@@ -1,4 +1,9 @@
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Scanner;
 
 public class filecontrol {
 
@@ -19,5 +24,11 @@ public class filecontrol {
 		last.delete();
 		GUI.check.setText("remove " + name);
 		GUI.list.remove(name.toLowerCase());		
+	}
+	
+	public static void gettext(String a) throws IOException{
+		Scanner in = new Scanner(new File(a));
+		String data = in.nextLine();
+		
 	}
 }

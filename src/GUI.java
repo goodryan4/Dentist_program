@@ -48,6 +48,7 @@ public class GUI {
 	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	double width = screenSize.getWidth();
 	double height = screenSize.getHeight();
+	private JTextField txtXxxxxxxxxx;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -252,20 +253,20 @@ public class GUI {
 
 		//labels
 		JLabel lblfirstname = new JLabel("First name: ");
-		lblfirstname.setBounds(34, 32, 60, 14);
+		lblfirstname.setBounds(34, 34, 60, 14);
 		info.add(lblfirstname);
 
 		JLabel lblPhoneNumber = new JLabel("Phone number:");
-		lblPhoneNumber.setBounds(34, 139, 111, 20);
+		lblPhoneNumber.setBounds(34, 136, 86, 14);
 		info.add(lblPhoneNumber);
 
 		//this is the info from the info file being displayed to the user
 		name = new JLabel("");
-		name.setBounds(130, 26, 92, 26);
+		name.setBounds(104, 32, 144, 20);
 		info.add(name);
 
 		number = new JLabel("");
-		number.setBounds(130, 133, 92, 26);
+		number.setBounds(104, 63, 144, 20);
 		info.add(number);
 
 		//this goes to the procedure panel
@@ -302,28 +303,52 @@ public class GUI {
 		info.add(btnGoToData);
 		
 		JLabel lbllastname = new JLabel("Last name:");
-		lbllastname.setBounds(34, 67, 92, 26);
+		lbllastname.setBounds(34, 68, 60, 14);
 		info.add(lbllastname);
 		
 		JLabel lblpostalcode = new JLabel("Postal Code:");
-		lblpostalcode.setBounds(34, 105, 111, 26);
+		lblpostalcode.setBounds(34, 102, 68, 14);
 		info.add(lblpostalcode);
 		
 		JLabel lblSex = new JLabel("Sex:");
-		lblSex.setBounds(34, 180, 92, 26);
+		lblSex.setBounds(34, 170, 28, 14);
 		info.add(lblSex);
 		
 		JLabel lblDateOfBirth = new JLabel("Date of birth:");
-		lblDateOfBirth.setBounds(34, 218, 92, 26);
+		lblDateOfBirth.setBounds(34, 204, 68, 14);
 		info.add(lblDateOfBirth);
 		
 		JLabel lblHealthNotes = new JLabel("Health Notes:");
-		lblHealthNotes.setBounds(258, 26, 92, 26);
+		lblHealthNotes.setBounds(258, 34, 68, 14);
 		info.add(lblHealthNotes);
 		
 		JLabel lblMedicalIssues = new JLabel("Medical Issues:");
-		lblMedicalIssues.setBounds(258, 67, 92, 26);
+		lblMedicalIssues.setBounds(258, 67, 78, 14);
 		info.add(lblMedicalIssues);
+		
+		JLabel postalcode = new JLabel("");
+		postalcode.setBounds(104, 94, 144, 20);
+		info.add(postalcode);
+		
+		JLabel phonenumber = new JLabel("");
+		phonenumber.setBounds(115, 136, 144, 20);
+		info.add(phonenumber);
+		
+		JLabel sex = new JLabel("");
+		sex.setBounds(66, 170, 144, 20);
+		info.add(sex);
+		
+		JLabel dateofbirth = new JLabel("");
+		dateofbirth.setBounds(104, 198, 144, 20);
+		info.add(dateofbirth);
+		
+		JLabel healthnotes = new JLabel("");
+		healthnotes.setBounds(350, 34, 144, 20);
+		info.add(healthnotes);
+		
+		JLabel medicalissues = new JLabel("");
+		medicalissues.setBounds(346, 63, 144, 20);
+		info.add(medicalissues);
 
 		//creating the procedure, allinfo and data panels
 		procedure = new JPanel();
@@ -339,23 +364,37 @@ public class GUI {
 
 		//labels in the data panel
 		JLabel dataname = new JLabel("Name: ");
-		dataname.setBounds(21, 21, 92, 26);
+		dataname.setBounds(21, 27, 39, 14);
 		data.add(dataname);
 
-		JLabel datanumber = new JLabel("Phone number");
-		datanumber.setBounds(21, 105, 157, 26);
+		JLabel datanumber = new JLabel("Phone number:");
+		datanumber.setBounds(21, 99, 76, 14);
 		data.add(datanumber);
 		
 		//
 		textField = new JTextField();
-		textField.setBounds(94, 21, 108, 26);
+		textField.setBounds(98, 21, 127, 26);
 		data.add(textField);
 		textField.setColumns(10);
 
 		textField_1 = new JTextField();
 		textField_1.setColumns(10);
-		textField_1.setBounds(199, 105, 108, 26);
+		textField_1.setBounds(98, 58, 127, 26);
 		data.add(textField_1);
+		
+		JLabel label = new JLabel("Postal Code:");
+		label.setBounds(21, 64, 68, 14);
+		data.add(label);
+		
+		txtXxxxxxxxxx = new JTextField();
+		txtXxxxxxxxxx.setText("xxxxxxxxxx");
+		txtXxxxxxxxxx.setColumns(10);
+		txtXxxxxxxxxx.setBounds(98, 96, 127, 26);
+		data.add(txtXxxxxxxxxx);
+		
+		JButton btnSave = new JButton("Save");
+		btnSave.setBounds(512, 303, 76, 23);
+		data.add(btnSave);
 	}
 
 	public void filestolist(List list, File bob) {
