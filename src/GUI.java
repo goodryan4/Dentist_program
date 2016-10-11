@@ -1,54 +1,55 @@
 import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.List;
-import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+
 import java.awt.CardLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.Calendar;
 
 import javax.swing.JScrollPane;
+
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.WindowStateListener;
 import java.awt.event.WindowEvent;
+
 import javax.swing.JCheckBox;
 
 public class GUI {
 
-	public JFrame frame;
-	public Calendar currdate = Calendar.getInstance();
+	private JFrame frame;
+	private JTextField text;
+	private JTextField newname;
 	static List list;
-	public JPanel info, procedure, data, allinfo;
-	static JLabel name, number, check, date;
-	public JTextField text, newname, textField, textField_1;
+	static JLabel check;
+	JPanel info;
+	JPanel procedure;
+	JPanel data;
+	JPanel allinfo;
+	JLabel name;
 	static String directory = "src/patients";
-	
-	//get screen resolution
-	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-	double width = screenSize.getWidth();
-	double height = screenSize.getHeight();
-	private JTextField txtXxxxxxxxxx;
+	private JTextField textField;
+	private JTextField textField_1;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -68,14 +69,10 @@ public class GUI {
 	}
 
 	private void initialize() {
-		//create temporary file for main directory
 		File bob = new File(directory);
-		//if the file exists then do not make one
 		if (bob.exists() == false) {
 			bob.mkdirs();
 		}
-		
-		//create main container
 		frame = new JFrame();
 		frame.addWindowStateListener(new WindowStateListener() {
 			public void windowStateChanged(WindowEvent arg0) {
@@ -86,12 +83,11 @@ public class GUI {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new CardLayout(0, 0));
 
-		//add a panel to the container for main page (searching)
 		JPanel search = new JPanel();
 		frame.getContentPane().add(search, "name_210219853183045");
 		search.setLayout(null);
 
-		//button to search
+		// button to search
 		JLabel iconsearch = new JLabel("");
 		iconsearch.setBounds(406, 86, 24, 25);
 		ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource("icon.png"));
@@ -127,12 +123,15 @@ public class GUI {
 						add.mkdir();
 						try {
 							new File(dir + "/data.txt").createNewFile();
+							filecontrol.instantiat(dir,"/data.txt");
 							new File(dir + "/info.txt").createNewFile();
+							filecontrol.instantiat(dir,"/info.txt");
 							new File(dir + "/procedure.txt").createNewFile();
+							filecontrol.instantiat(dir,"/procedure.txt");
 							new File(dir + "/balance.txt").createNewFile();
+							filecontrol.instantiat(dir,"/balance.txt");
 							check.setText("added " + name);
 							list.add(newname.getText().toLowerCase());
-							checklist();
 						} catch (IOException e) {
 							check.setText("Failed to add");
 							e.printStackTrace();
@@ -141,7 +140,8 @@ public class GUI {
 				}
 			}
 		});
-		newperson.setBounds(418, 256, 125, 25);
+		
+		newperson.setBounds(417, 255, 89, 25);
 		search.add(newperson);
 
 		// scrolling down list of people in folder when searching
@@ -157,6 +157,7 @@ public class GUI {
 					if (!(list.countItems() == 0)) {
 						list.getSelectedItem().toString();
 						search.hide();
+						filecontrol.getData(list.getSelectedItem().toString(),"data.txt");
 
 						info.show();
 					}
@@ -165,12 +166,11 @@ public class GUI {
 		});
 		scrollPane.setViewportView(list);
 
-		//this is displayed under the add or remove user
 		check = new JLabel("");
-		check.setBounds(127, 289, 280, 25);
+		check.setBounds(127, 289, 280, 14);
 		search.add(check);
 
-		//input from user to search
+		// input from user
 		text = new JTextField();
 		text.setForeground(Color.GRAY);
 		text.addFocusListener(new FocusAdapter() {
@@ -182,8 +182,6 @@ public class GUI {
 				}
 			}
 		});
-		
-		//check files then change list according to the files that exist
 		text.addKeyListener(new KeyAdapter() {
 			public void keyReleased(KeyEvent e) {
 				list.removeAll();
@@ -191,7 +189,6 @@ public class GUI {
 			}
 		});
 
-		//if user clicks on the textbox then this erases the text if it is equal to "Enter the person you wish to Search"
 		text.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent arg0) {
 				if (text.getText().equals("Enter the person you wish to search")) {
@@ -211,7 +208,6 @@ public class GUI {
 		search.add(text);
 		text.setColumns(10);
 
-		//delete the file with the specified and remove the name from the list
 		JButton removeperson = new JButton("Remove Entry");
 		removeperson.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -219,138 +215,77 @@ public class GUI {
 				filecontrol.removefolder(name);
 			}
 		});
-		removeperson.setBounds(418, 289, 125, 25);
+		removeperson.setBounds(417, 292, 113, 25);
 		search.add(removeperson);
 
-		//remove all names by looping the "removefolder" method with a for loop of names in the main folder
 		JButton btnRemoveAll = new JButton("Remove all");
 		btnRemoveAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				int response = JOptionPane.showConfirmDialog(null, "Are you sure you want all the patients deleted");
-				if(response == 1){
-					System.out.println("1");
-				}else{
-					filecontrol.removeallfolders();
-				}	
+				filecontrol.removeallfolders();
 			}
 		});
-		btnRemoveAll.setBounds(0, 289, 125, 25);
+		btnRemoveAll.setBounds(17, 292, 99, 25);
 		search.add(btnRemoveAll);
-		
-		JLabel lblTodaysDate = new JLabel("Today's Date:");
-		lblTodaysDate.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblTodaysDate.setBounds(357, 335, 125, 26);
-		search.add(lblTodaysDate);
-		
-		date = new JLabel("date");
-		date.setBounds(487, 335, 101, 26);
-		search.add(date);
 
-		//create the info panel
 		info = new JPanel();
 		frame.getContentPane().add(info, "name_210221315294922");
 		info.setLayout(null);
 
-		//labels
-		JLabel lblfirstname = new JLabel("First name: ");
-		lblfirstname.setBounds(34, 34, 60, 14);
-		info.add(lblfirstname);
+		JLabel lblName = new JLabel("Name: ");
+		lblName.setBounds(34, 32, 46, 14);
+		info.add(lblName);
 
 		JLabel lblPhoneNumber = new JLabel("Phone number:");
-		lblPhoneNumber.setBounds(34, 136, 86, 14);
+		lblPhoneNumber.setBounds(34, 139, 92, 14);
 		info.add(lblPhoneNumber);
 
-		//this is the info from the info file being displayed to the user
 		name = new JLabel("");
-		name.setBounds(104, 32, 144, 20);
+		name.setBounds(130, 26, 92, 26);
 		info.add(name);
 
-		number = new JLabel("");
-		number.setBounds(104, 63, 144, 20);
+		JLabel number = new JLabel("");
+		number.setBounds(130, 133, 92, 26);
 		info.add(number);
 
-		//this goes to the procedure panel
 		JButton btnGoToProcedure = new JButton("Go to procedure");
 		btnGoToProcedure.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				info.hide();
 				procedure.show();
+				filecontrol.getData(list.getSelectedItem().toString(),"procedure.txt");
+				
 			}
 		});
 		btnGoToProcedure.setBounds(21, 304, 141, 35);
 		info.add(btnGoToProcedure);
 
-		//this goes to the compressed info panel
 		JButton btnGoToCompressed = new JButton("Go to compressed info");
 		btnGoToCompressed.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				info.hide();
 				allinfo.show();
+				filecontrol.getData(list.getSelectedItem().toString(),"info.txt");
 			}
 		});
-		btnGoToCompressed.setBounds(183, 304, 167, 35);
+		btnGoToCompressed.setBounds(183, 304, 141, 35);
 		info.add(btnGoToCompressed);
 
-		//this goes to the data pael
 		JButton btnGoToData = new JButton("Go to data");
 		btnGoToData.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				info.hide();
-				data.show();
+				//info.hide();
+				//data.show();
+				try {
+					filecontrol.newInfo("hello",1);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 		btnGoToData.setBounds(375, 304, 141, 35);
 		info.add(btnGoToData);
-		
-		JLabel lbllastname = new JLabel("Last name:");
-		lbllastname.setBounds(34, 68, 60, 14);
-		info.add(lbllastname);
-		
-		JLabel lblpostalcode = new JLabel("Postal Code:");
-		lblpostalcode.setBounds(34, 102, 68, 14);
-		info.add(lblpostalcode);
-		
-		JLabel lblSex = new JLabel("Sex:");
-		lblSex.setBounds(34, 170, 28, 14);
-		info.add(lblSex);
-		
-		JLabel lblDateOfBirth = new JLabel("Date of birth:");
-		lblDateOfBirth.setBounds(34, 204, 68, 14);
-		info.add(lblDateOfBirth);
-		
-		JLabel lblHealthNotes = new JLabel("Health Notes:");
-		lblHealthNotes.setBounds(258, 34, 68, 14);
-		info.add(lblHealthNotes);
-		
-		JLabel lblMedicalIssues = new JLabel("Medical Issues:");
-		lblMedicalIssues.setBounds(258, 67, 78, 14);
-		info.add(lblMedicalIssues);
-		
-		JLabel postalcode = new JLabel("");
-		postalcode.setBounds(104, 94, 144, 20);
-		info.add(postalcode);
-		
-		JLabel phonenumber = new JLabel("");
-		phonenumber.setBounds(115, 136, 144, 20);
-		info.add(phonenumber);
-		
-		JLabel sex = new JLabel("");
-		sex.setBounds(66, 170, 144, 20);
-		info.add(sex);
-		
-		JLabel dateofbirth = new JLabel("");
-		dateofbirth.setBounds(104, 198, 144, 20);
-		info.add(dateofbirth);
-		
-		JLabel healthnotes = new JLabel("");
-		healthnotes.setBounds(350, 34, 144, 20);
-		info.add(healthnotes);
-		
-		JLabel medicalissues = new JLabel("");
-		medicalissues.setBounds(346, 63, 144, 20);
-		info.add(medicalissues);
 
-		//creating the procedure, allinfo and data panels
 		procedure = new JPanel();
 		frame.getContentPane().add(procedure, "name_210203575219193");
 		procedure.setLayout(null);
@@ -362,39 +297,23 @@ public class GUI {
 		frame.getContentPane().add(data, "name_210281137029020");
 		data.setLayout(null);
 
-		//labels in the data panel
 		JLabel dataname = new JLabel("Name: ");
-		dataname.setBounds(21, 27, 39, 14);
+		dataname.setBounds(21, 21, 92, 26);
 		data.add(dataname);
 
-		JLabel datanumber = new JLabel("Phone number:");
-		datanumber.setBounds(21, 99, 76, 14);
-		data.add(datanumber);
-		
-		//
 		textField = new JTextField();
-		textField.setBounds(98, 21, 127, 26);
+		textField.setBounds(94, 21, 108, 26);
 		data.add(textField);
 		textField.setColumns(10);
 
 		textField_1 = new JTextField();
 		textField_1.setColumns(10);
-		textField_1.setBounds(98, 58, 127, 26);
+		textField_1.setBounds(199, 105, 108, 26);
 		data.add(textField_1);
-		
-		JLabel label = new JLabel("Postal Code:");
-		label.setBounds(21, 64, 68, 14);
-		data.add(label);
-		
-		txtXxxxxxxxxx = new JTextField();
-		txtXxxxxxxxxx.setText("xxxxxxxxxx");
-		txtXxxxxxxxxx.setColumns(10);
-		txtXxxxxxxxxx.setBounds(98, 96, 127, 26);
-		data.add(txtXxxxxxxxxx);
-		
-		JButton btnSave = new JButton("Save");
-		btnSave.setBounds(512, 303, 76, 23);
-		data.add(btnSave);
+
+		JLabel datanumber = new JLabel("Phone number");
+		datanumber.setBounds(21, 105, 157, 26);
+		data.add(datanumber);
 	}
 
 	public void filestolist(List list, File bob) {
@@ -409,20 +328,5 @@ public class GUI {
 				}
 			}
 		}
-	}
-	
-	public void checklist (){
-		String[] stuff = list.getItems();
-		for(String string : stuff){
-		if(string.contains("there are no names")){
-			list.remove(string);
-		}
-		}
-	}
-	
-	public void settime(){
-		String time = currdate.getTime().toString();
-		int appearance = time.indexOf(":")-3;
-		date.setText(time.substring(0, appearance));
 	}
 }
