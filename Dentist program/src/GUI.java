@@ -4,6 +4,7 @@ import java.awt.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+
 import java.awt.CardLayout;
 import java.awt.Color;
 
@@ -12,6 +13,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -20,13 +22,17 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JScrollPane;
+
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+
 import javax.swing.JLabel;
+
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.WindowStateListener;
 import java.awt.event.WindowEvent;
+
 import javax.swing.JCheckBox;
 
 public class GUI {
@@ -117,9 +123,13 @@ public class GUI {
 						add.mkdir();
 						try {
 							new File(dir + "/data.txt").createNewFile();
+							filecontrol.instantiat(dir,"/data.txt");
 							new File(dir + "/info.txt").createNewFile();
+							filecontrol.instantiat(dir,"/info.txt");
 							new File(dir + "/procedure.txt").createNewFile();
+							filecontrol.instantiat(dir,"/procedure.txt");
 							new File(dir + "/balance.txt").createNewFile();
+							filecontrol.instantiat(dir,"/balance.txt");
 							check.setText("added " + name);
 							list.add(newname.getText().toLowerCase());
 						} catch (IOException e) {
@@ -147,12 +157,7 @@ public class GUI {
 					if (!(list.countItems() == 0)) {
 						list.getSelectedItem().toString();
 						search.hide();
-						try {
-							filecontrol.getData(list.getSelectedItem().toString(),"data.txt");
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+						filecontrol.getData(list.getSelectedItem().toString(),"data.txt");
 
 						info.show();
 					}
@@ -247,12 +252,8 @@ public class GUI {
 			public void actionPerformed(ActionEvent arg0) {
 				info.hide();
 				procedure.show();
-				try {
-					filecontrol.getData(list.getSelectedItem().toString(),"procedure.txt");
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				filecontrol.getData(list.getSelectedItem().toString(),"procedure.txt");
+				
 			}
 		});
 		btnGoToProcedure.setBounds(21, 304, 141, 35);
@@ -263,12 +264,7 @@ public class GUI {
 			public void actionPerformed(ActionEvent e) {
 				info.hide();
 				allinfo.show();
-				try {
-					filecontrol.getData(list.getSelectedItem().toString(),"info.txt");
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				filecontrol.getData(list.getSelectedItem().toString(),"info.txt");
 			}
 		});
 		btnGoToCompressed.setBounds(183, 304, 141, 35);
