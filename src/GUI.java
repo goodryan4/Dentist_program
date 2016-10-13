@@ -33,23 +33,19 @@ import java.awt.event.FocusEvent;
 import java.awt.event.WindowStateListener;
 import java.awt.event.WindowEvent;
 
-import javax.swing.JCheckBox;
-
 public class GUI {
 
-	private JFrame frame;
-	private JTextField text;
-	private JTextField newname;
+	public JFrame frame;
+	public static JTextField text;
+	public JTextField textField;
+	public JTextField textField_1;
+	public JTextField newname;
 	static List list;
-	static JLabel check;
-	JPanel info;
-	JPanel procedure;
-	JPanel data;
-	JPanel allinfo;
-	JLabel name;
+	static JLabel check, name, lblPhoneNumber, lblName, iconsearch, number, dataname, datanumber;
+	public JPanel info, procedure, data, allinfo, search;
 	static String directory = "src/patients";
-	private JTextField textField;
-	private JTextField textField_1;
+	public JButton newperson, removeperson, btnGoToCompressed, btnGoToProcedure, btnGoToData;
+	public JScrollPane scrollPane;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -83,12 +79,12 @@ public class GUI {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new CardLayout(0, 0));
 
-		JPanel search = new JPanel();
+		search = new JPanel();
 		frame.getContentPane().add(search, "name_210219853183045");
 		search.setLayout(null);
 
 		// button to search
-		JLabel iconsearch = new JLabel("");
+		iconsearch = new JLabel("");
 		iconsearch.setBounds(406, 86, 24, 25);
 		ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource("icon.png"));
 		Image newimg = icon.getImage().getScaledInstance(iconsearch.getWidth(), iconsearch.getHeight(),
@@ -108,7 +104,7 @@ public class GUI {
 		newname.setColumns(10);
 
 		// button to add person to database
-		JButton newperson = new JButton("Add Entry");
+		newperson = new JButton("Add Entry");
 		newperson.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String name = newname.getText().toLowerCase();
@@ -145,7 +141,7 @@ public class GUI {
 		search.add(newperson);
 
 		// scrolling down list of people in folder when searching
-		JScrollPane scrollPane = new JScrollPane();
+		scrollPane = new JScrollPane();
 		scrollPane.setBounds(127, 122, 280, 122);
 		search.add(scrollPane);
 
@@ -185,7 +181,7 @@ public class GUI {
 		text.addKeyListener(new KeyAdapter() {
 			public void keyReleased(KeyEvent e) {
 				list.removeAll();
-				filestolist(list, bob);
+				filecontrol.filestolist(list, bob);
 			}
 		});
 
@@ -201,14 +197,14 @@ public class GUI {
 			}
 		});
 		text.setHorizontalAlignment(SwingConstants.CENTER);
-		filestolist(list, bob);
+		filecontrol.filestolist(list, bob);
 		text.setText("Enter the person you wish to search");
 		text.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 0, Color.WHITE));
 		text.setBounds(frame.getWidth() / 2 - 180, frame.getHeight() / 5, 280, 25);
 		search.add(text);
 		text.setColumns(10);
 
-		JButton removeperson = new JButton("Remove Entry");
+		removeperson = new JButton("Remove Entry");
 		removeperson.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String name = newname.getText().toLowerCase();
@@ -231,11 +227,11 @@ public class GUI {
 		frame.getContentPane().add(info, "name_210221315294922");
 		info.setLayout(null);
 
-		JLabel lblName = new JLabel("Name: ");
+		lblName = new JLabel("Name: ");
 		lblName.setBounds(34, 32, 46, 14);
 		info.add(lblName);
 
-		JLabel lblPhoneNumber = new JLabel("Phone number:");
+		lblPhoneNumber= new JLabel("Phone number:");
 		lblPhoneNumber.setBounds(34, 139, 92, 14);
 		info.add(lblPhoneNumber);
 
@@ -243,11 +239,12 @@ public class GUI {
 		name.setBounds(130, 26, 92, 26);
 		info.add(name);
 
-		JLabel number = new JLabel("");
+		number = new JLabel("");
 		number.setBounds(130, 133, 92, 26);
 		info.add(number);
 
-		JButton btnGoToProcedure = new JButton("Go to procedure");
+		//JButtons
+		btnGoToProcedure = new JButton("Go to procedure");
 		btnGoToProcedure.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				info.hide();
@@ -259,7 +256,7 @@ public class GUI {
 		btnGoToProcedure.setBounds(21, 304, 141, 35);
 		info.add(btnGoToProcedure);
 
-		JButton btnGoToCompressed = new JButton("Go to compressed info");
+		btnGoToCompressed = new JButton("Go to compressed info");
 		btnGoToCompressed.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				info.hide();
@@ -270,15 +267,14 @@ public class GUI {
 		btnGoToCompressed.setBounds(183, 304, 141, 35);
 		info.add(btnGoToCompressed);
 
-		JButton btnGoToData = new JButton("Go to data");
+		btnGoToData = new JButton("Go to data");
 		btnGoToData.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//info.hide();
-				//data.show();
+				info.hide();
+				data.show();
 				try {
 					filecontrol.newInfo("hello",1);
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}
@@ -286,6 +282,7 @@ public class GUI {
 		btnGoToData.setBounds(375, 304, 141, 35);
 		info.add(btnGoToData);
 
+		//JPanels
 		procedure = new JPanel();
 		frame.getContentPane().add(procedure, "name_210203575219193");
 		procedure.setLayout(null);
@@ -297,10 +294,16 @@ public class GUI {
 		frame.getContentPane().add(data, "name_210281137029020");
 		data.setLayout(null);
 
-		JLabel dataname = new JLabel("Name: ");
+		//JLabels
+		dataname = new JLabel("Name: ");
 		dataname.setBounds(21, 21, 92, 26);
 		data.add(dataname);
 
+		datanumber = new JLabel("Phone number");
+		datanumber.setBounds(21, 105, 157, 26);
+		data.add(datanumber);
+		
+		//JTextFields
 		textField = new JTextField();
 		textField.setBounds(94, 21, 108, 26);
 		data.add(textField);
@@ -310,23 +313,5 @@ public class GUI {
 		textField_1.setColumns(10);
 		textField_1.setBounds(199, 105, 108, 26);
 		data.add(textField_1);
-
-		JLabel datanumber = new JLabel("Phone number");
-		datanumber.setBounds(21, 105, 157, 26);
-		data.add(datanumber);
-	}
-
-	public void filestolist(List list, File bob) {
-		File[] files = bob.listFiles();
-		int numfiles = files.length;
-		if (numfiles == 0) {
-			list.add("there are no names");
-		} else {
-			for (int i = 0; i < numfiles; i++) {
-				if (files[i].getName().contains(text.getText().toLowerCase())) {
-					list.add(files[i].getName());
-				}
-			}
-		}
 	}
 }

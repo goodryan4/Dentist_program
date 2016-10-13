@@ -1,3 +1,4 @@
+import java.awt.List;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,22 +16,19 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
-public class filecontrol {
+public class filecontrol extends GUI{
 	public static String[] info;
 	public static File CurrentPat;
 	public static String path;
 
 	
 	public static void instantiat(String dir, String file) {
-		String nullData = "::::::::::::::";
+		String nullData = ": : : : : : : : : : : : : :";
 		String directory = dir + file;
-
-		PrintWriter writer;
 		try {
-			writer = new PrintWriter(directory);
+			PrintWriter writer = new PrintWriter(directory);
 			writer.print(nullData);
 			writer.close();
-
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -40,17 +38,15 @@ public class filecontrol {
 	public static String[] getData(String name, String type) {
 		path = GUI.directory + "/" + name + "/" + type;
 		File CurrentPat = new File(path);
-		Scanner in = null;
 		try {
-			in = new Scanner(CurrentPat);
+			Scanner in = new Scanner(CurrentPat);
+			System.out.println(in.hasNextLine());
+			String data = in.nextLine();
+			info = data.split(":");
+			in.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		String data = in.nextLine();
-		info = data.split(":");
-		in.close();
-
 		return info;
 
 	}
@@ -86,6 +82,18 @@ public class filecontrol {
 		GUI.check.setText("remove " + name);
 		GUI.list.remove(name.toLowerCase());
 	}
-
 	
+	public static void filestolist(List list, File bob) {
+		File[] files = bob.listFiles();
+		int numfiles = files.length;
+		if (numfiles == 0) {
+			list.add("there are no names");
+		} else {
+			for (int i = 0; i < numfiles; i++) {
+				if (files[i].getName().contains(text.getText().toLowerCase())) {
+					list.add(files[i].getName());
+				}
+			}
+		}
+	}
 }
