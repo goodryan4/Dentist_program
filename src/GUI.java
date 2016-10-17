@@ -37,15 +37,16 @@ public class GUI {
 
 	public JFrame frame;
 	public static JTextField text;
-	public JTextField textField;
-	public JTextField textField_1;
 	public JTextField newname;
 	static List list;
-	static JLabel check, name, lblPhoneNumber, lblName, iconsearch, number, dataname, datanumber;
-	public JPanel info, procedure, data, allinfo, search;
+	static JLabel check, name, lblPhoneNumber, lblName, iconsearch, number;
+	public JPanel info, procedure, allinfo, search;
 	static String directory = "src/patients";
-	public JButton newperson, removeperson, btnGoToCompressed, btnGoToProcedure, btnGoToData;
+	public JButton newperson, removeperson, btnGoToCompressed, btnGoToProcedure;
 	public JScrollPane scrollPane;
+	public JTextField textField, textField_1, textField_2, textField_3, textField_4;
+	public JTextField [] TextFields;
+	public String [] currentData;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -102,7 +103,7 @@ public class GUI {
 		newname.setBounds(127, 255, 280, 25);
 		search.add(newname);
 		newname.setColumns(10);
-
+		
 		// button to add person to database
 		newperson = new JButton("Add Entry");
 		newperson.addActionListener(new ActionListener() {
@@ -140,6 +141,19 @@ public class GUI {
 		newperson.setBounds(417, 255, 89, 25);
 		search.add(newperson);
 
+		JButton btnHome = new JButton("Home");
+		btnHome.setBounds(475, 28, 89, 24);
+		btnHome.setVisible(true);
+		btnHome.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				info.hide();
+				procedure.hide();
+				allinfo.hide();
+				search.show();
+				
+			}
+		});
+		
 		// scrolling down list of people in folder when searching
 		scrollPane = new JScrollPane();
 		scrollPane.setBounds(127, 122, 280, 122);
@@ -153,9 +167,12 @@ public class GUI {
 					if (!(list.countItems() == 0)) {
 						list.getSelectedItem().toString();
 						search.hide();
-						filecontrol.getData(list.getSelectedItem().toString(),"data.txt");
+						info.add(btnHome);
+						currentData = filecontrol.getData(list.getSelectedItem().toString(),"data.txt");
 
 						info.show();
+						setData();
+						
 					}
 				}
 			}
@@ -227,6 +244,8 @@ public class GUI {
 		frame.getContentPane().add(info, "name_210221315294922");
 		info.setLayout(null);
 
+		info.add(btnHome);
+		
 		lblName = new JLabel("Name: ");
 		lblName.setBounds(34, 32, 46, 14);
 		info.add(lblName);
@@ -249,11 +268,12 @@ public class GUI {
 			public void actionPerformed(ActionEvent arg0) {
 				info.hide();
 				procedure.show();
-				filecontrol.getData(list.getSelectedItem().toString(),"procedure.txt");
+				procedure.add(btnHome);
+				currentData = filecontrol.getData(list.getSelectedItem().toString(),"procedure.txt");
 				
 			}
 		});
-		btnGoToProcedure.setBounds(21, 304, 141, 35);
+		btnGoToProcedure.setBounds(31, 326, 141, 35);
 		info.add(btnGoToProcedure);
 
 		btnGoToCompressed = new JButton("Go to compressed info");
@@ -261,57 +281,84 @@ public class GUI {
 			public void actionPerformed(ActionEvent e) {
 				info.hide();
 				allinfo.show();
-				filecontrol.getData(list.getSelectedItem().toString(),"info.txt");
+				allinfo.add(btnHome);
+				currentData = filecontrol.getData(list.getSelectedItem().toString(),"info.txt");
 			}
 		});
-		btnGoToCompressed.setBounds(183, 304, 141, 35);
+		btnGoToCompressed.setBounds(182, 326, 141, 35);
 		info.add(btnGoToCompressed);
-
-		btnGoToData = new JButton("Go to data");
-		btnGoToData.addActionListener(new ActionListener() {
+		
+		JButton btnSchedule = new JButton("Schedule");
+		btnSchedule.setBounds(453, 326, 123, 35);
+		info.add(btnSchedule);
+	
+		createTextFields();
+		TextFields = new JTextField [] {textField, textField_1, textField_2, textField_3, textField_4};
+		
+		
+		
+		JButton btnUpdateInfo = new JButton("Update Info");
+		btnUpdateInfo.setBounds(475, 68, 89, 23);
+		info.add(btnUpdateInfo);
+		btnUpdateInfo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				info.hide();
-				data.show();
-				try {
-					filecontrol.newInfo("hello",1);
-				} catch (IOException e1) {
-					e1.printStackTrace();
+				for(int i = 0; i<TextFields.length; i++){
+					TextFields[i].setEditable(true);
+					System.out.println("hello");
 				}
+				btnUpdateInfo.setVisible(false);
 			}
 		});
-		btnGoToData.setBounds(375, 304, 141, 35);
-		info.add(btnGoToData);
 
 		//JPanels
 		procedure = new JPanel();
 		frame.getContentPane().add(procedure, "name_210203575219193");
 		procedure.setLayout(null);
+		
+		
 
 		allinfo = new JPanel();
 		frame.getContentPane().add(allinfo, "name_210279605001369");
-
-		data = new JPanel();
-		frame.getContentPane().add(data, "name_210281137029020");
-		data.setLayout(null);
-
-		//JLabels
-		dataname = new JLabel("Name: ");
-		dataname.setBounds(21, 21, 92, 26);
-		data.add(dataname);
-
-		datanumber = new JLabel("Phone number");
-		datanumber.setBounds(21, 105, 157, 26);
-		data.add(datanumber);
 		
-		//JTextFields
-		textField = new JTextField();
-		textField.setBounds(94, 21, 108, 26);
-		data.add(textField);
-		textField.setColumns(10);
-
-		textField_1 = new JTextField();
-		textField_1.setColumns(10);
-		textField_1.setBounds(199, 105, 108, 26);
-		data.add(textField_1);
+		
 	}
+	public void createTextFields()
+	{
+	textField = new JTextField();
+	textField.setBounds(116, 29, 86, 20);
+	info.add(textField);
+	textField.setColumns(10);
+	textField.setEditable(false);
+	
+	textField_1 = new JTextField();
+	textField_1.setBounds(116, 63, 86, 26);
+	info.add(textField_1);
+	textField_1.setColumns(10);
+	textField_1.setEditable(false);
+	
+	textField_2 = new JTextField();
+	textField_2.setBounds(116, 100, 86, 20);
+	info.add(textField_2);
+	textField_2.setColumns(10);
+	textField_2.setEditable(false);
+	
+	textField_3 = new JTextField();
+	textField_3.setBounds(116, 136, 86, 20);
+	info.add(textField_3);
+	textField_3.setColumns(10);
+	textField_3.setEditable(false);
+	
+	textField_4 = new JTextField();
+	textField_4.setBounds(116, 164, 86, 20);
+	info.add(textField_4);
+	textField_4.setColumns(10);
+	textField_4.setEditable(false);
+	
+	}
+	public void setData(){
+		for(int i = 0; i<TextFields.length; i++){
+			TextFields[i].setText(currentData[i].toString());
+		}
+	}
+	
 }
