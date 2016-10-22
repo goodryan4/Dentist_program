@@ -32,21 +32,30 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.WindowStateListener;
 import java.awt.event.WindowEvent;
+import java.awt.Window.Type;
+import javax.swing.JToggleButton;
 
 public class GUI {
 
 	public JFrame frame;
 	public static JTextField text;
-	public JTextField newname;
 	static List list;
-	static JLabel check, name, lblPhoneNumber, lblName, iconsearch, number;
+	static JLabel check, lblPhoneNumber, lblName, iconsearch;
 	public JPanel info, procedure, allinfo, search;
 	static String directory = "src/patients";
 	public JButton newperson, removeperson, btnGoToCompressed, btnGoToProcedure;
 	public JScrollPane scrollPane;
-	public JTextField textField, textField_1, textField_2, textField_3, textField_4;
-	public JTextField [] TextFields;
-	public String [] currentData;
+	public JTextField textField;
+
+	public String[] currentData;
+	private JTextField textField_1;
+	private JTextField textField_2;
+	private JTextField textField_3;
+	private JTextField textField_4;
+	private JTextField textField_5;
+	JToggleButton btnUpdateInfo;
+	JButton btnHome;
+	JTextField[] TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3, textField_4, textField_5 };
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -71,6 +80,7 @@ public class GUI {
 			bob.mkdirs();
 		}
 		frame = new JFrame();
+		frame.setResizable(false);
 		frame.addWindowStateListener(new WindowStateListener() {
 			public void windowStateChanged(WindowEvent arg0) {
 				text.setBounds(frame.getWidth() / 2 - 180, frame.getHeight() / 5, 280, 25);
@@ -94,55 +104,43 @@ public class GUI {
 		iconsearch.setIcon(icon);
 		search.add(iconsearch);
 
-		newname = new JTextField();
-		newname.addFocusListener(new FocusAdapter() {
-			public void focusGained(FocusEvent arg0) {
-				newname.setText("");
-			}
-		});
-		newname.setBounds(127, 255, 280, 25);
-		search.add(newname);
-		newname.setColumns(10);
-		
 		// button to add person to database
 		newperson = new JButton("Add Entry");
 		newperson.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String name = newname.getText().toLowerCase();
-				String dir = directory + "/" + name;
+				String dir = directory + "/" + text.getText().toLowerCase();
 				File add = new File(dir);
 				if (add.exists()) {
-					check.setText("already exist");
+					check.setText("the patient already exist");
 				} else {
-					if (name.contains("(") || name.contains(")")) {
-						check.setText("really RHYS");
-					}else{
-						add.mkdir();
-						try {
-							new File(dir + "/data.txt").createNewFile();
-							filecontrol.instantiat(dir,"/data.txt");
-							new File(dir + "/info.txt").createNewFile();
-							filecontrol.instantiat(dir,"/info.txt");
-							new File(dir + "/procedure.txt").createNewFile();
-							filecontrol.instantiat(dir,"/procedure.txt");
-							new File(dir + "/balance.txt").createNewFile();
-							filecontrol.instantiat(dir,"/balance.txt");
-							check.setText("added " + name);
-							list.add(newname.getText().toLowerCase());
-						} catch (IOException e) {
-							check.setText("Failed to add");
-							e.printStackTrace();
+					add.mkdir();
+					try {
+						new File(dir + "/data.txt").createNewFile();
+						filecontrol.instantiat(dir, "/data.txt");
+						new File(dir + "/info.txt").createNewFile();
+						filecontrol.instantiat(dir, "/info.txt");
+						new File(dir + "/procedure.txt").createNewFile();
+						filecontrol.instantiat(dir, "/procedure.txt");
+						new File(dir + "/balance.txt").createNewFile();
+						filecontrol.instantiat(dir, "/balance.txt");
+						check.setText("added " + text.getText().toLowerCase());
+						list.add(text.getText().toLowerCase());
+						if(list.getItem(0).contains("")){
+							
 						}
+					} catch (IOException e) {
+						check.setText("Failed to add");
+						e.printStackTrace();
 					}
 				}
 			}
 		});
-		
+
 		newperson.setBounds(417, 255, 89, 25);
 		search.add(newperson);
 
-		JButton btnHome = new JButton("Home");
-		btnHome.setBounds(475, 28, 89, 24);
+		btnHome = new JButton("Home");
+		btnHome.setBounds(463, 28, 101, 24);
 		btnHome.setVisible(true);
 		btnHome.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -150,13 +148,12 @@ public class GUI {
 				procedure.hide();
 				allinfo.hide();
 				search.show();
-				
 			}
 		});
-		
+
 		// scrolling down list of people in folder when searching
 		scrollPane = new JScrollPane();
-		scrollPane.setBounds(127, 122, 280, 122);
+		scrollPane.setBounds(127, 122, 280, 150);
 		search.add(scrollPane);
 
 		// list of people when searching
@@ -168,17 +165,18 @@ public class GUI {
 						list.getSelectedItem().toString();
 						search.hide();
 						info.add(btnHome);
-						currentData = filecontrol.getData(list.getSelectedItem().toString(),"data.txt");
+						currentData = filecontrol.getData(list.getSelectedItem().toString(), "data.txt");
 
 						info.show();
 						setData();
-						
+
 					}
 				}
 			}
 		});
 		scrollPane.setViewportView(list);
 
+		//user can see if their patient already exists or is added
 		check = new JLabel("");
 		check.setBounds(127, 289, 280, 14);
 		search.add(check);
@@ -224,7 +222,7 @@ public class GUI {
 		removeperson = new JButton("Remove Entry");
 		removeperson.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String name = newname.getText().toLowerCase();
+				String name = text.getText().toLowerCase();
 				filecontrol.removefolder(name);
 			}
 		});
@@ -245,32 +243,24 @@ public class GUI {
 		info.setLayout(null);
 
 		info.add(btnHome);
-		
+
 		lblName = new JLabel("Name: ");
-		lblName.setBounds(34, 32, 46, 14);
+		lblName.setBounds(10, 33, 46, 14);
 		info.add(lblName);
 
-		lblPhoneNumber= new JLabel("Phone number:");
-		lblPhoneNumber.setBounds(34, 139, 92, 14);
+		lblPhoneNumber = new JLabel("Phone number:");
+		lblPhoneNumber.setBounds(10, 125, 73, 14);
 		info.add(lblPhoneNumber);
 
-		name = new JLabel("");
-		name.setBounds(130, 26, 92, 26);
-		info.add(name);
-
-		number = new JLabel("");
-		number.setBounds(130, 133, 92, 26);
-		info.add(number);
-
-		//JButtons
+		// JButtons
 		btnGoToProcedure = new JButton("Go to procedure");
 		btnGoToProcedure.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				info.hide();
 				procedure.show();
 				procedure.add(btnHome);
-				currentData = filecontrol.getData(list.getSelectedItem().toString(),"procedure.txt");
-				
+				currentData = filecontrol.getData(list.getSelectedItem().toString(), "procedure.txt");
+
 			}
 		});
 		btnGoToProcedure.setBounds(31, 326, 141, 35);
@@ -282,83 +272,87 @@ public class GUI {
 				info.hide();
 				allinfo.show();
 				allinfo.add(btnHome);
-				currentData = filecontrol.getData(list.getSelectedItem().toString(),"info.txt");
+				currentData = filecontrol.getData(list.getSelectedItem().toString(), "info.txt");
 			}
 		});
 		btnGoToCompressed.setBounds(182, 326, 141, 35);
 		info.add(btnGoToCompressed);
-		
+
 		JButton btnSchedule = new JButton("Schedule");
 		btnSchedule.setBounds(453, 326, 123, 35);
 		info.add(btnSchedule);
-	
+
 		createTextFields();
-		TextFields = new JTextField [] {textField, textField_1, textField_2, textField_3, textField_4};
-		
-		
-		
-		JButton btnUpdateInfo = new JButton("Update Info");
-		btnUpdateInfo.setBounds(475, 68, 89, 23);
-		info.add(btnUpdateInfo);
+
+		btnUpdateInfo = new JToggleButton("Update Info");
 		btnUpdateInfo.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				for(int i = 0; i<TextFields.length; i++){
-					TextFields[i].setEditable(true);
-					System.out.println("hello");
+			public void actionPerformed(ActionEvent arg0) {
+				if (btnUpdateInfo.isSelected()) {
+					for (int i = 0; i < TextFields.length; i++) {
+						TextFields[i].setEditable(true);
+					}
+				} else {
+					for (int i = 0; i < TextFields.length; i++) {
+						TextFields[i].setEditable(false);
+					}
 				}
-				btnUpdateInfo.setVisible(false);
 			}
 		});
+		btnUpdateInfo.setBounds(463, 68, 101, 23);
+		info.add(btnUpdateInfo);
 
-		//JPanels
+		textField_1 = new JTextField();
+		textField_1.setEditable(false);
+		textField_1.setColumns(10);
+		textField_1.setBounds(93, 60, 86, 20);
+		info.add(textField_1);
+
+		textField_2 = new JTextField();
+		textField_2.setEditable(false);
+		textField_2.setColumns(10);
+		textField_2.setBounds(93, 91, 86, 20);
+		info.add(textField_2);
+
+		textField_3 = new JTextField();
+		textField_3.setEditable(false);
+		textField_3.setColumns(10);
+		textField_3.setBounds(93, 122, 86, 20);
+		info.add(textField_3);
+
+		textField_4 = new JTextField();
+		textField_4.setEditable(false);
+		textField_4.setColumns(10);
+		textField_4.setBounds(93, 153, 86, 20);
+		info.add(textField_4);
+
+		textField_5 = new JTextField();
+		textField_5.setEditable(false);
+		textField_5.setColumns(10);
+		textField_5.setBounds(93, 184, 86, 20);
+		info.add(textField_5);
+
+		// JPanels
 		procedure = new JPanel();
 		frame.getContentPane().add(procedure, "name_210203575219193");
 		procedure.setLayout(null);
-		
-		
 
 		allinfo = new JPanel();
 		frame.getContentPane().add(allinfo, "name_210279605001369");
-		
-		
+
 	}
-	public void createTextFields()
-	{
-	textField = new JTextField();
-	textField.setBounds(116, 29, 86, 20);
-	info.add(textField);
-	textField.setColumns(10);
-	textField.setEditable(false);
-	
-	textField_1 = new JTextField();
-	textField_1.setBounds(116, 63, 86, 26);
-	info.add(textField_1);
-	textField_1.setColumns(10);
-	textField_1.setEditable(false);
-	
-	textField_2 = new JTextField();
-	textField_2.setBounds(116, 100, 86, 20);
-	info.add(textField_2);
-	textField_2.setColumns(10);
-	textField_2.setEditable(false);
-	
-	textField_3 = new JTextField();
-	textField_3.setBounds(116, 136, 86, 20);
-	info.add(textField_3);
-	textField_3.setColumns(10);
-	textField_3.setEditable(false);
-	
-	textField_4 = new JTextField();
-	textField_4.setBounds(116, 164, 86, 20);
-	info.add(textField_4);
-	textField_4.setColumns(10);
-	textField_4.setEditable(false);
-	
+
+	public void createTextFields() {
+		textField = new JTextField();
+		textField.setBounds(93, 30, 86, 20);
+		info.add(textField);
+		textField.setColumns(10);
+		textField.setEditable(false);
+
 	}
-	public void setData(){
-		for(int i = 0; i<TextFields.length; i++){
+
+	public void setData() {
+		for (int i = 0; i <= TextFields.length; i++) {
 			TextFields[i].setText(currentData[i].toString());
 		}
 	}
-	
 }
