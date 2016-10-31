@@ -1,4 +1,5 @@
 import java.awt.List;
+import java.awt.TextField;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -133,8 +134,9 @@ public class filecontrol extends GUI{
 	
 	//sets the data to each textfield
 	public static void setData() {
-		for (int i = 0; i <= TextFields.length; i++) {
-			TextFields[i].setText(currentData[i].toString());
+		for (int i = 0; i < TextFields.length; i++) {
+			System.out.println(currentData[i]);
+			TextFields[i].setText(currentData[i]);
 		}
 	}
 	

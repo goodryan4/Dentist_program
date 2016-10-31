@@ -17,7 +17,7 @@ public class GUI {
 	public static String[] currentData;
 	public static JToggleButton btnUpdateInfo;
 	public static JTextField textField, textField_1, textField_2, textField_3, textField_4, textField_5;
-	public static JTextField[] TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3, textField_4,textField_5 };
+	public static JTextField[] TextFields;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -52,12 +52,12 @@ public class GUI {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new CardLayout(0, 0));
 
-		//main page
+		// main page
 		search = new JPanel();
 		frame.getContentPane().add(search, "name_210219853183045");
 		search.setLayout(null);
-		
-		//search icon beside the user input
+
+		// search icon beside the user input
 		iconsearch = new JLabel("");
 		iconsearch.setBounds(406, 86, 24, 25);
 		ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource("icon.png"));
@@ -77,7 +77,7 @@ public class GUI {
 		newperson.setBounds(441, 86, 89, 25);
 		search.add(newperson);
 
-		//button to go back to the main page
+		// button to go back to the main page
 		btnHome = new JButton("Home");
 		btnHome.setBounds(463, 28, 101, 24);
 		btnHome.setVisible(true);
@@ -105,9 +105,12 @@ public class GUI {
 					if (!(list.countItems() == 0) && !a.equals("There are no patients in the list")) {
 						search.hide();
 						info.add(btnHome);
-						currentData = filecontrol.getData(a, "data.txt");
-						info.show();
+						currentData = filecontrol.getData(a, "info.txt");
+						for (int i = 0; i < TextFields.length; i++) {
+							System.out.println(i + "" + TextFields[i].getText());
+						}
 						filecontrol.setData();
+						info.show();
 					}
 				}
 			}
@@ -156,14 +159,13 @@ public class GUI {
 		text.setBounds(frame.getWidth() / 2 - 180, frame.getHeight() / 5, 280, 25);
 		search.add(text);
 
-		//delete patient button
+		// delete patient button
 		removeperson = new JButton("Remove Entry");
 		removeperson.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String name = list.getSelectedItem();
-				if (name == null || name.equals("There are no patients in the list")) {
-
-				} else {
+				System.out.println(name);
+				if (!name.equals(null) && (!name.equals("There are no patients in the list"))) {
 					filecontrol.removefolder(name);
 				}
 			}
@@ -171,7 +173,7 @@ public class GUI {
 		removeperson.setBounds(417, 247, 113, 25);
 		search.add(removeperson);
 
-		//delete all patient button
+		// delete all patient button
 		btnRemoveAll = new JButton("Remove all");
 		btnRemoveAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -181,12 +183,21 @@ public class GUI {
 		btnRemoveAll.setBounds(18, 247, 99, 25);
 		search.add(btnRemoveAll);
 
-		//info page
+		// JPanels
 		info = new JPanel();
 		frame.getContentPane().add(info, "name_210221315294922");
 		info.setLayout(null);
 		info.add(btnHome);
 
+		procedure = new JPanel();
+		frame.getContentPane().add(procedure, "name_210203575219193");
+		procedure.setLayout(null);
+
+		allinfo = new JPanel();
+		frame.getContentPane().add(allinfo, "name_210279605001369");
+		allinfo.setLayout(null);
+
+		// labels
 		lblName = new JLabel("Name: ");
 		lblName.setBounds(10, 33, 46, 14);
 		info.add(lblName);
@@ -200,10 +211,12 @@ public class GUI {
 		btnGoToProcedure.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				info.hide();
-				procedure.show();
+				allinfo.hide();
 				procedure.add(btnHome);
 				currentData = filecontrol.getData(list.getSelectedItem().toString(), "procedure.txt");
-
+				addtextfields(procedure);
+				addupdate(procedure);
+				procedure.show();
 			}
 		});
 		btnGoToProcedure.setBounds(31, 326, 141, 35);
@@ -213,9 +226,12 @@ public class GUI {
 		btnGoToCompressed.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				info.hide();
-				allinfo.show();
+				procedure.hide();
 				allinfo.add(btnHome);
 				currentData = filecontrol.getData(list.getSelectedItem().toString(), "info.txt");
+				addtextfields(allinfo);
+				addupdate(allinfo);
+				allinfo.show();
 			}
 		});
 		btnGoToCompressed.setBounds(182, 326, 141, 35);
@@ -224,8 +240,12 @@ public class GUI {
 		btnSchedule = new JButton("Schedule");
 		btnSchedule.setBounds(453, 326, 123, 35);
 		info.add(btnSchedule);
+		addtextfields(info);
+		addupdate(info);
+	}
 
-		//button to allow editing
+	// button to allow editing
+	private void addupdate(JPanel a) {
 		btnUpdateInfo = new JToggleButton("Update Info");
 		btnUpdateInfo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -233,45 +253,41 @@ public class GUI {
 			}
 		});
 		btnUpdateInfo.setBounds(463, 68, 101, 23);
-		info.add(btnUpdateInfo);
+		a.add(btnUpdateInfo);
+	}
 
-		//textfields
+	// textfields
+	private void addtextfields(JPanel a) {		
 		textField = new JTextField();
 		textField.setEditable(false);
 		textField.setBounds(93, 30, 86, 20);
-		info.add(textField);
-		
+		a.add(textField);
+
 		textField_1 = new JTextField();
 		textField_1.setEditable(false);
 		textField_1.setBounds(93, 60, 86, 20);
-		info.add(textField_1);
+		a.add(textField_1);
 
 		textField_2 = new JTextField();
 		textField_2.setEditable(false);
 		textField_2.setBounds(93, 91, 86, 20);
-		info.add(textField_2);
+		a.add(textField_2);
 
 		textField_3 = new JTextField();
 		textField_3.setEditable(false);
 		textField_3.setBounds(93, 122, 86, 20);
-		info.add(textField_3);
+		a.add(textField_3);
 
 		textField_4 = new JTextField();
 		textField_4.setEditable(false);
 		textField_4.setBounds(93, 153, 86, 20);
-		info.add(textField_4);
+		a.add(textField_4);
 
 		textField_5 = new JTextField();
 		textField_5.setEditable(false);
 		textField_5.setBounds(93, 184, 86, 20);
-		info.add(textField_5);
-
-		// JPanels
-		procedure = new JPanel();
-		frame.getContentPane().add(procedure, "name_210203575219193");
-		procedure.setLayout(null);
-
-		allinfo = new JPanel();
-		frame.getContentPane().add(allinfo, "name_210279605001369");
+		a.add(textField_5);
+		
+		TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3, textField_4, textField_5 };
 	}
 }
