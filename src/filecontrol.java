@@ -1,20 +1,8 @@
 import java.awt.List;
-import java.awt.TextField;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class filecontrol extends GUI{
@@ -41,7 +29,6 @@ public class filecontrol extends GUI{
 		File CurrentPat = new File(path);
 		try {
 			Scanner in = new Scanner(CurrentPat);
-			System.out.println(in.hasNextLine());
 			String data = in.nextLine();
 			info = data.split(":");
 			in.close();
