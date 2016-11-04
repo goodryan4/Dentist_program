@@ -1,16 +1,26 @@
 import java.awt.List;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
-public class filecontrol extends GUI{
-	public static String[] info;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.JToggleButton;
+
+public class filecontrol extends GUI {
+	public static String[] information;
 	public static File CurrentPat;
 	public static String path;
 
-	//make each file with blank info
+	// Make each file with blank info
 	public static void instantiat(String dir, String file) {
 		String nullData = ": : : : : : : : : : : : : :";
 		String directory = dir + file;
@@ -23,36 +33,36 @@ public class filecontrol extends GUI{
 		}
 	}
 
-	//get data from files
+	// Get data from files
 	public static String[] getData(String name, String type) {
 		path = GUI.directory + "/" + name + "/" + type;
 		File CurrentPat = new File(path);
 		try {
 			Scanner in = new Scanner(CurrentPat);
 			String data = in.nextLine();
-			info = data.split(":");
+			information = data.split(":");
 			in.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		return info;
+		return information;
 	}
 
-	//adds new info to info page
+	// Adds new info to info page
 	public static void newInfo(String data, int position) throws IOException {
 
-		info[position] = data;
+		information[position] = data;
 		String textline = "";
-		for (int i = 0; i < info.length; i++) {
-			textline = textline + info[i].toString() + ":";
+		for (int i = 0; i < information.length; i++) {
+			textline = textline + information[i].toString() + ":";
 		}
 		PrintWriter writer = new PrintWriter(path);
 		writer.print(textline);
 		writer.close();
 
 	}
-	
-	//for look through all patients and calling "removefolder" method
+
+	// For look through all patients and calling "removefolder" method
 	public static void removeallfolders() {
 		File last = new File(GUI.directory);
 		File[] things = last.listFiles();
@@ -61,7 +71,7 @@ public class filecontrol extends GUI{
 		}
 	}
 
-	//remove patient and folders involved with the patient
+	// Remove patient and folders involved with the patient
 	public static void removefolder(String name) {
 		File last = new File(GUI.directory + "/" + name);
 		File[] things = last.listFiles();
@@ -72,8 +82,8 @@ public class filecontrol extends GUI{
 		GUI.check.setText("remove " + name);
 		GUI.list.remove(name.toLowerCase());
 	}
-	
-	//this is the initial check to see what patients are in the patents folder
+
+	// This is the initial check to see what patients are in the patents folder
 	public static void filestolist(List list, File bob) {
 		File[] files = bob.listFiles();
 		int numfiles = files.length;
@@ -87,9 +97,9 @@ public class filecontrol extends GUI{
 			}
 		}
 	}
-	
-	//add a patient to the list and to the file
-	public static void addentry(){
+
+	// Add a patient to the list and to the file
+	public static void addentry() {
 		String name = text.getText().toLowerCase();
 		String dir = directory + "/" + name;
 		File add = new File(dir);
@@ -98,37 +108,39 @@ public class filecontrol extends GUI{
 		} else {
 			add.mkdir();
 			try {
-				String[] files = {"/data.txt","/info.txt","/procedure.txt","/balance.txt"};
-				for(int i=0; i<files.length; i++){
+				String[] files = { "/data.txt", "/info.txt", "/procedure.txt", "/balance.txt" };
+				for (int i = 0; i < files.length; i++) {
 					new File(dir + files[i]).createNewFile();
 					filecontrol.instantiat(dir, files[i]);
 				}
 				check.setText("added " + name);
 				list.add(name);
-				
-				//check for "There are no names" item in list and if it is there then delete it
-				if(list.getItem(0).contains("There are no patients in the list")){
+
+				// check for "There are no names" item in list and if it is
+				// there then delete it
+				if (list.getItem(0).contains("There are no patients in the list")) {
 					list.remove(0);
 				}
-				
-			//this should never happen!! but if there is an error creating the files then the it will tell user "Failed to add"	
+
+				// this should never happen!! but if there is an error creating
+				// the files then the it will tell user "Failed to add"
 			} catch (IOException e) {
 				check.setText("Failed to add");
 				e.printStackTrace();
 			}
 		}
 	}
-	
-	//sets the data to each textfield
+
+	// Sets the data to each textField
 	public static void setData() {
 		for (int i = 0; i < TextFields.length; i++) {
 			System.out.println(currentData[i]);
 			TextFields[i].setText(currentData[i]);
 		}
 	}
-	
-	//set textfields to editable or disabled
-	public static void updateinfo(){
+
+	// Set textFields to editable or disabled
+	public static void updateinfo() {
 		if (btnUpdateInfo.isSelected()) {
 			for (int i = 0; i < TextFields.length; i++) {
 				TextFields[i].setEditable(true);
@@ -137,6 +149,163 @@ public class filecontrol extends GUI{
 			for (int i = 0; i < TextFields.length; i++) {
 				TextFields[i].setEditable(false);
 			}
+		}
+	}
+
+	// Add info components
+	public static void addtoinfo() {
+		addobjects(info);
+		TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3, textField_4, textField_5,
+				textField_6, textField_7, textField_8 };
+	}
+
+	// Add all objects
+	public static void addobjects(JPanel a) {
+		lblFirstName = new JLabel("First Name: ");
+		lblFirstName.setBounds(10, 30, 100, 14);
+		a.add(lblFirstName);
+
+		lblLastName = new JLabel("Last Name:");
+		lblLastName.setBounds(10, 60, 100, 14);
+		a.add(lblLastName);
+
+		lblSex = new JLabel("Sex:");
+		lblSex.setBounds(10, 90, 100, 14);
+		a.add(lblSex);
+
+		lblDateOfBirth = new JLabel("Date of Birth:");
+		lblDateOfBirth.setBounds(10, 120, 100, 14);
+		a.add(lblDateOfBirth);
+
+		lblPostalCode = new JLabel("Postal code:");
+		lblPostalCode.setBounds(10, 150, 100, 14);
+		a.add(lblPostalCode);
+
+		textField = new JTextField();
+		textField.setEditable(false);
+		textField.setBounds(120, 32, 86, 20);
+		a.add(textField);
+
+		textField_1 = new JTextField();
+		textField_1.setEditable(false);
+		textField_1.setBounds(120, 60, 86, 20);
+		a.add(textField_1);
+
+		textField_2 = new JTextField();
+		textField_2.setEditable(false);
+		textField_2.setBounds(120, 90, 86, 20);
+		a.add(textField_2);
+
+		textField_3 = new JTextField();
+		textField_3.setEditable(false);
+		textField_3.setBounds(120, 120, 86, 20);
+		a.add(textField_3);
+
+		textField_4 = new JTextField();
+		textField_4.setEditable(false);
+		textField_4.setBounds(120, 150, 86, 20);
+		a.add(textField_4);
+		
+		btnUpdateInfo = new JToggleButton("Update Info");
+		btnUpdateInfo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				filecontrol.updateinfo();
+			}
+		});
+		btnUpdateInfo.setBounds(463, 60, 101, 23);
+		a.add(btnUpdateInfo);
+		
+		// procedure button
+		btnGoToProcedure = new JButton("Go to procedure");
+		btnGoToProcedure.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				info.hide();
+				allinfo.hide();
+
+				filecontrol.addobjects(procedure);
+				TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3, textField_4,
+						textField_5, textField_6, textField_7, textField_8 };
+
+				currentData = filecontrol.getData(list.getSelectedItem().toString(), "procedure.txt");
+				procedure.show();
+			}
+		});
+		btnGoToProcedure.setBounds(31, 326, 141, 35);
+		a.add(btnGoToProcedure);
+		
+		btnGoToCompressed = new JButton("Go to compressed info");
+		btnGoToCompressed.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				info.hide();
+				procedure.hide();
+
+				addobjects(allinfo);
+				TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3, textField_4, textField_5 };
+
+				currentData = filecontrol.getData(list.getSelectedItem().toString(), "info.txt");
+				allinfo.show();
+			}
+		});
+		btnGoToCompressed.setBounds(182, 326, 141, 35);
+		a.add(btnGoToCompressed);
+
+		// button to go back to the main page
+		btnHome = new JButton("Home");
+		btnHome.setBounds(463, 30, 101, 24);
+		btnHome.setVisible(true);
+		btnHome.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				info.hide();
+				procedure.hide();
+				allinfo.hide();
+				search.show();
+			}
+		});
+		a.add(btnHome);
+
+		if (a.equals(info)) {
+			lblPhoneNumber = new JLabel("Phone number:");
+			lblPhoneNumber.setBounds(10, 180, 100, 14);
+			a.add(lblPhoneNumber);
+
+			lblHealthNumber = new JLabel("Health Number:");
+			lblHealthNumber.setBounds(10, 210, 100, 14);
+			a.add(lblHealthNumber);
+
+			lblHealthIssues = new JLabel("Health Issues:");
+			lblHealthIssues.setBounds(10, 240, 100, 14);
+			a.add(lblHealthIssues);
+
+			lblMedicalNotes = new JLabel("Medical Notes:");
+			lblMedicalNotes.setBounds(250, 30, 173, 14);
+			a.add(lblMedicalNotes);
+
+			textField_5 = new JTextField();
+			textField_5.setEditable(false);
+			textField_5.setBounds(120, 180, 86, 20);
+			a.add(textField_5);
+
+			textField_6 = new JTextField();
+			textField_6.setEditable(false);
+			textField_6.setBounds(120, 210, 86, 20);
+			a.add(textField_6);
+
+			textField_7 = new JTextField();
+			textField_7.setEditable(false);
+			textField_7.setBounds(120, 240, 86, 20);
+			a.add(textField_7);
+
+			textField_8 = new JTextField();
+			textField_8.setEditable(false);
+			textField_8.setBounds(250, 60, 173, 70);
+			a.add(textField_8);
+
+		} else if (a.equals(procedure)) {
+			JLabel label = new JLabel("Name: ");
+			label.setBounds(218, 30, 46, 14);
+			a.add(label);
+		} else if (a.equals(allinfo)) {
+
 		}
 	}
 }
