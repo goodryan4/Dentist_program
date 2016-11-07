@@ -11,9 +11,10 @@ public class GUI {
 	static List list;
 	static JLabel check, lblFirstName, iconsearch, lblHealthNumber, lblHealthIssues, lblMedicalNotes, lblPhoneNumber,
 			lblLastName, lblSex, lblDateOfBirth, lblPostalCode;
-	static JPanel info, procedure, allinfo, search;
+	static JPanel info, procedure, allinfo, search, schedule;
 	static String directory = "src/patients";
-	public static JButton newperson, removeperson, btnGoToCompressed, btnGoToProcedure, btnHome, btnSchedule, btnRemoveAll;
+	public static JButton newperson, removeperson, btnGoToCompressed, btnGoToProcedure, btnHome, btnSchedule,
+			btnRemoveAll;
 	public JScrollPane scrollPane;
 	public static String[] currentData;
 	public static JToggleButton btnUpdateInfo;
@@ -22,7 +23,6 @@ public class GUI {
 	public static JTextField[] TextFields;
 	public static JTextArea textarea, textarea_1;
 	public static JTextArea[] textareas;
-	private JPanel schedule;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -170,7 +170,7 @@ public class GUI {
 		});
 		btnRemoveAll.setBounds(18, 247, 99, 25);
 		search.add(btnRemoveAll);
-		
+
 		JButton btnSchedule_1 = new JButton("Schedule");
 		btnSchedule_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -188,31 +188,24 @@ public class GUI {
 		procedure = new JPanel();
 		frame.getContentPane().add(procedure, "name_210203575219193");
 		procedure.setLayout(null);
-		
-		JTextArea textArea = new JTextArea();
-		textArea.setBounds(56, 96, 160, 117);
-		procedure.add(textArea);
 
 		allinfo = new JPanel();
 		frame.getContentPane().add(allinfo, "name_210279605001369");
 		allinfo.setLayout(null);
 
-		btnSchedule = new JButton("Schedule");
-		btnSchedule.setBounds(453, 326, 123, 35);
-		info.add(btnSchedule);
-		
 		schedule = new JPanel();
 		frame.getContentPane().add(schedule, "name_2570594671192");
 		schedule.setLayout(null);
-		
+
 		JLabel lblNewLabel = new JLabel("change date");
 		lblNewLabel.setBounds(391, 21, 92, 26);
 		schedule.add(lblNewLabel);
-		
+
 		JComboBox comboBox = new JComboBox();
 		comboBox.setBounds(479, 21, 92, 26);
 		schedule.add(comboBox);
 	}
+
 	private static void addPopup(Component component, final JPopupMenu popup) {
 		component.addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {
@@ -220,6 +213,7 @@ public class GUI {
 					showMenu(e);
 				}
 			}
+
 			private void showMenu(MouseEvent e) {
 				popup.show(e.getComponent(), e.getX(), e.getY());
 			}

@@ -230,15 +230,12 @@ public class filecontrol extends GUI {
 		btnGoToProcedure = new JButton("Go to procedure");
 		btnGoToProcedure.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				info.hide();
-				allinfo.hide();
-
 				filecontrol.addobjects(procedure);
 				TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3, textField_4,
 						textField_5, textField_6, textField_7, textField_8 };
 
 				currentData = filecontrol.getData(list.getSelectedItem().toString(), "procedure.txt");
-				procedure.show();
+				hidepanels(procedure);
 			}
 		});
 		btnGoToProcedure.setBounds(31, 326, 141, 35);
@@ -309,6 +306,10 @@ public class filecontrol extends GUI {
 			textarea_1.setEditable(false);
 			textarea_1.setBounds(250, 60, 173, 70);
 			a.add(textarea_1);
+			
+			btnSchedule = new JButton("Schedule");
+			btnSchedule.setBounds(453, 326, 123, 35);
+			a.add(btnSchedule);
 
 		} else if (a.equals(procedure)) {
 			lblSex.setText("procedure date:");
@@ -322,6 +323,40 @@ public class filecontrol extends GUI {
 			a.add(label);
 		} else if (a.equals(allinfo)) {
 
+		}
+	}
+	
+	public static void hidepanels(JPanel panelbeingshown){
+		if(panelbeingshown.equals(procedure)){
+			allinfo.hide();
+			info.hide();
+			schedule.hide();
+			search.hide();
+			procedure.show();
+		}else if(panelbeingshown.equals(allinfo)){
+			procedure.hide();
+			info.hide();
+			schedule.hide();
+			search.hide();
+			allinfo.show();
+		}else if(panelbeingshown.equals(info)){
+			procedure.hide();
+			allinfo.hide();
+			schedule.hide();
+			search.hide();
+			info.show();
+		}else if(panelbeingshown.equals(schedule)){
+			procedure.hide();
+			info.hide();
+			allinfo.hide();
+			search.hide();
+			schedule.show();
+		}else if(panelbeingshown.equals(search)){
+			procedure.hide();
+			allinfo.hide();
+			info.hide();
+			schedule.hide();
+			search.show();
 		}
 	}
 }
