@@ -12,6 +12,7 @@ import java.util.Scanner;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 
@@ -21,6 +22,9 @@ public class filecontrol extends GUI {
 	public static String path;
 
 	// Make each file with blank info
+	/**
+	 * @wbp.parser.entryPoint
+	 */
 	public static void instantiat(String dir, String file) {
 		String nullData = ": : : : : : : : : : : : : :";
 		String directory = dir + file;
@@ -156,7 +160,8 @@ public class filecontrol extends GUI {
 	public static void addtoinfo() {
 		addobjects(info);
 		TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3, textField_4, textField_5,
-				textField_6, textField_7, textField_8 };
+				textField_6};
+		textareas = new JTextArea[] {textarea, textarea_1};
 	}
 
 	// Add all objects
@@ -180,7 +185,12 @@ public class filecontrol extends GUI {
 		lblPostalCode = new JLabel("Postal code:");
 		lblPostalCode.setBounds(10, 150, 100, 14);
 		a.add(lblPostalCode);
+		
+		lblPhoneNumber = new JLabel("Phone number:");
+		lblPhoneNumber.setBounds(10, 180, 100, 14);
+		a.add(lblPhoneNumber);
 
+		//TextFields
 		textField = new JTextField();
 		textField.setEditable(false);
 		textField.setBounds(120, 32, 86, 20);
@@ -206,6 +216,7 @@ public class filecontrol extends GUI {
 		textField_4.setBounds(120, 150, 86, 20);
 		a.add(textField_4);
 		
+		//update button
 		btnUpdateInfo = new JToggleButton("Update Info");
 		btnUpdateInfo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -215,7 +226,7 @@ public class filecontrol extends GUI {
 		btnUpdateInfo.setBounds(463, 60, 101, 23);
 		a.add(btnUpdateInfo);
 		
-		// procedure button
+		// button to go to procedure
 		btnGoToProcedure = new JButton("Go to procedure");
 		btnGoToProcedure.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -233,6 +244,7 @@ public class filecontrol extends GUI {
 		btnGoToProcedure.setBounds(31, 326, 141, 35);
 		a.add(btnGoToProcedure);
 		
+		// button to go to all info
 		btnGoToCompressed = new JButton("Go to compressed info");
 		btnGoToCompressed.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -263,10 +275,8 @@ public class filecontrol extends GUI {
 		});
 		a.add(btnHome);
 
+		//info page setup
 		if (a.equals(info)) {
-			lblPhoneNumber = new JLabel("Phone number:");
-			lblPhoneNumber.setBounds(10, 180, 100, 14);
-			a.add(lblPhoneNumber);
 
 			lblHealthNumber = new JLabel("Health Number:");
 			lblHealthNumber.setBounds(10, 210, 100, 14);
@@ -290,17 +300,23 @@ public class filecontrol extends GUI {
 			textField_6.setBounds(120, 210, 86, 20);
 			a.add(textField_6);
 
-			textField_7 = new JTextField();
-			textField_7.setEditable(false);
-			textField_7.setBounds(120, 240, 86, 20);
-			a.add(textField_7);
+			textarea= new JTextArea();
+			textarea.setEditable(false);
+			textarea.setBounds(120, 240, 86, 20);
+			a.add(textarea);
 
-			textField_8 = new JTextField();
-			textField_8.setEditable(false);
-			textField_8.setBounds(250, 60, 173, 70);
-			a.add(textField_8);
+			textarea_1 = new JTextArea();
+			textarea_1.setEditable(false);
+			textarea_1.setBounds(250, 60, 173, 70);
+			a.add(textarea_1);
 
 		} else if (a.equals(procedure)) {
+			lblSex.setText("procedure date:");
+			lblDateOfBirth.setText("Procedure starts:"); 
+			lblPostalCode.setText("Procedure ends:");
+			lblPhoneNumber.setText("Procedure:");
+			lblPhoneNumber.setBounds(10, 200, 100, 14);
+			
 			JLabel label = new JLabel("Name: ");
 			label.setBounds(218, 30, 46, 14);
 			a.add(label);
