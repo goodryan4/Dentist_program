@@ -205,12 +205,18 @@ public static void fileInit(Date CurrentDate){
 				}
 			System.out.println(startTime);
 			System.out.println(endTime);
-			//if (){
-				
-			//}
+			if (ApointStart>=startTime && ApointEnd<=endTime && timeSlot[2].compareTo("free")==0){
+				checks();
+				if(ApointStart>startTime+0.15){
+					
+				}
+			}
 				
 			}
 		}
+	public static void checks(){
+		
+	}
 		
 	
 	public static int checkMonth(int m, boolean leapYear){
