@@ -138,7 +138,6 @@ public class filecontrol extends GUI {
 	// Sets the data to each textField
 	public static void setData() {
 		for (int i = 0; i < TextFields.length; i++) {
-			System.out.println(currentData[i]);
 			TextFields[i].setText(currentData[i]);
 		}
 	}
@@ -190,6 +189,14 @@ public class filecontrol extends GUI {
 		lblPhoneNumber.setBounds(10, 180, 100, 14);
 		a.add(lblPhoneNumber);
 
+		lblHealthNumber = new JLabel("Health Number:");
+		lblHealthNumber.setBounds(10, 210, 100, 14);
+		a.add(lblHealthNumber);
+
+		lblHealthIssues = new JLabel("Health Issues:");
+		lblHealthIssues.setBounds(250, 30, 175, 14);
+		a.add(lblHealthIssues);
+
 		//TextFields
 		textField = new JTextField();
 		textField.setEditable(false);
@@ -216,6 +223,11 @@ public class filecontrol extends GUI {
 		textField_4.setBounds(120, 150, 86, 20);
 		a.add(textField_4);
 		
+		textField_5 = new JTextField();
+		textField_5.setEditable(false);
+		textField_5.setBounds(120, 180, 86, 20);
+		a.add(textField_5);
+		
 		//update button
 		btnUpdateInfo = new JToggleButton("Update Info");
 		btnUpdateInfo.addActionListener(new ActionListener() {
@@ -232,7 +244,9 @@ public class filecontrol extends GUI {
 			public void actionPerformed(ActionEvent arg0) {
 				filecontrol.addobjects(procedure);
 				TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3, textField_4,
-						textField_5, textField_6, textField_7, textField_8 };
+						textField_5, textField_6 };
+				
+				textareas = new JTextArea[] {textarea, textarea_1}; 
 
 				currentData = filecontrol.getData(list.getSelectedItem().toString(), "procedure.txt");
 				hidepanels(procedure);
@@ -245,14 +259,11 @@ public class filecontrol extends GUI {
 		btnGoToCompressed = new JButton("Go to compressed info");
 		btnGoToCompressed.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				info.hide();
-				procedure.hide();
-
 				addobjects(allinfo);
 				TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3, textField_4, textField_5 };
-
+				
 				currentData = filecontrol.getData(list.getSelectedItem().toString(), "info.txt");
-				allinfo.show();
+				hidepanels(allinfo);
 			}
 		});
 		btnGoToCompressed.setBounds(182, 326, 141, 35);
@@ -264,48 +275,32 @@ public class filecontrol extends GUI {
 		btnHome.setVisible(true);
 		btnHome.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				info.hide();
-				procedure.hide();
-				allinfo.hide();
-				search.show();
+				hidepanels(search);
 			}
 		});
 		a.add(btnHome);
+		
+		textarea= new JTextArea();
+		textarea.setEditable(false);
+		textarea.setBounds(250, 60, 175, 70);
+		a.add(textarea);
+
+		textarea_1 = new JTextArea();
+		textarea_1.setEditable(false);
+		textarea_1.setBounds(250, 180, 175, 70);
+		a.add(textarea_1);
 
 		//info page setup
 		if (a.equals(info)) {
 
-			lblHealthNumber = new JLabel("Health Number:");
-			lblHealthNumber.setBounds(10, 210, 100, 14);
-			a.add(lblHealthNumber);
-
-			lblHealthIssues = new JLabel("Health Issues:");
-			lblHealthIssues.setBounds(10, 240, 100, 14);
-			a.add(lblHealthIssues);
-
 			lblMedicalNotes = new JLabel("Medical Notes:");
-			lblMedicalNotes.setBounds(250, 30, 173, 14);
+			lblMedicalNotes.setBounds(250, 150, 175, 14);
 			a.add(lblMedicalNotes);
-
-			textField_5 = new JTextField();
-			textField_5.setEditable(false);
-			textField_5.setBounds(120, 180, 86, 20);
-			a.add(textField_5);
 
 			textField_6 = new JTextField();
 			textField_6.setEditable(false);
 			textField_6.setBounds(120, 210, 86, 20);
 			a.add(textField_6);
-
-			textarea= new JTextArea();
-			textarea.setEditable(false);
-			textarea.setBounds(120, 240, 86, 20);
-			a.add(textarea);
-
-			textarea_1 = new JTextArea();
-			textarea_1.setEditable(false);
-			textarea_1.setBounds(250, 60, 173, 70);
-			a.add(textarea_1);
 			
 			btnSchedule = new JButton("Schedule");
 			btnSchedule.setBounds(453, 326, 123, 35);
@@ -315,14 +310,21 @@ public class filecontrol extends GUI {
 			lblSex.setText("procedure date:");
 			lblDateOfBirth.setText("Procedure starts:"); 
 			lblPostalCode.setText("Procedure ends:");
-			lblPhoneNumber.setText("Procedure:");
-			lblPhoneNumber.setBounds(10, 200, 100, 14);
 			
-			JLabel label = new JLabel("Name: ");
-			label.setBounds(218, 30, 46, 14);
-			a.add(label);
+			lblPhoneNumber.setText("Procedure:");
+			lblPhoneNumber.setBounds(10, 180, 200, 14);
+			
+			lblHealthNumber.setText("Discriptions:");
+			lblHealthNumber.setBounds(10, 210, 100, 14);
+			
+			lblHealthIssues.setText("Additional rules:");
+			lblHealthIssues.setBounds(250, 210, 175, 14);
+			
+			textarea.setBounds(10, 230, 175, 70);
+			textarea_1.setBounds(250, 230, 175, 70);
+			
 		} else if (a.equals(allinfo)) {
-
+			
 		}
 	}
 	

@@ -7,22 +7,22 @@ import javax.swing.border.*;
 public class GUI {
 
 	public JFrame frame;
-	public static JTextField text;
-	static List list;
-	static JLabel check, lblFirstName, iconsearch, lblHealthNumber, lblHealthIssues, lblMedicalNotes, lblPhoneNumber,
+	public static List list;
+	public static JLabel check, lblFirstName, iconsearch, lblHealthNumber, lblHealthIssues, lblMedicalNotes, lblPhoneNumber,
 			lblLastName, lblSex, lblDateOfBirth, lblPostalCode;
-	static JPanel info, procedure, allinfo, search, schedule;
-	static String directory = "src/patients";
-	public static JButton newperson, removeperson, btnGoToCompressed, btnGoToProcedure, btnHome, btnSchedule,
+	public static JPanel info, procedure, allinfo, search, schedule;
+	public static String directory = "src/patients";
+	public static JButton newperson, removeperson, btnGoToCompressed, btnGoToProcedure, btnHome, btnSchedule, btnSchedule_1,
 			btnRemoveAll;
 	public JScrollPane scrollPane;
 	public static String[] currentData;
 	public static JToggleButton btnUpdateInfo;
-	public static JTextField textField, textField_1, textField_2, textField_3, textField_4, textField_5, textField_6,
+	public static JTextField text, textField, textField_1, textField_2, textField_3, textField_4, textField_5, textField_6,
 			textField_7, textField_8;
 	public static JTextField[] TextFields;
 	public static JTextArea textarea, textarea_1;
 	public static JTextArea[] textareas;
+	public static JComboBox comboBox;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -171,7 +171,7 @@ public class GUI {
 		btnRemoveAll.setBounds(18, 247, 99, 25);
 		search.add(btnRemoveAll);
 
-		JButton btnSchedule_1 = new JButton("Schedule");
+		btnSchedule_1 = new JButton("Schedule");
 		btnSchedule_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				schedule.show();
@@ -201,7 +201,7 @@ public class GUI {
 		lblNewLabel.setBounds(391, 21, 92, 26);
 		schedule.add(lblNewLabel);
 
-		JComboBox comboBox = new JComboBox();
+		comboBox = new JComboBox();
 		comboBox.setBounds(479, 21, 92, 26);
 		schedule.add(comboBox);
 	}
