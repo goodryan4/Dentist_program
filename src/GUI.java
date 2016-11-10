@@ -13,12 +13,12 @@ public class GUI {
 	public static JPanel info, procedure, allinfo, search, schedule;
 	public static String directory = "src/patients";
 	public static JButton newperson, removeperson, btnGoToCompressed, btnGoToProcedure, btnHome, btnSchedule, btnSchedule_1,
-			btnRemoveAll;
+			btnRemoveAll, btnGoToPatientInfo;
 	public JScrollPane scrollPane;
 	public static String[] currentData;
 	public static JToggleButton btnUpdateInfo;
 	public static JTextField text, textField, textField_1, textField_2, textField_3, textField_4, textField_5, textField_6,
-			textField_7, textField_8;
+			textField_7, textField_8, textField_9;
 	public static JTextField[] TextFields;
 	public static JTextArea textarea, textarea_1;
 	public static JTextArea[] textareas;
@@ -97,7 +97,10 @@ public class GUI {
 					if (!(list.countItems() == 0) && !a.equals("There are no patients in the list")) {
 						search.hide();
 						currentData = filecontrol.getData(a, "info.txt");
-						filecontrol.addtoinfo();
+						filecontrol.addobjects(info);
+						TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3, textField_4, textField_5,
+								textField_6 };
+						textareas = new JTextArea[] { textarea, textarea_1 };
 						filecontrol.setData();
 						info.show();
 					}
@@ -174,7 +177,7 @@ public class GUI {
 		btnSchedule_1 = new JButton("Schedule");
 		btnSchedule_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				schedule.show();
+				filecontrol.hidepanels(schedule);
 			}
 		});
 		btnSchedule_1.setBounds(417, 215, 113, 25);

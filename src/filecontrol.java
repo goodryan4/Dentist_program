@@ -148,22 +148,20 @@ public class filecontrol extends GUI {
 			for (int i = 0; i < TextFields.length; i++) {
 				TextFields[i].setEditable(true);
 			}
+			for (int i = 0; i < textareas.length; i++) {
+				textareas[i].setEditable(true);
+			}
 		} else {
 			for (int i = 0; i < TextFields.length; i++) {
 				TextFields[i].setEditable(false);
 			}
+			for (int i = 0; i < textareas.length; i++) {
+				textareas[i].setEditable(false);
+			}
 		}
 	}
 
-	// Add info components
-	public static void addtoinfo() {
-		addobjects(info);
-		TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3, textField_4, textField_5,
-				textField_6};
-		textareas = new JTextArea[] {textarea, textarea_1};
-	}
-
-	// Add all objects
+	/** Add all objects **/
 	public static void addobjects(JPanel a) {
 		lblFirstName = new JLabel("First Name: ");
 		lblFirstName.setBounds(10, 30, 100, 14);
@@ -184,7 +182,7 @@ public class filecontrol extends GUI {
 		lblPostalCode = new JLabel("Postal code:");
 		lblPostalCode.setBounds(10, 150, 100, 14);
 		a.add(lblPostalCode);
-		
+
 		lblPhoneNumber = new JLabel("Phone number:");
 		lblPhoneNumber.setBounds(10, 180, 100, 14);
 		a.add(lblPhoneNumber);
@@ -197,7 +195,7 @@ public class filecontrol extends GUI {
 		lblHealthIssues.setBounds(250, 30, 175, 14);
 		a.add(lblHealthIssues);
 
-		//TextFields
+		// TextFields
 		textField = new JTextField();
 		textField.setEditable(false);
 		textField.setBounds(120, 32, 86, 20);
@@ -222,13 +220,13 @@ public class filecontrol extends GUI {
 		textField_4.setEditable(false);
 		textField_4.setBounds(120, 150, 86, 20);
 		a.add(textField_4);
-		
+
 		textField_5 = new JTextField();
 		textField_5.setEditable(false);
 		textField_5.setBounds(120, 180, 86, 20);
 		a.add(textField_5);
-		
-		//update button
+
+		// update button
 		btnUpdateInfo = new JToggleButton("Update Info");
 		btnUpdateInfo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -237,37 +235,6 @@ public class filecontrol extends GUI {
 		});
 		btnUpdateInfo.setBounds(463, 60, 101, 23);
 		a.add(btnUpdateInfo);
-		
-		// button to go to procedure
-		btnGoToProcedure = new JButton("Go to procedure");
-		btnGoToProcedure.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				filecontrol.addobjects(procedure);
-				TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3, textField_4,
-						textField_5, textField_6 };
-				
-				textareas = new JTextArea[] {textarea, textarea_1}; 
-
-				currentData = filecontrol.getData(list.getSelectedItem().toString(), "procedure.txt");
-				hidepanels(procedure);
-			}
-		});
-		btnGoToProcedure.setBounds(31, 326, 141, 35);
-		a.add(btnGoToProcedure);
-		
-		// button to go to all info
-		btnGoToCompressed = new JButton("Go to compressed info");
-		btnGoToCompressed.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				addobjects(allinfo);
-				TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3, textField_4, textField_5 };
-				
-				currentData = filecontrol.getData(list.getSelectedItem().toString(), "info.txt");
-				hidepanels(allinfo);
-			}
-		});
-		btnGoToCompressed.setBounds(182, 326, 141, 35);
-		a.add(btnGoToCompressed);
 
 		// button to go back to the main page
 		btnHome = new JButton("Home");
@@ -279,8 +246,8 @@ public class filecontrol extends GUI {
 			}
 		});
 		a.add(btnHome);
-		
-		textarea= new JTextArea();
+
+		textarea = new JTextArea();
 		textarea.setEditable(false);
 		textarea.setBounds(250, 60, 175, 70);
 		a.add(textarea);
@@ -290,9 +257,8 @@ public class filecontrol extends GUI {
 		textarea_1.setBounds(250, 180, 175, 70);
 		a.add(textarea_1);
 
-		//info page setup
+		// info page setup
 		if (a.equals(info)) {
-
 			lblMedicalNotes = new JLabel("Medical Notes:");
 			lblMedicalNotes.setBounds(250, 150, 175, 14);
 			a.add(lblMedicalNotes);
@@ -301,64 +267,215 @@ public class filecontrol extends GUI {
 			textField_6.setEditable(false);
 			textField_6.setBounds(120, 210, 86, 20);
 			a.add(textField_6);
-			
-			btnSchedule = new JButton("Schedule");
-			btnSchedule.setBounds(453, 326, 123, 35);
-			a.add(btnSchedule);
+
+			hidebuttons(a);
 
 		} else if (a.equals(procedure)) {
 			lblSex.setText("procedure date:");
-			lblDateOfBirth.setText("Procedure starts:"); 
+			lblDateOfBirth.setText("Procedure starts:");
 			lblPostalCode.setText("Procedure ends:");
-			
+
 			lblPhoneNumber.setText("Procedure:");
 			lblPhoneNumber.setBounds(10, 180, 200, 14);
-			
+
 			lblHealthNumber.setText("Discriptions:");
 			lblHealthNumber.setBounds(10, 210, 100, 14);
-			
+
 			lblHealthIssues.setText("Additional rules:");
 			lblHealthIssues.setBounds(250, 210, 175, 14);
-			
+
 			textarea.setBounds(10, 230, 175, 70);
 			textarea_1.setBounds(250, 230, 175, 70);
-			
+
+			hidebuttons(a);
+
 		} else if (a.equals(allinfo)) {
-			
+			textField_6 = new JTextField();
+			textField_6.setEditable(false);
+			textField_6.setBounds(120, 210, 86, 20);
+			a.add(textField_6);
+
+			lblMedicalNotes = new JLabel("Medical Notes:");
+			lblMedicalNotes.setBounds(250, 150, 175, 14);
+			a.add(lblMedicalNotes);
+
+			a.remove(textarea);
+			a.remove(textarea_1);
+
+			hidebuttons(a);
+		}
+
+	}
+
+	/** Remove all objects from other JPanels **/
+	public static void removeobjects() {
+		JPanel a = info;
+		if (info.isShowing()) {
+			a = info;
+		} else if (procedure.isShowing()) {
+			a = procedure;
+		} else if (allinfo.isShowing()) {
+			a = allinfo;
+		} else if (schedule.isShowing()) {
+			a = schedule;
+		}
+		a.remove(lblFirstName);
+		a.remove(lblLastName);
+		a.remove(lblSex);
+		a.remove(lblDateOfBirth);
+		a.remove(lblPostalCode);
+		a.remove(lblPhoneNumber);
+		a.remove(lblHealthNumber);
+		a.remove(lblHealthIssues);
+		a.remove(textField);
+		a.remove(textField_1);
+		a.remove(textField_2);
+		a.remove(textField_3);
+		a.remove(textField_4);
+		a.remove(textField_5);
+		a.remove(btnUpdateInfo);
+		a.remove(btnHome);
+		a.remove(textarea);
+		a.remove(textarea_1);
+
+		// info page setup
+		if (a.equals(info)) {
+			a.remove(lblMedicalNotes);
+			a.remove(textField_6);
+
+		} else if (a.equals(allinfo)) {
+			a.remove(textField_6);
+			a.remove(lblMedicalNotes);
+			a.remove(textarea);
+			a.remove(textarea_1);
+
 		}
 	}
-	
-	public static void hidepanels(JPanel panelbeingshown){
-		if(panelbeingshown.equals(procedure)){
+
+	// hide all panels other than the input panel which is shown
+	public static void hidepanels(JPanel panelbeingshown) {
+		if (panelbeingshown.equals(procedure)) {
 			allinfo.hide();
 			info.hide();
 			schedule.hide();
 			search.hide();
 			procedure.show();
-		}else if(panelbeingshown.equals(allinfo)){
+		} else if (panelbeingshown.equals(allinfo)) {
 			procedure.hide();
 			info.hide();
 			schedule.hide();
 			search.hide();
 			allinfo.show();
-		}else if(panelbeingshown.equals(info)){
+		} else if (panelbeingshown.equals(info)) {
 			procedure.hide();
 			allinfo.hide();
 			schedule.hide();
 			search.hide();
 			info.show();
-		}else if(panelbeingshown.equals(schedule)){
+		} else if (panelbeingshown.equals(schedule)) {
 			procedure.hide();
 			info.hide();
 			allinfo.hide();
 			search.hide();
 			schedule.show();
-		}else if(panelbeingshown.equals(search)){
+		} else if (panelbeingshown.equals(search)) {
 			procedure.hide();
 			allinfo.hide();
 			info.hide();
 			schedule.hide();
 			search.show();
 		}
+	}
+
+	// hide all other buttons beside what is called
+	public static void hidebuttons(JPanel a) {
+		if (a.equals(allinfo)) {
+			createbutton1(a, 30, 326, 140, 35);
+			createbutton2(a, 180, 326, 140, 35);
+			createbutton4(a, 450, 326, 123, 35);
+
+		} else if (a.equals(procedure)) {
+			createbutton1(a, 30, 326, 140, 35);
+			createbutton3(a, 180, 326, 140, 35);
+			createbutton4(a, 450, 326, 140, 35);
+
+		} else if (a.equals(info)) {
+			createbutton2(a, 30, 326, 140, 35);
+			createbutton3(a, 180, 326, 140, 35);
+			createbutton4(a, 450, 326, 140, 35);
+
+		} else if (a.equals(schedule)) {
+			createbutton1(a, 30, 326, 140, 35);
+			createbutton2(a, 180, 326, 140, 35);
+			createbutton3(a, 330, 326, 140, 35);
+		}
+	}
+
+	// patient info button
+	public static void createbutton1(JPanel a, int b, int c, int d, int e) {
+		btnGoToPatientInfo = new JButton("Go to Patient Info");
+		btnGoToPatientInfo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				removeobjects();
+				filecontrol.addobjects(info);
+				TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3, textField_4,
+						textField_5, textField_6 };
+				textareas = new JTextArea[] { textarea, textarea_1 };
+
+				currentData = filecontrol.getData(list.getSelectedItem().toString(), "procedure.txt");
+				hidepanels(info);
+			}
+		});
+		btnGoToPatientInfo.setBounds(b, c, d, e);
+		a.add(btnGoToPatientInfo);
+	}
+
+	// procedure button
+	public static void createbutton2(JPanel a, int b, int c, int d, int e) {
+		btnGoToProcedure = new JButton("Go to procedure");
+		btnGoToProcedure.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				removeobjects();
+				filecontrol.addobjects(procedure);
+				TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3, textField_4,
+						textField_5, textField_6 };
+				textareas = new JTextArea[] { textarea, textarea_1 };
+				currentData = filecontrol.getData(list.getSelectedItem().toString(), "procedure.txt");
+				hidepanels(procedure);
+			}
+		});
+		btnGoToProcedure.setBounds(b, c, d, e);
+		a.add(btnGoToProcedure);
+	}
+
+	// all info button
+	public static void createbutton3(JPanel a, int b, int c, int d, int e) {
+		btnGoToCompressed = new JButton("Go to compressed info");
+		btnGoToCompressed.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				removeobjects();
+				addobjects(allinfo);
+				TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3, textField_4,
+						textField_5, textField_6, textField_7, textField_8, textField_9 };
+				currentData = filecontrol.getData(list.getSelectedItem().toString(), "info.txt");
+				hidepanels(allinfo);
+			}
+		});
+		btnGoToCompressed.setBounds(b, c, d, e);
+		a.add(btnGoToCompressed);
+	}
+
+	// schedule button
+	public static void createbutton4(JPanel a, int b, int c, int d, int e) {
+		btnSchedule = new JButton("Schedule");
+		btnSchedule.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				removeobjects();
+				filecontrol.hidepanels(schedule);
+				filecontrol.hidebuttons(schedule);
+			}
+		});
+		btnSchedule.setBounds(b, c, d, e);
+		a.add(btnSchedule);
 	}
 }
