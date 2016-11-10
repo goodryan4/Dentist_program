@@ -93,11 +93,12 @@ public class Schedule extends JFrame {
 		//filestuff.fileInit(date);
 		//filestuff.updateDates();
 		CurrentDay = filestuff.getCurrentDate(date);
-		Double a = 7.30;
-		Double b = 8.00;
+		Double a = 8.00;
+		Double b = 9.30;
 		String m = "Robert";
-		filestuff.AddApointment(CurrentDay, a ,  b ,  m );
-		
+		String k = "Ryan";
+		//filestuff.AddApointment(CurrentDay, a ,  b ,  m );
+		filestuff.editApointment(CurrentDay, a ,  b ,m, k);
 
 		
 	}

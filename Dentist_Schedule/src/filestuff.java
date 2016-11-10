@@ -147,7 +147,7 @@ public static void fileInit(Date CurrentDate){
 				lastDateM=1;
 				leapYear1 = leapYear(lastDateY);
 			}
-			System.out.println(date2);
+			
 			CurrMonth= checkMonth(lastDateM,leapYear1);
 		}
 		
@@ -182,6 +182,19 @@ public static void fileInit(Date CurrentDate){
 		return null;
 	}
 	public static void AddApointment(String [] DaysProcedings,Double ApointStart, Double ApointEnd, String name){
+		
+		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		Date date = new Date();
+		String CurrentDate = dateFormat.format(date).toString();
+		
+		String previousSlot = "";
+		String newTextLine ="";
+		String newTimeSlots = "";
+		String conflict ="";
+		boolean moreConflict = false;
+		boolean change =  false;
+		boolean oneTime = false;
+		
 		for (int i = 0; i<DaysProcedings.length; i++){
 			String [] timeSlot = DaysProcedings [i].split(";");
 			double startTime = 0;
@@ -203,21 +216,353 @@ public static void fileInit(Date CurrentDate){
 				endTime = Double.parseDouble(timeSlot[1].substring(0,2)) + Double.parseDouble
 							(timeSlot[1].substring(3,5))/100;
 				}
-			System.out.println(startTime);
-			System.out.println(endTime);
+			
+			
+			
 			if (ApointStart>=startTime && ApointEnd<=endTime && timeSlot[2].compareTo("free")==0){
-				checks();
-				if(ApointStart>startTime+0.15){
+				boolean [] gaps = checks(startTime, endTime, ApointStart, ApointEnd);
+				change = true;
+				oneTime=true;
+				
+				if(gaps [0]==true && gaps [1]==true){
+					String freeStart = moreChecks(Double.toString(startTime).replace(".", ":"));
+					String freeEnd = moreChecks(Double.toString(ApointStart).replace(".", ":"));
+					String ApointBegin = moreChecks(Double.toString(ApointStart).replace(".", ":"));
+					String ApointFinish = moreChecks(Double.toString(ApointEnd).replace(".", ":"));
+					String freeStart1 = moreChecks(Double.toString(ApointEnd).replace(".", ":"));
+					String freeEnd1 = moreChecks(Double.toString(endTime).replace(".", ":"));
+					newTimeSlots = freeStart + ";" + freeEnd + ";free__" + ApointBegin + ";" +ApointFinish + ";" + name
+							+ "__" + freeStart1 + ";" + freeEnd1 + ";free__";
+				}
+				else if(gaps [0]==true && gaps [1]==false){
+					String freeStart = moreChecks(Double.toString(startTime).replace(".", ":"));
+					String freeEnd = moreChecks(Double.toString(ApointStart).replace(".", ":"));
+					String ApointBegin = moreChecks(Double.toString(ApointStart).replace(".", ":"));
+					String ApointFinish = moreChecks(Double.toString(ApointEnd).replace(".", ":"));
+					newTimeSlots = freeStart + ";" + freeEnd + ";free__" + ApointBegin + ";" +ApointFinish + ";" + name
+							+ "__";
 					
 				}
-			}
+				else if(gaps [0]==false && gaps [1]==true){
+					
+					String ApointBegin = moreChecks(Double.toString(ApointStart).replace(".", ":"));
+					String ApointFinish = moreChecks(Double.toString(ApointEnd).replace(".", ":"));
+					String freeStart1 = moreChecks(Double.toString(ApointEnd).replace(".", ":"));
+					String freeEnd1 = moreChecks(Double.toString(endTime).replace(".", ":"));
+					newTimeSlots = ApointBegin + ";" +ApointFinish + ";" + name
+							+ "__" + freeStart1 + ";" + freeEnd1 + ";free__";
+				}
+				else if(gaps [0]==false && gaps [1]==false){
+					
+					String ApointBegin = moreChecks(Double.toString(ApointStart).replace(".", ":"));
+					String ApointFinish = moreChecks(Double.toString(ApointEnd).replace(".", ":"));
+					newTimeSlots =  ApointBegin + ";" +ApointFinish + ";" + name + "__";
+							
+					
+				}
+				
+				
 				
 			}
+			if(change==false){
+				
+			if(ApointStart<startTime && !(DaysProcedings[i-1].endsWith("free")) && ApointEnd<endTime && conflict.compareTo("")==0){
+				if(ApointEnd>startTime && !(DaysProcedings[i].endsWith("free"))) {
+					conflict = DaysProcedings[i-1]+DaysProcedings[i];
+				}
+				else if(conflict.compareTo("")==0){
+					conflict = DaysProcedings[i-1];
+				}
+			}
+			
+			if(ApointStart<startTime && ApointEnd>endTime){
+				if(!(DaysProcedings[i].endsWith("free")) && !(DaysProcedings[i+1].endsWith("free")) && !(DaysProcedings[i-1].endsWith("free"))) {
+					conflict =DaysProcedings[i-1]+DaysProcedings[i]+DaysProcedings[i+1];
+				}
+				else if(!(DaysProcedings[i+1].endsWith("free")) && !(DaysProcedings[i-1].endsWith("free"))) {
+					conflict = DaysProcedings[i-1]+DaysProcedings[i+1];
+				}
+				else if(!(DaysProcedings[i].endsWith("free")) && !(DaysProcedings[i+1].endsWith("free"))) {
+					conflict = DaysProcedings[i]+DaysProcedings[i+1];
+				}
+				else if(!(DaysProcedings[i].endsWith("free")) && !(DaysProcedings[i-1].endsWith("free"))) {
+					conflict = DaysProcedings[i-1]+DaysProcedings[i];
+				}
+			}
+			}
+			
+			
+			if (oneTime == true){
+				newTextLine = newTextLine + newTimeSlots;
+				oneTime=false;
+			}
+			else{
+			newTextLine = newTextLine + DaysProcedings [i] + "__";
+			}
+			
+			}
+		newTextLine= CurrentDate + ":-:" + newTextLine;
+		System.out.println(newTextLine);
+		System.out.println(conflict);
 		}
-	public static void checks(){
+	public static boolean[] checks(double start, double end, double startA, double endA){
+		boolean[] gaps; 
+		start = start+0.15;
+		if (start-(int)start>0.59 ){
+			 start = start+1+(start-(int)start-0.60);
+		}
+		end = end-0.15;
+		if (end-(int)end>0.59 ){
+			 end = (int)end+0.60-0.15-((int)end+0.15-(int)(end+0.15));
+		}
+		if(startA>=start && endA<=end){
+			gaps= new boolean [] {true,true};
+			return gaps;
+		}
+		else if(startA>=start){
+			gaps= new boolean [] {true,false};
+			return gaps;
+		}
+		else if(endA<=end){
+			gaps= new boolean [] {false,true};
+			return gaps;
+		}
+		else{
+			gaps= new boolean [] {false,false};
+			return gaps;
+		}
+	}
+	public static String moreChecks(String m){
+		if (m.indexOf(":")== m.length()-2){
+			m = m + "0";
+			
+			return m;
+		}
 		
+		return m;
 	}
 		
+	public static void editApointment(String [] DaysProcedings,Double ApointStart, Double ApointEnd, String oldName, String newName){
+		String conflict = "";
+		boolean hasStarted = false;
+		boolean hasAdded = false;
+		boolean freeBefore = false;
+		boolean firstTime = true;
+		double endTimeAfter = 0.0;
+		double startTimeAfter = 0.0;
+		double endTimeBefore = 0.0;
+		double startTimeBefore = 0.0;
+		String newFreeBefore="";
+		String newFreeAfter="";
+		String replace = "";
+		String newTextLine ="";
+		int x;
+		
+		boolean IsConflict = checkForConflicts(DaysProcedings,ApointStart, ApointEnd, oldName);
+		
+		if(IsConflict == false){
+			for (int i = 0; i<DaysProcedings.length; i++){
+				
+				x=i;
+				String [] timeSlot = DaysProcedings [i].split(";");
+				double startTime = 0;
+				double endTime = 0;
+				
+				if (timeSlot[0].length()<5){
+				startTime = Double.parseDouble(timeSlot[0].substring(0,1)) + Double.parseDouble
+					(timeSlot[0].substring(2,4))/100;
+				}
+				else{
+				startTime = Double.parseDouble(timeSlot[0].substring(0,2)) + Double.parseDouble
+							(timeSlot[0].substring(3,5))/100;
+				}
+				if (timeSlot[1].length()<5){
+					endTime = Double.parseDouble(timeSlot[1].substring(0,1)) + Double.parseDouble
+						(timeSlot[1].substring(2,4))/100;
+				}
+				else{
+					endTime = Double.parseDouble(timeSlot[1].substring(0,2)) + Double.parseDouble
+								(timeSlot[1].substring(3,5))/100;
+				}
+				
+				if(hasAdded == true){
+					newTextLine = newTextLine+DaysProcedings[i];
+				}
+				
+					if(timeSlot[2].compareTo(oldName)==0){
+						String newStart = moreChecks(Double.toString(ApointStart).replace(".", ":"));
+						String newEnd = moreChecks(Double.toString(ApointEnd).replace(".", ":"));
+						replace = newStart+ ";" + newEnd + ";" + newName + "__";
+						
+						if(endTime-ApointEnd>=0.15){
+							String tempS1 = moreChecks(Double.toString(ApointEnd).replace(".", ":"));
+							String tempE1 = moreChecks(Double.toString(endTime).replace(".", ":"));
+							newFreeAfter = tempS1 + ";" + tempE1 + ";" + "free__";
+						}
+						if(ApointStart-startTime>=0.15){
+							String tempS2 = moreChecks(Double.toString(startTime).replace(".", ":"));
+							String tempE2 = moreChecks(Double.toString(ApointStart).replace(".", ":"));
+							newFreeBefore = tempS2 + ";" + tempE2 + ";" + "free__";
+						}
+						
+						String [] temp = DaysProcedings [i+1].split(";");
+						
+						startTimeAfter = getStartTime(temp[0]);
+						endTimeAfter = getEndTime(temp[1]);
+						
+						String [] temp1 = DaysProcedings [i-1].split(";");
+						
+						startTimeBefore = getStartTime(temp1[0]);
+						endTimeBefore = getEndTime(temp1[1]);
+						
+						if(DaysProcedings[i-1].endsWith("free") && DaysProcedings[i+1].endsWith("free")){
+							
+							if(endTimeAfter-ApointEnd>=0.15){
+								String tempS3 = moreChecks(Double.toString(ApointEnd).replace(".", ":"));
+								String tempE3 = moreChecks(Double.toString(endTimeAfter).replace(".", ":"));
+								newFreeAfter =  tempS3 + ";" + tempE3 + ";" + "free__";
+							}
+							if(ApointStart-endTimeBefore>=0.15){
+								String tempS4 = moreChecks(Double.toString(startTimeBefore).replace(".", ":"));
+								String tempE4 = moreChecks(Double.toString(ApointStart).replace(".", ":"));
+								newFreeBefore =  tempS4 + ";" + tempE4 + ";" + "free__";
+							}
+							i++;
+							freeBefore=true;
+							
+						}
+						else if(DaysProcedings[i-1].endsWith("free")){
+						
+							if(ApointStart-startTimeBefore>=0.15){
+								String tempS4 = moreChecks(Double.toString(startTimeBefore).replace(".", ":"));
+								String tempE4 = moreChecks(Double.toString(ApointStart).replace(".", ":"));
+								newFreeBefore =  tempS4 + ";" + tempE4 + ";" + "free__";
+								
+							}
+							freeBefore=true;
+							
+						}
+						else if(DaysProcedings[i+1].endsWith("free")){
+							
+							if(endTimeAfter-ApointEnd>=0.15){
+								String tempS3 = moreChecks(Double.toString(ApointEnd).replace(".", ":"));
+								String tempE3 = moreChecks(Double.toString(endTimeAfter).replace(".", ":"));
+								newFreeAfter =  tempS3 + ";" + tempE3 + ";" + "free__";
+							}
+							i++;
+						}
+						
+						
+						newTextLine = newTextLine + newFreeBefore + replace + newFreeAfter;
+						hasAdded = true;
+						
+					}
+					
+					if(freeBefore==false && hasAdded==true && firstTime == true){
+						String P = newTextLine;
+						newTextLine = "";
+						for(int b = 0; b<x; b++){
+						newTextLine = newTextLine + DaysProcedings[b] + "__";
+						}
+						newTextLine = newTextLine + P;
+						firstTime = false;
+						System.out.println("check4");
+					}
+					if(freeBefore==true){
+						freeBefore=false;
+						String P = newTextLine;
+						newTextLine = "";
+						for(int b = 0; b<x-1; b++){
+						newTextLine = newTextLine + DaysProcedings[b] + "__";
+						}
+						newTextLine = newTextLine + P;
+						firstTime=false;
+					}
+					
+					
+					
+					
+			}
+		}
+		
+		System.out.println(newTextLine);	
+		System.out.println("check1");
+			
+	}
+	public static double getStartTime(String d){
+		if (d.length()<5){
+			double startTime = Double.parseDouble(d.substring(0,1)) + Double.parseDouble
+				(d.substring(2,4))/100;
+			return startTime;
+			}
+			else{
+			double startTime = Double.parseDouble(d.substring(0,2)) + Double.parseDouble
+						(d.substring(3,5))/100;
+			return startTime;
+			
+			}
+	}
+	public static double getEndTime(String d){
+		if (d.length()<5){
+			double EndTime = Double.parseDouble(d.substring(0,1)) + Double.parseDouble
+				(d.substring(2,4))/100;
+			return EndTime;
+			}
+			else{
+			double EndTime = Double.parseDouble(d.substring(0,2)) + Double.parseDouble
+						(d.substring(3,5))/100;
+			return EndTime;
+			
+			}
+	}
+	public static boolean checkForConflicts(String [] DaysProcedings,Double ApointStart, Double ApointEnd, String name){
+		String conflict = "";
+		boolean hasStarted = false;
+		
+		for (int i = 0; i<DaysProcedings.length; i++){
+			String [] timeSlot = DaysProcedings [i].split(";");
+			double startTime = 0;
+			double endTime = 0;
+			
+			//System.out.println(timeSlot[2]);
+			
+			if (timeSlot[0].length()<5){
+			startTime = Double.parseDouble(timeSlot[0].substring(0,1)) + Double.parseDouble
+				(timeSlot[0].substring(2,4))/100;
+			}
+			else{
+			startTime = Double.parseDouble(timeSlot[0].substring(0,2)) + Double.parseDouble
+						(timeSlot[0].substring(3,5))/100;
+			}
+			if (timeSlot[1].length()<5){
+				endTime = Double.parseDouble(timeSlot[1].substring(0,1)) + Double.parseDouble
+					(timeSlot[1].substring(2,4))/100;
+			}
+			else{
+				endTime = Double.parseDouble(timeSlot[1].substring(0,2)) + Double.parseDouble
+							(timeSlot[1].substring(3,5))/100;
+			}
+			
+			if(ApointEnd>startTime && !(timeSlot[2].compareTo(name)==0) && hasStarted==true && !(timeSlot[2].compareTo("free")==0)){
+				conflict = conflict+DaysProcedings [i];
+				
+				return true;
+				
+			}
+			else if(ApointStart>=startTime && endTime>ApointStart){
+				hasStarted = true;
+				if(!(timeSlot[2].compareTo("free")==0) && !(timeSlot[2].compareTo(name)==0)){
+					conflict = conflict+DaysProcedings [i];
+					
+					return true;
+				}
+				
+			}
+			
+		}
+		System.out.println("check3");
+		return false;
+	}
 	
 	public static int checkMonth(int m, boolean leapYear){
 		
