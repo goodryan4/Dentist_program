@@ -8,10 +8,10 @@ public class GUI {
 
 	public JFrame frame;
 	public static List list;
-	public static JLabel check, lblFirstName, iconsearch, lblHealthNumber, lblHealthIssues, lblMedicalNotes, lblPhoneNumber,
-			lblLastName, lblSex, lblDateOfBirth, lblPostalCode;
-	public static JPanel info, procedure, allinfo, search, schedule;
+	public static JLabel check, lblFirstName, iconsearch, lblHealthNumber, lblHealthIssues, lblMedicalNotes, lblPhoneNumber, lblLastName, lblSex, lblDateOfBirth, lblPostalCode;
+	public static JPanel info, procedure, allinfo, search, schedule, currjpanel;
 	public static String directory = "src/patients";
+	public static String name;
 	public static JButton newperson, removeperson, btnGoToCompressed, btnGoToProcedure, btnHome, btnSchedule, btnSchedule_1,
 			btnRemoveAll, btnGoToPatientInfo;
 	public JScrollPane scrollPane;
@@ -23,6 +23,9 @@ public class GUI {
 	public static JTextArea textarea, textarea_1;
 	public static JTextArea[] textareas;
 	public static JComboBox comboBox;
+	public static String x;
+	public static JTable table;
+	public static File bob;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -42,7 +45,7 @@ public class GUI {
 	}
 
 	private void initialize() {
-		File bob = new File(directory);
+		bob = new File(directory);
 		if (bob.exists() == false) {
 			bob.mkdirs();
 		}
@@ -61,7 +64,7 @@ public class GUI {
 		search = new JPanel();
 		frame.getContentPane().add(search, "name_210219853183045");
 		search.setLayout(null);
-
+		
 		// search icon beside the user input
 		iconsearch = new JLabel("");
 		iconsearch.setBounds(406, 86, 24, 25);
@@ -93,16 +96,15 @@ public class GUI {
 		list.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent arg0) {
 				if (arg0.getClickCount() == 2) {
-					String a = list.getSelectedItem().toString();
-					if (!(list.countItems() == 0) && !a.equals("There are no patients in the list")) {
-						search.hide();
-						currentData = filecontrol.getData(a, "info.txt");
+					name = list.getSelectedItem();
+					if (!(list.countItems() == 0) && !name.equals("There are no patients in the list")) {
+						currentData = filecontrol.getData(name, "info");
 						filecontrol.addobjects(info);
 						TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3, textField_4, textField_5,
 								textField_6 };
 						textareas = new JTextArea[] { textarea, textarea_1 };
 						filecontrol.setData();
-						info.show();
+						filecontrol.hidepanels(info);
 					}
 				}
 			}
@@ -178,6 +180,7 @@ public class GUI {
 		btnSchedule_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				filecontrol.hidepanels(schedule);
+				filecontrol.addobjects(schedule);
 			}
 		});
 		btnSchedule_1.setBounds(417, 215, 113, 25);
@@ -199,14 +202,13 @@ public class GUI {
 		schedule = new JPanel();
 		frame.getContentPane().add(schedule, "name_2570594671192");
 		schedule.setLayout(null);
-
-		JLabel lblNewLabel = new JLabel("change date");
-		lblNewLabel.setBounds(391, 21, 92, 26);
-		schedule.add(lblNewLabel);
-
-		comboBox = new JComboBox();
-		comboBox.setBounds(479, 21, 92, 26);
-		schedule.add(comboBox);
+		
+		//set the name of each JPanel
+		info.setName("info");
+		procedure.setName("procedure");
+		allinfo.setName("allinfo");
+		search.setName("search");
+		schedule.setName("schedule");
 	}
 
 	private static void addPopup(Component component, final JPopupMenu popup) {
