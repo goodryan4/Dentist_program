@@ -95,8 +95,9 @@ public class GUI {
 		list = new List();
 		list.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent arg0) {
-				if (arg0.getClickCount() == 2) {
+				if (arg0.getClickCount() == 2 && list.getSelectedItem().length()>0) {
 					name = list.getSelectedItem();
+					System.out.println(name);
 					if (!(list.countItems() == 0) && !name.equals("There are no patients in the list")) {
 						currentData = filecontrol.getData(name, "info");
 						filecontrol.addobjects(info);

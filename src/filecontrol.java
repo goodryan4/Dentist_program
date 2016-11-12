@@ -32,7 +32,7 @@ public class filecontrol extends GUI {
 	 * @wbp.parser.entryPoint
 	 */
 	public static void instantiat(String dir, String file) {
-		String nullData = ":; :; :; :; :; :; :; :; :; :; :; :; :; :; ";
+		String nullData = " :; :; :; :; :; :; :; :; :; :; :; :; :; :;";
 		String directory = dir + file;
 		try {
 			PrintWriter writer = new PrintWriter(directory);
@@ -50,6 +50,7 @@ public class filecontrol extends GUI {
 		try {
 			Scanner in = new Scanner(CurrentPat);
 			String data = in.nextLine();
+			System.out.println(data);
 			information = data.split(":;");
 			in.close();
 		} catch (FileNotFoundException e) {
@@ -113,12 +114,15 @@ public class filecontrol extends GUI {
 		String name = text.getText().toLowerCase();
 		String dir = directory + "/" + name;
 		File add = new File(dir);
-		if (add.exists()) {
+		System.out.println(name);
+		if(name.equals("enter the person you wish to search")){
+			check.setText("Enter patient name in search bar first");
+		}else  if (add.exists()) {
 			check.setText("the patient already exist");
 		} else {
 			add.mkdir();
 			try {
-				String[] files = { "/data.txt", "/info.txt", "/procedure.txt", "/balance.txt" };
+				String[] files = { "/allinfo.txt", "/info.txt", "/procedure.txt", "/balance.txt" };
 				for (int i = 0; i < files.length; i++) {
 					new File(dir + files[i]).createNewFile();
 					filecontrol.instantiat(dir, files[i]);
@@ -149,10 +153,12 @@ public class filecontrol extends GUI {
 	// Sets the data to each textField
 	public static void setData() {
 		for (int i = 0; i < TextFields.length; i++) {
-			TextFields[i].setText(currentData[i]);
+			String a = currentData[i].substring(1, currentData[i].length());
+			TextFields[i].setText(a);
 		}
 		for (int i = 0; i < textareas.length; i++) {
-			textareas[i].setText(currentData[TextFields.length + i]);
+			String a = currentData[TextFields.length + i].substring(1, currentData[TextFields.length + i].length());
+			textareas[i].setText(a);
 		}
 	}
 
@@ -263,6 +269,7 @@ public class filecontrol extends GUI {
 			btnHome.setVisible(true);
 			btnHome.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
+					removeobjects();
 					hidepanels(search);
 				}
 			});
@@ -270,11 +277,15 @@ public class filecontrol extends GUI {
 
 			textarea = new JTextArea();
 			textarea.setEditable(false);
+			textarea.setLineWrap(true);
+			textarea.setWrapStyleWord(true);
 			textarea.setBounds(250, 60, 175, 70);
 			a.add(textarea);
 
 			textarea_1 = new JTextArea();
 			textarea_1.setEditable(false);
+			textarea_1.setLineWrap(true);
+			textarea_1.setWrapStyleWord(true);
 			textarea_1.setBounds(250, 180, 175, 70);
 			a.add(textarea_1);
 
@@ -350,12 +361,22 @@ public class filecontrol extends GUI {
 			a.add(lblNewLabel);
 
 			comboBox = new JComboBox();
-			comboBox.setBounds(479, 21, 92, 26);
+			comboBox.setBounds(460, 20, 80, 25);
 			a.add(comboBox);
 			
 			table = new JTable();
-			table.setBounds(61, 33, 393, 292);
+			table.setBounds(61, 33, 350, 300);
 			a.add(table);
+			
+			btnHome = new JButton("Home");
+			btnHome.setBounds(460, 110, 80, 25);
+			btnHome.setVisible(true);
+			btnHome.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					hidepanels(search);
+				}
+			});
+			a.add(btnHome);
 		}
 
 	}
@@ -404,6 +425,9 @@ public class filecontrol extends GUI {
 
 		} else if (a.equals(allinfo)) {
 			a.remove(textField_6);
+			a.remove(textField_7);
+			a.remove(textField_8);
+			a.remove(textField_9);
 			a.remove(lblMedicalNotes);
 			a.remove(textarea);
 			a.remove(textarea_1);
@@ -476,12 +500,12 @@ public class filecontrol extends GUI {
 		btnGoToPatientInfo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				removeobjects();
-				filecontrol.addobjects(info);
+				addobjects(info);
 				TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3, textField_4,
 						textField_5, textField_6 };
 				textareas = new JTextArea[] { textarea, textarea_1 };
 				currentData = filecontrol.getData(list.getSelectedItem().toString(), "info");
-				filecontrol.setData();
+				setData();
 				hidepanels(info);
 			}
 		});
@@ -495,12 +519,12 @@ public class filecontrol extends GUI {
 		btnGoToProcedure.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				removeobjects();
-				filecontrol.addobjects(procedure);
+				addobjects(procedure);
 				TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3, textField_4,
 						textField_5, textField_6 };
 				textareas = new JTextArea[] { textarea, textarea_1 };
 				currentData = filecontrol.getData(list.getSelectedItem().toString(), "procedure");
-				filecontrol.setData();
+				setData();
 				hidepanels(procedure);
 			}
 		});
@@ -517,8 +541,8 @@ public class filecontrol extends GUI {
 				addobjects(allinfo);
 				TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3, textField_4,
 						textField_5, textField_6, textField_7, textField_8, textField_9 };
-				currentData = filecontrol.getData(list.getSelectedItem().toString(), "data");
-				filecontrol.setData();
+				currentData = filecontrol.getData(list.getSelectedItem().toString(), "allinfo");
+				setData();
 				hidepanels(allinfo);
 			}
 		});
@@ -546,7 +570,7 @@ public class filecontrol extends GUI {
 		File CurrentPat = new File(path);
 		String data = "";
 		for (int i = 0; i < info.length; i++) {
-			data = data + info[i] + ":;";
+			data = data +" "+ info[i] + ":;";
 		}
 		try {
 			PrintWriter writer = new PrintWriter(path, "UTF-8");
@@ -555,6 +579,5 @@ public class filecontrol extends GUI {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 }
