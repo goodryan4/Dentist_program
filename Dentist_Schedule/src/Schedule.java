@@ -80,7 +80,7 @@ public class Schedule extends JFrame {
 		box.addItem(query3);
 		
 		
-		table = new JTable(2,4);
+		table = new JTable(2,3);
 		table.setBounds(60, 50, 214, 208);
 		table.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(box));
 		table.setColumnSelectionAllowed(true);
@@ -98,8 +98,8 @@ public class Schedule extends JFrame {
 		String m = "Robert";
 		String k = "Ryan";
 		//filestuff.AddApointment(CurrentDay, a ,  b ,  m );
-		//filestuff.editApointment(CurrentDay, a ,  b ,m, k);
-		filestuff.deleteApointment(CurrentDay, "Robert");
+		filestuff.editApointment(CurrentDay, a ,  b ,m, k);
+
 		
 	}
 	public void variableCheck(){
