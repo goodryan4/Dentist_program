@@ -22,7 +22,7 @@ public class GUI {
 	public static JTextField[] TextFields;
 	public static JTextArea textarea, textarea_1;
 	public static JTextArea[] textareas;
-	public static JComboBox comboBox;
+	public static JComboBox listdates, status ;
 	public static String x;
 	public static JTable table;
 	public static File bob;

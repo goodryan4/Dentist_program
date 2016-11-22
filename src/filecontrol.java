@@ -12,6 +12,7 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Scanner;
 
+import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -357,19 +358,35 @@ public class filecontrol extends GUI {
 		}
 		if (a.equals(schedule)) {
 			JLabel lblNewLabel = new JLabel("change date");
-			lblNewLabel.setBounds(391, 21, 92, 26);
+			lblNewLabel.setBounds(460, 10, 92, 26);
 			a.add(lblNewLabel);
-
-			comboBox = new JComboBox();
-			comboBox.setBounds(460, 20, 80, 25);
-			a.add(comboBox);
 			
-			table = new JTable();
-			table.setBounds(61, 33, 350, 300);
+			listdates = new JComboBox();
+			listdates.setBounds(460, 30, 100, 25);
+			listdates.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					String a  = (String) listdates.getSelectedItem();
+				}
+			});
+			listdates.addItem("thing");
+			listdates.addItem("bob");
+			a.add(listdates);
+			
+			status = new JComboBox();
+			status.addItem("waiting");
+			status.addItem("done");
+			status.addItem("coming soon");
+			status.addItem("in progress");
+			
+			table = new JTable(2,4);
+			table.setBounds(30, 20, 400, 330);
+			table.setCellSelectionEnabled(true);
+			table.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(status));
+			table.setRowHeight(table.getHeight()/table.getRowCount());
 			a.add(table);
 			
 			btnHome = new JButton("Home");
-			btnHome.setBounds(460, 110, 80, 25);
+			btnHome.setBounds(460, 110, 100, 25);
 			btnHome.setVisible(true);
 			btnHome.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
@@ -579,5 +596,9 @@ public class filecontrol extends GUI {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static boolean leapyear(int y){
+		return true;
 	}
 }
