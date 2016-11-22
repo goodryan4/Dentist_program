@@ -1,9 +1,11 @@
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -168,7 +170,7 @@ public class filestuff {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			// System.out.println(CurrentDay.substring(0,10));
+			//System.out.println(CurrentDay.substring(0,10));
 			if (CurrentDate.compareTo(CurrentDay.substring(0, 10)) == 0) {
 
 				return CurrentDay.substring(13, CurrentDay.length())
@@ -193,26 +195,18 @@ public class filestuff {
 		boolean moreConflict = false;
 		boolean change = false;
 		boolean oneTime = false;
+		boolean conflict2 = false;
+		boolean didRun = false;
 
 		for (int i = 0; i < DaysProcedings.length; i++) {
 			String[] timeSlot = DaysProcedings[i].split(";");
 			double startTime = 0;
 			double endTime = 0;
 
-			if (timeSlot[0].length() < 5) {
-				startTime = Double.parseDouble(timeSlot[0].substring(0, 1))
-						+ Double.parseDouble(timeSlot[0].substring(2, 4)) / 100;
-			} else {
-				startTime = Double.parseDouble(timeSlot[0].substring(0, 2))
-						+ Double.parseDouble(timeSlot[0].substring(3, 5)) / 100;
-			}
-			if (timeSlot[1].length() < 5) {
-				endTime = Double.parseDouble(timeSlot[1].substring(0, 1))
-						+ Double.parseDouble(timeSlot[1].substring(2, 4)) / 100;
-			} else {
-				endTime = Double.parseDouble(timeSlot[1].substring(0, 2))
-						+ Double.parseDouble(timeSlot[1].substring(3, 5)) / 100;
-			}
+			
+				startTime = getStartTime(timeSlot[0]);
+				endTime = getStartTime(timeSlot[1]);
+			
 
 			if (ApointStart >= startTime && ApointEnd <= endTime
 					&& timeSlot[2].compareTo("free") == 0) {
@@ -220,6 +214,7 @@ public class filestuff {
 						ApointEnd);
 				change = true;
 				oneTime = true;
+				didRun = true;
 
 				if (gaps[0] == true && gaps[1] == true) {
 					String freeStart = moreChecks(Double.toString(startTime)
@@ -283,8 +278,10 @@ public class filestuff {
 					if (ApointEnd > startTime
 							&& !(DaysProcedings[i].endsWith("free"))) {
 						conflict = DaysProcedings[i - 1] + DaysProcedings[i];
+						conflict2 = true;
 					} else if (conflict.compareTo("") == 0) {
 						conflict = DaysProcedings[i - 1];
+						conflict2 = true;
 					}
 				}
 
@@ -294,16 +291,20 @@ public class filestuff {
 							&& !(DaysProcedings[i - 1].endsWith("free"))) {
 						conflict = DaysProcedings[i - 1] + DaysProcedings[i]
 								+ DaysProcedings[i + 1];
+						conflict2 = true;
 					} else if (!(DaysProcedings[i + 1].endsWith("free"))
 							&& !(DaysProcedings[i - 1].endsWith("free"))) {
 						conflict = DaysProcedings[i - 1]
 								+ DaysProcedings[i + 1];
+						conflict2 = true;
 					} else if (!(DaysProcedings[i].endsWith("free"))
 							&& !(DaysProcedings[i + 1].endsWith("free"))) {
 						conflict = DaysProcedings[i] + DaysProcedings[i + 1];
+						conflict2 = true;
 					} else if (!(DaysProcedings[i].endsWith("free"))
 							&& !(DaysProcedings[i - 1].endsWith("free"))) {
 						conflict = DaysProcedings[i - 1] + DaysProcedings[i];
+						conflict2 = true;
 					}
 				}
 			}
@@ -319,27 +320,23 @@ public class filestuff {
 		newTextLine = CurrentDate + ":-:" + newTextLine;
 		System.out.println(newTextLine);
 		System.out.println(conflict);
+		if(conflict2 == false && didRun == true){
+			wrightToFile1(newTextLine);
+		}
+		
 	}
 
 	public static boolean[] checks(double start, double end, double startA,
 			double endA) {
 		boolean[] gaps;
-		start = start + 0.15;
-		if (start - (int) start > 0.59) {
-			start = start + 1 + (start - (int) start - 0.60);
-		}
-		end = end - 0.15;
-		if (end - (int) end > 0.59) {
-			end = (int) end + 0.60 - 0.15
-					- ((int) end + 0.15 - (int) (end + 0.15));
-		}
-		if (startA >= start && endA <= end) {
+		
+		if (startA-start>=0.15 && end-endA>=0.15) {
 			gaps = new boolean[] { true, true };
 			return gaps;
-		} else if (startA >= start) {
+		} else if (startA-start>=0.15) {
 			gaps = new boolean[] { true, false };
 			return gaps;
-		} else if (endA <= end) {
+		} else if (end-endA>=0.15) {
 			gaps = new boolean[] { false, true };
 			return gaps;
 		} else {
@@ -360,6 +357,7 @@ public class filestuff {
 
 	public static void editApointment(String[] DaysProcedings,
 			Double ApointStart, Double ApointEnd, String oldName, String newName) {
+		
 		String conflict = "";
 		boolean hasStarted = false;
 		boolean hasAdded = false;
@@ -374,9 +372,14 @@ public class filestuff {
 		String replace = "";
 		String newTextLine = "";
 		int x;
-
+		
+		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		Date date = new Date();
+		String CurrentDate = dateFormat.format(date).toString();
+		
 		boolean IsConflict = checkForConflicts(DaysProcedings, ApointStart,
 				ApointEnd, oldName);
+		
 
 		if (IsConflict == false) {
 			for (int i = 0; i < DaysProcedings.length; i++) {
@@ -386,32 +389,15 @@ public class filestuff {
 				double startTime = 0;
 				double endTime = 0;
 
-				for (int j = 0; j < 2; j++) {
-					if (timeSlot[0].length() < 5) {
-						startTime = Double.parseDouble(timeSlot[0].substring(0,
-								1))
-								+ Double.parseDouble(timeSlot[0]
-										.substring(2, 4)) / 100;
-					} else {
-						startTime = Double.parseDouble(timeSlot[0].substring(0,
-								2))
-								+ Double.parseDouble(timeSlot[0]
-										.substring(3, 5)) / 100;
-					}
-					if (timeSlot[1].length() < 5) {
-						endTime = Double.parseDouble(timeSlot[1]
-								.substring(0, 1))
-								+ Double.parseDouble(timeSlot[1]
-										.substring(2, 4)) / 100;
-					} else {
-						endTime = Double.parseDouble(timeSlot[1]
-								.substring(0, 2))
-								+ Double.parseDouble(timeSlot[1]
-										.substring(3, 5)) / 100;
-					}
+				
+				
+					
+					startTime = getStartTime(timeSlot[0]);
+					endTime = getStartTime(timeSlot[1]);
+					
 
 					if (hasAdded == true) {
-						newTextLine = newTextLine + DaysProcedings[j];
+						newTextLine = newTextLine + DaysProcedings[i];
 					}
 
 					if (timeSlot[2].compareTo(oldName) == 0) {
@@ -439,18 +425,24 @@ public class filestuff {
 									+ "free__";
 						}
 
-						String[] temp = DaysProcedings[j + 1].split(";");
+						if(i+1 != DaysProcedings.length){
+						String[] temp = DaysProcedings[i + 1].split(";");
 
 						startTimeAfter = getStartTime(temp[0]);
-						endTimeAfter = getEndTime(temp[1]);
+						endTimeAfter = getStartTime(temp[1]);
+						}
 
-						String[] temp1 = DaysProcedings[j - 1].split(";");
+						if(i>0){
+						String[] temp1 = DaysProcedings[i - 1].split(";");
 
 						startTimeBefore = getStartTime(temp1[0]);
-						endTimeBefore = getEndTime(temp1[1]);
+						endTimeBefore = getStartTime(temp1[1]);
+						
+						
 
-						if (DaysProcedings[j - 1].endsWith("free")
-								&& DaysProcedings[j + 1].endsWith("free")) {
+						
+						if (DaysProcedings[i - 1].endsWith("free") && (i+1 != DaysProcedings.length)
+								&& DaysProcedings[i + 1].endsWith("free")) {
 
 							if (endTimeAfter - ApointEnd >= 0.15) {
 								String tempS3 = moreChecks(Double.toString(
@@ -468,10 +460,10 @@ public class filestuff {
 								newFreeBefore = tempS4 + ";" + tempE4 + ";"
 										+ "free__";
 							}
-							j++;
+							i++;
 							freeBefore = true;
 
-						} else if (DaysProcedings[j - 1].endsWith("free")) {
+						} else if (DaysProcedings[i - 1].endsWith("free")) {
 
 							if (ApointStart - startTimeBefore >= 0.15) {
 								String tempS4 = moreChecks(Double.toString(
@@ -484,7 +476,9 @@ public class filestuff {
 							}
 							freeBefore = true;
 
-						} else if (DaysProcedings[j + 1].endsWith("free")) {
+						} 
+						}
+						else if (DaysProcedings[i + 1].endsWith("free") && (i+1 != DaysProcedings.length)) {
 
 							if (endTimeAfter - ApointEnd >= 0.15) {
 								String tempS3 = moreChecks(Double.toString(
@@ -494,11 +488,11 @@ public class filestuff {
 								newFreeAfter = tempS3 + ";" + tempE3 + ";"
 										+ "free__";
 							}
-							j++;
+							i++;
 						}
 
 						newTextLine = newTextLine + newFreeBefore + replace
-								+ newFreeAfter;
+										+ newFreeAfter;
 						hasAdded = true;
 
 					}
@@ -526,14 +520,87 @@ public class filestuff {
 						newTextLine = newTextLine + P;
 						firstTime = false;
 					}
-
 				}
 			}
-
+			
+		newTextLine = CurrentDate + ":-:" + newTextLine;
 			System.out.println(newTextLine);
+			wrightToFile1(newTextLine);
 		}
-
+		
+		
+	
+	
+	
+	public static void wrightToFile1(String line) {
+		
+		
+		String CurrentDate = line.substring(0, 10);
+		BufferedReader br = null;
+		BufferedReader br2 = null;
+		
+		try {
+			br = new BufferedReader(new FileReader(dir));
+			br2 = new BufferedReader(new FileReader(dir));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		String input = "";
+		String CurrentDay = "";
+		File file = new File(dir);
+		if(file.exists()){
+		try {
+			while(br2.readLine() != null) {
+				
+				try {
+					
+					CurrentDay = br.readLine();
+					
+					
+					if (CurrentDate.compareTo(CurrentDay.substring(0, 10)) == 0) {
+						
+						System.out.println("check4");
+						input = input + line + '\n';
+					}
+					else{
+						input = input + CurrentDay + '\n';
+					}
+					
+					
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				
+				
+				System.out.println(CurrentDay.substring(0, 10) + "and" + CurrentDate);
+			}
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		
+		
+		try{
+			FileOutputStream fileOut = new FileOutputStream(dir);
+			fileOut.write(input.getBytes());
+			fileOut.close();
+			
+		}catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		}
 	}
+
+	
 
 	public static double getStartTime(String d) {
 		if (d.length() < 5) {
@@ -544,19 +611,6 @@ public class filestuff {
 			double startTime = Double.parseDouble(d.substring(0, 2))
 					+ Double.parseDouble(d.substring(3, 5)) / 100;
 			return startTime;
-
-		}
-	}
-
-	public static double getEndTime(String d) {
-		if (d.length() < 5) {
-			double EndTime = Double.parseDouble(d.substring(0, 1))
-					+ Double.parseDouble(d.substring(2, 4)) / 100;
-			return EndTime;
-		} else {
-			double EndTime = Double.parseDouble(d.substring(0, 2))
-					+ Double.parseDouble(d.substring(3, 5)) / 100;
-			return EndTime;
 
 		}
 	}
@@ -573,20 +627,10 @@ public class filestuff {
 
 			// System.out.println(timeSlot[2]);
 
-			if (timeSlot[0].length() < 5) {
-				startTime = Double.parseDouble(timeSlot[0].substring(0, 1))
-						+ Double.parseDouble(timeSlot[0].substring(2, 4)) / 100;
-			} else {
-				startTime = Double.parseDouble(timeSlot[0].substring(0, 2))
-						+ Double.parseDouble(timeSlot[0].substring(3, 5)) / 100;
-			}
-			if (timeSlot[1].length() < 5) {
-				endTime = Double.parseDouble(timeSlot[1].substring(0, 1))
-						+ Double.parseDouble(timeSlot[1].substring(2, 4)) / 100;
-			} else {
-				endTime = Double.parseDouble(timeSlot[1].substring(0, 2))
-						+ Double.parseDouble(timeSlot[1].substring(3, 5)) / 100;
-			}
+			
+				startTime = getStartTime(timeSlot[0]);
+				endTime = getStartTime(timeSlot[1]);
+			
 
 			if (ApointEnd > startTime && !(timeSlot[2].compareTo(name) == 0)
 					&& hasStarted == true
@@ -625,7 +669,7 @@ public class filestuff {
 
 			String[] timeSlot = DaysProcedings[i].split(";");
 			startTime = getStartTime(timeSlot[0]);
-			endTime = getEndTime(timeSlot[1]);
+			endTime = getStartTime(timeSlot[1]);
 
 			if (deleted == true) {
 				newTextLine = newTextLine + DaysProcedings[i] + "__";
@@ -633,7 +677,7 @@ public class filestuff {
 
 				String[] timeSlot2 = DaysProcedings[i + 1].split(";");
 				startTime1 = getStartTime(timeSlot2[0]);
-				endTime1 = getEndTime(timeSlot2[1]);
+				endTime1 = getStartTime(timeSlot2[1]);
 
 				if (DaysProcedings[i - 1].endsWith("free")
 						&& DaysProcedings[i + 1].endsWith("free") && i > 0) {

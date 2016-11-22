@@ -93,13 +93,13 @@ public class Schedule extends JFrame {
 		//filestuff.fileInit(date);
 		//filestuff.updateDates();
 		CurrentDay = filestuff.getCurrentDate(date);
-		Double a = 8.00;
+		Double a = 8.30;
 		Double b = 9.30;
 		String m = "Robert";
 		String k = "Ryan";
-		//filestuff.AddApointment(CurrentDay, a ,  b ,  m );
+		filestuff.AddApointment(CurrentDay, a ,  b ,  m );
 		//filestuff.editApointment(CurrentDay, a ,  b ,m, k);
-		filestuff.deleteApointment(CurrentDay, "Robert");
+		//filestuff.deleteApointment(CurrentDay, "Robert");
 		
 	}
 	public void variableCheck(){
