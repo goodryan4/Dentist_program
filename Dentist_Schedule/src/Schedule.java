@@ -80,7 +80,7 @@ public class Schedule extends JFrame {
 		box.addItem(query3);
 		
 		
-		table = new JTable(2,3);
+		table = new JTable(2,4);
 		table.setBounds(60, 50, 214, 208);
 		table.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(box));
 		table.setColumnSelectionAllowed(true);
@@ -93,13 +93,13 @@ public class Schedule extends JFrame {
 		//filestuff.fileInit(date);
 		//filestuff.updateDates();
 		CurrentDay = filestuff.getCurrentDate(date);
-		Double a = 8.00;
+		Double a = 8.30;
 		Double b = 9.30;
 		String m = "Robert";
 		String k = "Ryan";
-		//filestuff.AddApointment(CurrentDay, a ,  b ,  m );
-		filestuff.editApointment(CurrentDay, a ,  b ,m, k);
-
+		filestuff.AddApointment(CurrentDay, a ,  b ,  m );
+		//filestuff.editApointment(CurrentDay, a ,  b ,m, k);
+		//filestuff.deleteApointment(CurrentDay, "Robert");
 		
 	}
 	public void variableCheck(){
