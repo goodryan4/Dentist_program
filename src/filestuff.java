@@ -321,7 +321,7 @@ public class filestuff {
 		System.out.println(newTextLine);
 		System.out.println(conflict);
 		if(conflict2 == false && didRun == true){
-			wrightToFile1(newTextLine);
+			writeToFile1(newTextLine);
 		}
 		
 	}
@@ -525,16 +525,11 @@ public class filestuff {
 			
 		newTextLine = CurrentDate + ":-:" + newTextLine;
 			System.out.println(newTextLine);
-			wrightToFile1(newTextLine);
+			writeToFile1(newTextLine);
 		}
-		
-		
-	
-	
-	
-	public static void wrightToFile1(String line) {
-		
-		
+			
+	public static void writeToFile1(String line) {
+			
 		String CurrentDate = line.substring(0, 10);
 		BufferedReader br = null;
 		BufferedReader br2 = null;
@@ -599,8 +594,6 @@ public class filestuff {
 		
 		}
 	}
-
-	
 
 	public static double getStartTime(String d) {
 		if (d.length() < 5) {
