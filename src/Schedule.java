@@ -1,4 +1,3 @@
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
@@ -11,10 +10,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.TableCellEditor;
 import javax.swing.JTable;
 import javax.swing.JComboBox;
-import javax.swing.JList;
 
 
 public class Schedule extends JFrame {

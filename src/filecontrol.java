@@ -1,10 +1,7 @@
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,7 +11,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -28,6 +24,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableModel;
 
 public class filecontrol extends GUI {
 	public static String[] information;
@@ -370,30 +367,53 @@ public class filecontrol extends GUI {
 			lblNewLabel.setBounds(460, 10, 92, 26);
 			a.add(lblNewLabel);
 			
-			listdates = new JComboBox();
-			listdates.setBounds(460, 30, 100, 25);
-			listdates.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent arg0) {
-					System.out.println(listdates.getSelectedItem());
-				}
-			});
-			a.add(listdates);
-			
 			status = new JComboBox();
 			status.addItem("waiting");
 			status.addItem("done");
 			status.addItem("coming soon");
 			status.addItem("in progress");
 			
-			Date date = new Date();
-			fileInit(date);
-			
-			table = new JTable(2,4);
+			table = new JTable(4,4);
 			table.setBounds(30, 20, 400, 330);
 			table.setCellSelectionEnabled(true);
 			table.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(status));
-			table.setRowHeight(table.getHeight()/table.getRowCount());
+			
 			a.add(table);
+			
+			listdates = new JComboBox();
+			listdates.setBounds(460, 30, 100, 25);
+			listdates.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					File CurrentPat = new File(dir);
+					try {
+						Scanner in = new Scanner(CurrentPat);
+						Boolean start = true;
+						while(in.hasNextLine() && start == true){
+							String data = in.nextLine();
+							String date = data.substring(0,10);
+							if(date.equals(listdates.getSelectedItem())){
+								start=false;
+								String [] separator = data.substring(13,data.length()).split("__");
+								//remake the jtable to the proper amount of rows
+								DefaultTableModel model = new DefaultTableModel(separator.length,4);
+								table.setModel(model);
+								table.setRowHeight(table.getHeight()/table.getRowCount());
+								System.out.println(listdates.getSelectedItem());
+								for(int i=0; i<separator.length; i++){	
+									String[] timeandevent = separator[i].split(";");
+									table.setValueAt(timeandevent[0]+" "+timeandevent[2], i, 0);
+								}
+							}
+						}
+						in.close();
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					}
+				}
+			});
+			a.add(listdates);
+			
+			adddates();
 			
 			btnHome = new JButton("Home");
 			btnHome.setBounds(460, 110, 100, 25);
@@ -671,7 +691,6 @@ public class filecontrol extends GUI {
 				month = "" + dateM;
 			}
 			date = day + "/" + month + "/" + dateY;
-			listdates.addItem(date);
 			dateD++;
 			if (dateD > CurrMonth) {
 				dateM++;
@@ -728,7 +747,6 @@ public class filecontrol extends GUI {
 			}
 			year = "" + lastDateY;
 			date2 = day + "/" + month + "/" + year;
-			System.out.println(date2);
 
 			lastDateD++;
 			if (lastDateD > CurrMonth) {
@@ -1335,5 +1353,55 @@ public class filecontrol extends GUI {
 			return false;
 		}
 
+	}
+
+	private static void adddates() {
+		Date date = new Date();
+		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		
+		String CurDate = dateFormat.format(date);
+		int dateD, dateM, dateY, lastDateD, lastDateM, lastDateY;
+		String date2 = "";
+		
+		dateD = lastDateD = Integer.parseInt(CurDate.substring(0, 2));
+		dateM = lastDateM = Integer.parseInt(CurDate.substring(3, 5));
+		dateY = Integer.parseInt(CurDate.substring(6, 10));
+		
+		lastDateY = dateY+1;
+
+		boolean leapYear1 = leapYear(lastDateY);
+		int CurrMonth = checkMonth(lastDateM, leapYear1);
+		if (lastDateM == 2 && lastDateD == 29) {
+			lastDateD = lastDateD - 1;
+		}
+
+		while (dateY != lastDateY || dateM != lastDateM || dateD != lastDateD+1) {
+			if (dateD < 10) {
+				day = "0" + dateD;
+			} else {
+				day = "" + dateD;
+			}
+			if (dateM < 10) {
+				month = "0" + dateM;
+			} else {
+				month = "" + dateM;
+			}
+			year = "" + dateY;
+			date2 = day + "/" + month + "/" + year;
+			listdates.addItem(date2);
+			
+			dateD++;
+			if (dateD > CurrMonth) {
+				dateM++;
+				dateD = 1;
+			}
+			if (dateM > 12) {
+				dateY++;
+				dateM = 1;
+				leapYear1 = leapYear(dateY);
+			}
+
+			CurrMonth = checkMonth(dateM, leapYear1);
+		}
 	}
 }
