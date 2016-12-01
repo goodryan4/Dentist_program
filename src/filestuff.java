@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -8,6 +9,7 @@ import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Scanner;
 
 public class filestuff {
 	public static String dir = "src/table/schedule.txt";
@@ -32,7 +34,6 @@ public class filestuff {
 		try {
 			writer = new PrintWriter(dir);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -144,7 +145,6 @@ public class filestuff {
 				lastDateM = 1;
 				leapYear1 = leapYear(lastDateY);
 			}
-
 			CurrMonth = checkMonth(lastDateM, leapYear1);
 		}
 
@@ -733,5 +733,4 @@ public class filestuff {
 		}
 
 	}
-
 }
