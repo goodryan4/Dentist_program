@@ -1,3 +1,4 @@
+import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
@@ -10,8 +11,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.TableCellEditor;
 import javax.swing.JTable;
 import javax.swing.JComboBox;
+import javax.swing.JList;
 
 
 public class Schedule extends JFrame {
@@ -22,11 +25,16 @@ public class Schedule extends JFrame {
 	static String directory = "src/table";
 	static JLabel check;
 	public static String [] CurrentDay;
+	public static String CurDate;
+	private Thread t;
 
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		
+		
+		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -37,6 +45,7 @@ public class Schedule extends JFrame {
 				}
 			}
 		});
+		
 	}
 
 		
@@ -88,19 +97,34 @@ public class Schedule extends JFrame {
 		
 		String [] CurrentDay;
 		//filestuff.fileInit(date);
-		//filestuff.updateDates();
+		filestuff.updateDates();
 		CurrentDay = filestuff.getCurrentDate(date);
+		notification R1 = new notification( "Thread-1", CurrentDay);
+	      R1.start();
 		Double a = 8.30;
 		Double b = 9.30;
 		String m = "Robert";
 		String k = "Ryan";
-		filestuff.AddApointment(CurrentDay, a ,  b ,  m );
+		//filestuff.AddApointment(CurrentDay, a ,  b ,  m );
 		//filestuff.editApointment(CurrentDay, a ,  b ,m, k);
-		//filestuff.deleteApointment(CurrentDay, "Robert");
+		//filestuff.deleteApointment(CurrentDay, "Ryan");
+		
 		
 	}
-	public void variableCheck(){
+	
+	public void variableCheck(String oldtype, String newtype){
 		
+		if(newtype.compareTo("") ==0 && oldtype.compareTo("free")==1){
+			//invoke delete
+		}
+		else if(oldtype.compareTo("free")==0 && newtype.compareTo("")==1 && newtype.compareTo("free")==1){
+			//invoke create
+		}
+		else if(newtype.compareTo("free")==1 && newtype.compareTo("")==1){
+			//invoke edit
+		}
 	}
+	
+
 	
 }

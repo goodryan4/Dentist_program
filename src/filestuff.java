@@ -1,15 +1,14 @@
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Scanner;
 
 public class filestuff {
 	public static String dir = "src/table/schedule.txt";
@@ -18,6 +17,7 @@ public class filestuff {
 	public static String date;
 	public static String year;
 	public static String CurrentDate;
+	public static String CurDate;
 	public static final int[] MONTH_LENGTH = new int[] { 31, 28, 31, 30, 31,
 			30, 31, 31, 30, 31, 30, 31 };
 
@@ -34,6 +34,7 @@ public class filestuff {
 		try {
 			writer = new PrintWriter(dir);
 		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -145,6 +146,7 @@ public class filestuff {
 				lastDateM = 1;
 				leapYear1 = leapYear(lastDateY);
 			}
+
 			CurrMonth = checkMonth(lastDateM, leapYear1);
 		}
 
@@ -153,6 +155,7 @@ public class filestuff {
 	public static String[] getCurrentDate(Date d) {
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		String CurrentDate = dateFormat.format(d).toString();
+		CurDate = CurrentDate;
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new FileReader(dir));
@@ -316,11 +319,11 @@ public class filestuff {
 			}
 
 		}
-		newTextLine = CurrentDate + ":-:" + newTextLine;
+		newTextLine = CurDate + ":-:" + newTextLine;
 		System.out.println(newTextLine);
 		System.out.println(conflict);
 		if(conflict2 == false && didRun == true){
-			writeToFile1(newTextLine);
+			wrightToFile1(newTextLine);
 		}
 		
 	}
@@ -396,7 +399,7 @@ public class filestuff {
 					
 
 					if (hasAdded == true) {
-						newTextLine = newTextLine + DaysProcedings[i];
+						newTextLine = newTextLine + DaysProcedings[i] + "__";
 					}
 
 					if (timeSlot[2].compareTo(oldName) == 0) {
@@ -451,7 +454,8 @@ public class filestuff {
 								newFreeAfter = tempS3 + ";" + tempE3 + ";"
 										+ "free__";
 							}
-							if (ApointStart - endTimeBefore >= 0.15) {
+						
+							if (ApointStart - startTimeBefore >= 0.15) {
 								String tempS4 = moreChecks(Double.toString(
 										startTimeBefore).replace(".", ":"));
 								String tempE4 = moreChecks(Double.toString(
@@ -459,6 +463,7 @@ public class filestuff {
 								newFreeBefore = tempS4 + ";" + tempE4 + ";"
 										+ "free__";
 							}
+							
 							i++;
 							freeBefore = true;
 
@@ -522,13 +527,20 @@ public class filestuff {
 				}
 			}
 			
-		newTextLine = CurrentDate + ":-:" + newTextLine;
+		newTextLine = CurDate + ":-:" + newTextLine;
 			System.out.println(newTextLine);
-			writeToFile1(newTextLine);
+			if(IsConflict==false){
+			wrightToFile1(newTextLine);
+			}
 		}
-			
-	public static void writeToFile1(String line) {
-			
+		
+		
+	
+	
+	
+	public static void wrightToFile1(String line) {
+		
+		
 		String CurrentDate = line.substring(0, 10);
 		BufferedReader br = null;
 		BufferedReader br2 = null;
@@ -594,6 +606,8 @@ public class filestuff {
 		}
 	}
 
+	
+
 	public static double getStartTime(String d) {
 		if (d.length() < 5) {
 			double startTime = Double.parseDouble(d.substring(0, 1))
@@ -656,6 +670,10 @@ public class filestuff {
 		double oldstart = 0.0;
 		double oldend = 7.30;
 		boolean deleted = false;
+		
+		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		Date date = new Date();
+		String CurrentDate = dateFormat.format(date).toString();
 
 		for (int i = 0; i < DaysProcedings.length; i++) {
 
@@ -673,22 +691,26 @@ public class filestuff {
 
 				if (DaysProcedings[i - 1].endsWith("free")
 						&& DaysProcedings[i + 1].endsWith("free") && i > 0) {
-					newTextLine = newTextLine + oldstart + ";" + endTime1 + ";"
+					newTextLine = newTextLine + moreChecks(Double.toString(oldstart).replace(".", ":"))
+							+ ";" + moreChecks(Double.toString(endTime1).replace(".", ":"))+ ";"
 							+ "free__";
 					i++;
 
 				} else if (DaysProcedings[i - 1].endsWith("free") && i > 0) {
-					newTextLine = newTextLine + oldstart + ";" + endTime + ";"
+					newTextLine = newTextLine + moreChecks(Double.toString(oldstart).replace(".", ":"))
+							+ ";" + moreChecks(Double.toString(endTime).replace(".", ":")) + ";"
 							+ "free__";
 
 				} else if (DaysProcedings[i + 1].endsWith("free")) {
 					newTextLine = newTextLine + DaysProcedings[i - 1] + "__"
-							+ oldend + ";" + endTime1 + ";" + "free__";
+							+ moreChecks(Double.toString(oldend).replace(".", ":"))+ ";" 
+							+ moreChecks(Double.toString(endTime1).replace(".", ":")) + ";" + "free__";
 					i++;
 
 				} else {
 					newTextLine = newTextLine + DaysProcedings[i - 1] + "__"
-							+ oldend + ";" + startTime1 + ";" + "free__";
+							+ moreChecks(Double.toString(oldend).replace(".", ":")) + ";" 
+							+ moreChecks(Double.toString(startTime1).replace(".", ":")) + ";" + "free__";
 				}
 				deleted = true;
 
@@ -700,7 +722,9 @@ public class filestuff {
 			oldend = endTime;
 
 		}
+		newTextLine = CurDate + ":-:" +newTextLine;
 		System.out.println(newTextLine);
+		wrightToFile1(newTextLine);
 	}
 
 	public static int checkMonth(int m, boolean leapYear) {
@@ -733,4 +757,5 @@ public class filestuff {
 		}
 
 	}
+
 }
