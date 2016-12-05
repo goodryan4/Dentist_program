@@ -13,7 +13,7 @@ public class GUI {
 	public static String directory = "src/patients";
 	public static String name;
 	public static JButton newperson, removeperson, btnGoToCompressed, btnGoToProcedure, btnHome, btnSchedule, btnSchedule_1,
-			btnRemoveAll, btnGoToPatientInfo;
+			btnRemoveAll, btnGoToPatientInfo, btnAddEvent;
 	public JScrollPane scrollPane;
 	public static String[] currentData;
 	public static JToggleButton btnUpdateInfo;

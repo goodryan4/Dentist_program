@@ -277,7 +277,6 @@ public class filecontrol extends GUI {
 			// button to go back to the main page
 			btnHome = new JButton("Home");
 			btnHome.setBounds(463, 30, 101, 24);
-			btnHome.setVisible(true);
 			btnHome.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					removeobjects();
@@ -368,7 +367,7 @@ public class filecontrol extends GUI {
 		}
 		if (a.equals(schedule)) {
 			JLabel lblNewLabel = new JLabel("change date");
-			lblNewLabel.setBounds(460, 10, 92, 26);
+			lblNewLabel.setBounds(463, 50, 92, 26);
 			a.add(lblNewLabel);
 
 			status = new JComboBox();
@@ -376,6 +375,8 @@ public class filecontrol extends GUI {
 			status.addItem("done");
 			status.addItem("coming soon");
 			status.addItem("in progress");
+
+			String[] columnNames = { "Start Time", "End Time", "Event", "Status" };
 
 			table = new JTable(4, 4);
 			table.setBounds(20, 20, 40, 330);
@@ -390,7 +391,7 @@ public class filecontrol extends GUI {
 			a.add(scrollPane_1);
 
 			listdates = new JComboBox();
-			listdates.setBounds(460, 30, 100, 25);
+			listdates.setBounds(463, 70, 100, 25);
 			listdates.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					File CurrentPat = new File(dir);
@@ -407,16 +408,14 @@ public class filecontrol extends GUI {
 								// rows
 								DefaultTableModel model = new DefaultTableModel(separator.length, 4);
 								table.setModel(model);
-								
-								String[] columnNames = {"Start Time", "End Time", "Event", "Status"};
-								for(int i=0;i<table.getColumnCount();i++)
-								{
-								TableColumn column1 = table.getTableHeader().getColumnModel().getColumn(i);
-								  
-								column1.setHeaderValue(columnNames[i]);
-								} 
+
+								for (int i = 0; i < table.getColumnCount(); i++) {
+									TableColumn column1 = table.getTableHeader().getColumnModel().getColumn(i);
+
+									column1.setHeaderValue(columnNames[i]);
+								}
 								table.getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(status));
-								
+
 								for (int i = 0; i < separator.length; i++) {
 									String[] timeandevent = separator[i].split(";");
 									table.setValueAt(timeandevent[0], i, 0);
@@ -445,14 +444,41 @@ public class filecontrol extends GUI {
 			adddates();
 
 			btnHome = new JButton("Home");
-			btnHome.setBounds(460, 110, 100, 25);
-			btnHome.setVisible(true);
+			btnHome.setBounds(463, 30, 101, 24);
 			btnHome.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					hidepanels(search);
 				}
 			});
 			a.add(btnHome);
+
+			btnAddEvent = new JButton("Add Event");
+			btnAddEvent.setBounds(463, 100, 100, 25);
+			btnAddEvent.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					if (table.getValueAt(0, 0).equals("") || table.getValueAt(0, 1).equals("")
+							|| table.getValueAt(0, 2).equals("")) {
+					} else {
+						DefaultTableModel model = new DefaultTableModel(0, 4);
+						model.addRow(new Object[] { "", "", "", "" });
+						Object[] data = new Object[table.getColumnCount()];
+						for (int i = 0; i < table.getRowCount(); i++) {
+							for (int j = 0; j < table.getColumnCount(); j++) {
+								data[j] = table.getValueAt(i, j);
+							}
+							model.addRow(data);
+						}
+						table.setModel(model);
+						for (int i = 0; i < table.getColumnCount(); i++) {
+							TableColumn column1 = table.getTableHeader().getColumnModel().getColumn(i);
+
+							column1.setHeaderValue(columnNames[i]);
+						}
+						table.getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(status));
+					}
+				}
+			});
+			a.add(btnAddEvent);
 		}
 
 	}
@@ -1345,8 +1371,9 @@ public class filecontrol extends GUI {
 		}
 	}
 
-	/**get the current date and delete all info from the file that is before the
-	/date then add dates after until 1 year ahead of the current date
+	/**
+	 * get the current date and delete all info from the file that is before the
+	 * /date then add dates after until 1 year ahead of the current date
 	 *
 	 * @throws IOException
 	 */
@@ -1447,7 +1474,7 @@ public class filecontrol extends GUI {
 					leapYear1 = leapYear(startY);
 				}
 				writer.print(date2 + ":-:7:00;11:30;free__11:30;12:30;lunch__12:30;14:00;free");
-				if(startY < dateY || startD != dateD || startM != dateM){
+				if (startY < dateY || startD != dateD || startM != dateM) {
 					writer.println();
 				}
 				CurrMonth = checkMonth(startM, leapYear1);
