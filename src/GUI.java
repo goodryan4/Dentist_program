@@ -26,6 +26,7 @@ public class GUI {
 	public static String x;
 	public static JTable table;
 	public static File bob;
+	private JTable table_1;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {

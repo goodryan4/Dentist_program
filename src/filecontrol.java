@@ -16,17 +16,20 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 
 public class filecontrol extends GUI {
 	public static String[] information;
@@ -375,11 +378,16 @@ public class filecontrol extends GUI {
 			status.addItem("in progress");
 
 			table = new JTable(4, 4);
-			table.setBounds(30, 20, 400, 330);
+			table.setBounds(20, 20, 40, 330);
 			table.setCellSelectionEnabled(true);
-			table.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(status));
+			table.setRowHeight(30);
 
-			a.add(table);
+			JScrollPane scrollPane_1 = new JScrollPane();
+			scrollPane_1.setBounds(20, 20, 430, 330);
+			scrollPane_1.setViewportView(table);
+			scrollPane_1.setBorder(BorderFactory.createEmptyBorder());
+			scrollPane_1.setColumnHeaderView(table.getTableHeader());
+			a.add(scrollPane_1);
 
 			listdates = new JComboBox();
 			listdates.setBounds(460, 30, 100, 25);
@@ -399,10 +407,21 @@ public class filecontrol extends GUI {
 								// rows
 								DefaultTableModel model = new DefaultTableModel(separator.length, 4);
 								table.setModel(model);
-								table.setRowHeight(table.getHeight() / table.getRowCount());
+								
+								String[] columnNames = {"Start Time", "End Time", "Event", "Status"};
+								for(int i=0;i<table.getColumnCount();i++)
+								{
+								TableColumn column1 = table.getTableHeader().getColumnModel().getColumn(i);
+								  
+								column1.setHeaderValue(columnNames[i]);
+								} 
+								table.getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(status));
+								
 								for (int i = 0; i < separator.length; i++) {
 									String[] timeandevent = separator[i].split(";");
-									table.setValueAt(timeandevent[0] + " " + timeandevent[2], i, 0);
+									table.setValueAt(timeandevent[0], i, 0);
+									table.setValueAt(timeandevent[1], i, 1);
+									table.setValueAt(timeandevent[2], i, 2);
 								}
 							}
 						}
@@ -413,9 +432,6 @@ public class filecontrol extends GUI {
 				}
 			});
 			a.add(listdates);
-
-			Date date = new Date();
-			fileInit(date);
 			if (new File(dir).exists()) {
 				try {
 					fixdates();
@@ -423,7 +439,8 @@ public class filecontrol extends GUI {
 					e.printStackTrace();
 				}
 			} else {
-
+				Date date = new Date();
+				fileInit(date);
 			}
 			adddates();
 
@@ -640,9 +657,7 @@ public class filecontrol extends GUI {
 		}
 	}
 
-	// Rhys schedule
-
-	// instantiate JTable
+	// Initialize file
 	public static void fileInit(Date CurrentDate) {
 
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -656,6 +671,7 @@ public class filecontrol extends GUI {
 		try {
 			writer = new PrintWriter(dir);
 		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -699,6 +715,7 @@ public class filecontrol extends GUI {
 				month = "" + dateM;
 			}
 			date = day + "/" + month + "/" + dateY;
+
 			dateD++;
 			if (dateD > CurrMonth) {
 				dateM++;
@@ -709,10 +726,11 @@ public class filecontrol extends GUI {
 				dateM = 1;
 				leapYear1 = leapYear(dateY);
 			}
-			writer.println(date + ":-:7:00;11:30;free__11:30;12:30;lunch__12:30;14:00;free");
-
+			writer.print(date + ":-:7:00;11:30;free__11:30;12:30;lunch__12:30;14:00;free");
+			if (dateY < startY + 1 || dateD != startD || dateM != startM) {
+				writer.println("");
+			}
 			CurrMonth = checkMonth(dateM, leapYear1);
-
 		}
 		writer.close();
 
@@ -1272,7 +1290,7 @@ public class filecontrol extends GUI {
 
 	}
 
-	//add current date to 1 year ahead to combobox
+	// add current date to 1 year ahead to combobox
 	private static void adddates() {
 		Date date = new Date();
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -1282,9 +1300,14 @@ public class filecontrol extends GUI {
 		String date2 = "";
 
 		dateD = lastDateD = Integer.parseInt(CurDate.substring(0, 2));
-		dateM = lastDateM = Integer.parseInt(CurDate.substring(3, 5));
+		lastDateM = dateM = Integer.parseInt(CurDate.substring(3, 5));
 		dateY = Integer.parseInt(CurDate.substring(6, 10));
 		lastDateY = dateY + 1;
+		dateM--;
+		if (dateM == -1) {
+			dateM = 12;
+			dateY--;
+		}
 
 		boolean leapYear1 = leapYear(lastDateY);
 		int CurrMonth = checkMonth(lastDateM, leapYear1);
@@ -1322,11 +1345,33 @@ public class filecontrol extends GUI {
 		}
 	}
 
-	//get the current date and delete all info from the file that is before the date then add dates after until 1 year ahead of the current date
+	/**get the current date and delete all info from the file that is before the
+	/date then add dates after until 1 year ahead of the current date
+	 *
+	 * @throws IOException
+	 */
 	public static void fixdates() throws IOException {
-		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		Date date = new Date();
-		String CurDate = dateFormat.format(date);
+		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		String CurDate = dateFormat.format(date).toString();
+		int dateD = Integer.parseInt(CurDate.substring(0, 2));
+		int dateM = Integer.parseInt(CurDate.substring(3, 5)) - 1;
+		int dateY = Integer.parseInt(CurDate.substring(6, 10));
+		if (dateM == -1) {
+			dateM = 12;
+			dateY--;
+		}
+		if (dateD < 10) {
+			day = "0" + dateD;
+		} else {
+			day = "" + dateD;
+		}
+		if (dateM < 10) {
+			month = "0" + dateM;
+		} else {
+			month = "" + dateM;
+		}
+		CurDate = day + "/" + month + "/" + dateY;
 
 		File file = new File(dir);
 		Scanner scan = new Scanner(file);
@@ -1338,14 +1383,16 @@ public class filecontrol extends GUI {
 		lnr.skip(Long.MAX_VALUE);
 		int numlinesinfile = lnr.getLineNumber();
 		lnr.close();
+
 		int i = 0;
 		String datescanned = null;
+
 		while (scan.hasNextLine()) {
 			String line = scan.nextLine();
 			datescanned = line.substring(0, 10);
 			i++;
 			if (datescanned.equals(CurDate) && start == false) {
-				bob = new String[numlinesinfile - i + 1];
+				bob = new String[numlinesinfile - i + 2];
 				i = 0;
 				start = true;
 			}
@@ -1353,75 +1400,57 @@ public class filecontrol extends GUI {
 				bob[i] = line;
 			}
 		}
-		i=0;
 		PrintWriter writer = new PrintWriter(file);
-		for (int j = 0; j < bob.length; j++) {
-			writer.println(bob[j]);
+		if (bob.length > 0) {
+			for (int j = 0; j < bob.length; j++) {
+				writer.println(bob[j]);
+			}
 		}
-		CurDate= bob[bob.length-1].substring(0, 10);
-		System.out.println(CurDate);
-		if (!datescanned.equals(CurDate)) {
-			System.out.println("more " + datescanned+" = "+CurDate);
-			int dateD = Integer.parseInt(CurDate.substring(0, 2));
-			int dateM = Integer.parseInt(CurDate.substring(3, 5));
-			int dateY = Integer.parseInt(CurDate.substring(6, 10));
 
+		if (!datescanned.equals(CurDate)) {
 			String date2;
 
-			dateM = dateM - 1;
-			if (dateM == 0) {
-				dateM = 12;
-				dateY--;
-			}
+			CurDate = dateFormat.format(date).toString();
+			dateD = Integer.parseInt(CurDate.substring(0, 2));
+			dateM = Integer.parseInt(CurDate.substring(3, 5));
+			dateY = Integer.parseInt(CurDate.substring(6, 10)) + 1;
 
-			if (dateD < 10) {
-				day = "0" + dateD;
-			} else {
-				day = "" + dateD;
-			}
-			if (dateM < 10) {
-				month = "0" + dateM;
-			} else {
-				month = "" + dateM;
-			}
-			date2 = day + "/" + month + "/" + dateY;
+			int startD = Integer.parseInt(datescanned.substring(0, 2));
+			int startM = Integer.parseInt(datescanned.substring(3, 5));
+			int startY = Integer.parseInt(datescanned.substring(6, 10));
 
-			int startD = dateD;
-			int startM = dateM;
-			int startY = dateY;
-
-			boolean leapYear1 = leapYear(startY);
-			int CurrMonth = checkMonth(startM, leapYear1);
-			if (startM == 2 && startD == 29) {
-				startD = startD - 1;
+			boolean leapYear1 = leapYear(dateY);
+			int CurrMonth = checkMonth(dateM, leapYear1);
+			if (dateM == 2 && dateD == 29) {
+				dateD -= 1;
 			}
-
-			while (dateY < startY + 1 || dateD != startD || dateM != startM) {
-				if (dateD < 10) {
-					day = "0" + dateD;
+			while (startY < dateY || startD != dateD || startM != dateM) {
+				if (startD < 10) {
+					day = "0" + startD;
 				} else {
-					day = "" + dateD;
+					day = "" + startD;
 				}
-				if (dateM < 10) {
-					month = "0" + dateM;
+				if (startM < 10) {
+					month = "0" + startM;
 				} else {
-					month = "" + dateM;
+					month = "" + startM;
 				}
 				date2 = day + "/" + month + "/" + dateY;
-				dateD++;
-				if (dateD > CurrMonth) {
-					dateM++;
-					dateD = 1;
+				startD++;
+				if (startD > CurrMonth) {
+					startM++;
+					startD = 1;
 				}
-				if (dateM > 12) {
-					dateY++;
-					dateM = 1;
-					leapYear1 = leapYear(dateY);
+				if (startM > 12) {
+					startY++;
+					startM = 1;
+					leapYear1 = leapYear(startY);
 				}
-				writer.println(date2 + ":-:7:00;11:30;free__11:30;12:30;lunch__12:30;14:00;free");
-
-				CurrMonth = checkMonth(dateM, leapYear1);
-
+				writer.print(date2 + ":-:7:00;11:30;free__11:30;12:30;lunch__12:30;14:00;free");
+				if(startY < dateY || startD != dateD || startM != dateM){
+					writer.println();
+				}
+				CurrMonth = checkMonth(startM, leapYear1);
 			}
 			writer.close();
 		}
