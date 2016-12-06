@@ -49,7 +49,7 @@ public class notification implements Runnable {
 		if(time<nextApoint-0.15){
 			System.out.println(time + " " +  nextApoint);
 			try {
-				t.sleep(120000);
+				t.sleep(600000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -58,7 +58,7 @@ public class notification implements Runnable {
 		else if(time<nextApoint){
 			System.out.println(time + " " +  nextApoint);
 			try {
-				t.sleep(1200);
+				t.sleep(60000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -68,7 +68,7 @@ public class notification implements Runnable {
 		if(time==nextApoint){
 			System.out.println("appointment");
 			try {
-				t.sleep(120000);
+				t.sleep(600000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -689,14 +689,15 @@ public class filestuff {
 				startTime1 = getStartTime(timeSlot2[0]);
 				endTime1 = getStartTime(timeSlot2[1]);
 
-				if (DaysProcedings[i - 1].endsWith("free")
-						&& DaysProcedings[i + 1].endsWith("free") && i > 0) {
+				
+				if (i>0 && DaysProcedings[i - 1].endsWith("free")
+						&& DaysProcedings[i + 1].endsWith("free")) {
 					newTextLine = newTextLine + moreChecks(Double.toString(oldstart).replace(".", ":"))
 							+ ";" + moreChecks(Double.toString(endTime1).replace(".", ":"))+ ";"
 							+ "free__";
 					i++;
 
-				} else if (DaysProcedings[i - 1].endsWith("free") && i > 0) {
+				} else if (i > 0 && DaysProcedings[i - 1].endsWith("free")) {
 					newTextLine = newTextLine + moreChecks(Double.toString(oldstart).replace(".", ":"))
 							+ ";" + moreChecks(Double.toString(endTime).replace(".", ":")) + ";"
 							+ "free__";
@@ -708,9 +709,11 @@ public class filestuff {
 					i++;
 
 				} else {
+					if(i>0){
 					newTextLine = newTextLine + DaysProcedings[i - 1] + "__"
 							+ moreChecks(Double.toString(oldend).replace(".", ":")) + ";" 
 							+ moreChecks(Double.toString(startTime1).replace(".", ":")) + ";" + "free__";
+					}
 				}
 				deleted = true;
 
