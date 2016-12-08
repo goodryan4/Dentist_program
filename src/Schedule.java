@@ -155,7 +155,7 @@ public class Schedule extends JFrame implements TableModelListener{
 		String k = "rhys";
 		//filestuff.AddApointment(CurrentDay, a ,  b ,  m );
 		//filestuff.editApointment(CurrentDay, a ,  b ,m, k);
-		filestuff.deleteApointment(CurrentDay, "free");
+		//filestuff.deleteApointment(CurrentDay, "free");
 		setTable(CurrentDay);
 		table.getModel().addTableModelListener(this);
 		double l = filecontrol.getStartTime("");
