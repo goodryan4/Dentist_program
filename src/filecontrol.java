@@ -34,12 +34,10 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
-public class filecontrol extends GUI implements TableModelListener {
-	public static String[] information;
+public class filecontrol extends GUI {
+	public static String[] information, CurrentDay;
 	public static File CurrentPat;
-	public static String dir = "src/table/schedule.txt";
-	public static String path, day, month, date, year, CurrentDate;
-	public static String[] CurrentDay;
+	public static String dir = "src/table/schedule.txt", oldName, path, day, month, date, year, CurrentDate;
 	public static boolean newEvent = false;
 
 	public static final int[] MONTH_LENGTH = new int[] { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
@@ -429,59 +427,14 @@ public class filecontrol extends GUI implements TableModelListener {
 									table.setValueAt(timeandevent[1], i, 1);
 									table.setValueAt(timeandevent[2], i, 2);
 								}
-								/* TabelModellistener */
-								table.getModel().addTableModelListener(new TableModelListener() {
-									public void tableChanged(TableModelEvent e) {
-										System.out.println("check1");
-										int row = e.getFirstRow();
-										int column = e.getColumn();
-										TableModel model = (TableModel) e.getSource();
-										String columnName = model.getColumnName(column);
-										Object data = model.getValueAt(row, column);
-										String Name = "free";
-										double start = 0.0;
-										double end = 0.0;
-										String oldName = "free";
-										System.out.println(table.getValueAt(row, column));
-										if (column == 2) {
-											Name = (String) model.getValueAt(row, column);
-											String endTime = (String) model.getValueAt(row, column - 1);
-											String startTime = (String) model.getValueAt(row, column - 2);
-
-											start = getStartTime(startTime);
-											end = getStartTime(endTime);
-											oldName = "ryan";
-										}
-										if (column == 1) {
-											Name = (String) model.getValueAt(row, column + 1);
-											String endTime = (String) model.getValueAt(row, column);
-											String startTime = (String) model.getValueAt(row, column - 1);
-
-											start = getStartTime(startTime);
-											end = getStartTime(endTime);
-											oldName = "ryan";
-
-										}
-										if (column == 0) {
-											Name = (String) model.getValueAt(row, column + 2);
-											String endTime = (String) model.getValueAt(row, column + 1);
-											String startTime = (String) model.getValueAt(row, column);
-
-											start = getStartTime(startTime);
-											end = getStartTime(endTime);
-											oldName = "ryan";
-										}
-
-										if (end != 0.0 && start != 0.0 && Name.compareTo("free") != 0) {
-
-											if (newEvent == true && row == 0) {
-												AddApointment(CurrentDay, start, end, Name);
-												newEvent = false;
-											} else if (Name.compareTo("") == 0 && oldName.compareTo("free") != 0) {
-												deleteApointment(CurrentDay, oldName);
-											} else if (oldName.compareTo("free") != 0) {
-												editApointment(CurrentDay, start, end, oldName, Name);
-											}
+								addtablelistener();
+								table.addMouseListener(new java.awt.event.MouseAdapter() {
+									public void mouseClicked(java.awt.event.MouseEvent evt) {
+										int row = table.rowAtPoint(evt.getPoint());
+										int col = table.columnAtPoint(evt.getPoint());
+										if (col == 2) {
+											oldName = (String) table.getValueAt(row, col);
+											System.out.println(oldName);
 										}
 									}
 								});
@@ -494,15 +447,20 @@ public class filecontrol extends GUI implements TableModelListener {
 				}
 			});
 			a.add(listdates);
-			if (new File(dir).exists()) {
-				try {
+
+			File file = new File(dir);
+			//Date date = new Date();
+			//fileInit(date);
+			try {
+				Scanner scan = new Scanner(file);
+				if (file.exists() && scan.hasNextLine()) {
 					fixdates();
-				} catch (IOException e) {
-					e.printStackTrace();
+				} else {
+					Date date = new Date();
+					fileInit(date);
 				}
-			} else {
-				Date date = new Date();
-				fileInit(date);
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 			adddates();
 
@@ -540,6 +498,7 @@ public class filecontrol extends GUI implements TableModelListener {
 							column1.setHeaderValue(columnNames[i]);
 						}
 						table.getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(status));
+						addtablelistener();
 					}
 				}
 			});
@@ -934,6 +893,8 @@ public class filecontrol extends GUI implements TableModelListener {
 			startTime = getStartTime(timeSlot[0]);
 			endTime = getStartTime(timeSlot[1]);
 
+			System.out.println(ApointStart+">="+startTime +" "+ ApointEnd+">="+ endTime+" "+ timeSlot[2]);
+			
 			if (ApointStart >= startTime && ApointEnd <= endTime && timeSlot[2].compareTo("free") == 0) {
 				boolean[] gaps = checks(startTime, endTime, ApointStart, ApointEnd);
 				change = true;
@@ -975,8 +936,8 @@ public class filecontrol extends GUI implements TableModelListener {
 
 			}
 			if (change == false) {
-
-				if (ApointStart < startTime && !(DaysProcedings[i - 1].endsWith("free")) && ApointEnd < endTime
+				//found a -1 here which would cause a null pointer exception
+				if (ApointStart < startTime && !(DaysProcedings[i].endsWith("free")) && ApointEnd < endTime
 						&& conflict.compareTo("") == 0) {
 					if (ApointEnd > startTime && !(DaysProcedings[i].endsWith("free"))) {
 						conflict = DaysProcedings[i - 1] + DaysProcedings[i];
@@ -1193,16 +1154,13 @@ public class filecontrol extends GUI implements TableModelListener {
 
 	// write information to files
 	public static void writeToFile1(String line) {
-
 		String CurrentDate = line.substring(0, 10);
 		BufferedReader br = null;
 		BufferedReader br2 = null;
-
 		try {
 			br = new BufferedReader(new FileReader(dir));
 			br2 = new BufferedReader(new FileReader(dir));
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -1212,45 +1170,29 @@ public class filecontrol extends GUI implements TableModelListener {
 		if (file.exists()) {
 			try {
 				while (br2.readLine() != null) {
-					try {
-						CurrentDay = br.readLine();
-						System.out.println(CurrentDay + "checker");
-						if (CurrentDate.compareTo(CurrentDay.substring(0, 10)) == 0) {
-							System.out.println("check4");
-							input = input + line + '\n';
-						} else {
-							input = input + CurrentDay + '\n';
-						}
-
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					CurrentDay = br.readLine();
+					System.out.println(CurrentDay + "checker");
+					if (CurrentDate.compareTo(CurrentDay.substring(0, 10)) == 0) {
+						System.out.println("check4");
+						input = input + line + '\n';
+					} else {
+						input = input + CurrentDay + '\n';
 					}
-
 					System.out.println(CurrentDay.substring(0, 10) + "and" + CurrentDate);
+					FileOutputStream fileOut = new FileOutputStream(dir);
+					fileOut.write(input.getBytes());
+					fileOut.close();
 				}
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-
-			try {
-				FileOutputStream fileOut = new FileOutputStream(dir);
-				fileOut.write(input.getBytes());
-				fileOut.close();
-
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
 		}
 	}
 
 	// get start time
 	public static double getStartTime(String d) {
-
-		if (d.length() < 5 && d.length() == 4) {
+		if (d.length() == 4) {
 			double startTime = Double.parseDouble(d.substring(0, 1)) + Double.parseDouble(d.substring(2, 4)) / 100;
 			return startTime;
 		} else if (d.length() == 5) {
@@ -1547,9 +1489,53 @@ public class filecontrol extends GUI implements TableModelListener {
 			writer.close();
 		}
 	}
+	
+	public static void addtablelistener(){
+		table.getModel().addTableModelListener(new TableModelListener() {
+			public void tableChanged(TableModelEvent e) {
+				int row = e.getFirstRow();
+				int column = e.getColumn();
+				TableModel model = (TableModel) e.getSource();
+				String columnName = model.getColumnName(column);
+				Object data = model.getValueAt(row, column);
+				String Name = "free";
+				double start = 0.0;
+				double end = 0.0;
 
-	@Override
-	public void tableChanged(TableModelEvent arg0) {
-
+				if (column == 0 || column == 1 || column == 2) {
+					String startTime = (String) model.getValueAt(row, 0);
+					String endTime = (String) model.getValueAt(row, 1);
+					Name = (String) model.getValueAt(row, 2);
+					start = getStartTime(startTime);
+					end = getStartTime(endTime);
+					// WHAT ABOUT LUNCH!!!!
+					System.out.println("	start:"+start+" end:"+end+" name:"+Name+ " NewEventStatus:"+newEvent);
+					if (end != 0.0 && start != 0.0 && Name.compareTo("free") != 0 && Name.compareTo("lunch") != 0) {
+						if (newEvent == true && row == 0) {
+							System.out.println("added apointment");
+							AddApointment(CurrentDay, start, end, Name);
+							newEvent = false;
+						} else if (Name.compareTo("") == 0 && (oldName.compareTo("free") != 0 || oldName.compareTo("lunch") != 0)) {
+							deleteApointment(CurrentDay, oldName);
+							System.out.println("deleted event");
+						} else if (oldName.compareTo("free") != 0 && oldName.compareTo("lunch") != 0) {
+							editApointment(CurrentDay, start, end, oldName, Name);
+							System.out.println("edited appointment");
+						}else{
+							System.out.println("no changes");
+						}
+						System.out.println("something happened");
+					}else{
+						if (newEvent == true && row == 0) {
+							System.out.println("added apointment");
+							AddApointment(CurrentDay, start, end, Name);
+							newEvent = false;
+						}
+					}
+				} else {
+					System.out.println(data + " succeeded");
+				}
+			}
+		});
 	}
 }
