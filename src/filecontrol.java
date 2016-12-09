@@ -450,16 +450,15 @@ public class filecontrol extends GUI {
 
 			File file = new File(dir);
 
-			Date date = new Date();
-			fileInit(date);
+			// Date date = new Date();
+			// fileInit(date);
 			try {
 				Scanner scan = new Scanner(file);
-				if (file.exists() && scan.hasNextLine()) {
-					fixdates();
-				} else {
-					// Date date = new Date();
-					// fileInit(date);
-				}
+				if (!file.exists() || !scan.hasNextLine()) {
+					Date date = new Date();
+					fileInit(date);
+				} 
+				fixdates();
 				scan.close();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -1377,7 +1376,7 @@ public class filecontrol extends GUI {
 			lastDateD = lastDateD - 1;
 		}
 
-		while (dateY != lastDateY || dateM != lastDateM || dateD != lastDateD+1) {
+		while (dateY != lastDateY || dateM != lastDateM || dateD != lastDateD + 1) {
 			if (dateD < 10) {
 				day = "0" + dateD;
 			} else {
