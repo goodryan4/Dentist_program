@@ -449,21 +449,23 @@ public class filecontrol extends GUI {
 			a.add(listdates);
 
 			File file = new File(dir);
-			//Date date = new Date();
-			//fileInit(date);
+
+			Date date = new Date();
+			fileInit(date);
 			try {
 				Scanner scan = new Scanner(file);
 				if (file.exists() && scan.hasNextLine()) {
 					fixdates();
 				} else {
-					Date date = new Date();
-					fileInit(date);
+					// Date date = new Date();
+					// fileInit(date);
 				}
+				scan.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			adddates();
 
+			adddates();
 			btnHome = new JButton("Home");
 			btnHome.setBounds(463, 30, 101, 24);
 			btnHome.addActionListener(new ActionListener() {
@@ -783,9 +785,9 @@ public class filecontrol extends GUI {
 			CurrMonth = checkMonth(dateM, leapYear1);
 		}
 		writer.close();
-
 	}
 
+	// do not know (RHYS ADD A COMMENT FOR THIS ONE)
 	public static void updateDates() {
 		Date date = new Date();
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -869,8 +871,7 @@ public class filecontrol extends GUI {
 	}
 
 	// add appointment
-	public static void AddApointment(String[] DaysProcedings,
-			Double ApointStart, Double ApointEnd, String name) {
+	public static void AddApointment(String[] DaysProcedings, Double ApointStart, Double ApointEnd, String name) {
 
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		Date date = new Date();
@@ -885,88 +886,65 @@ public class filecontrol extends GUI {
 		boolean oneTime = false;
 		boolean conflict2 = false;
 		boolean didRun = false;
-		boolean runYet=false;
+		boolean runYet = false;
 
 		for (int i = 0; i < DaysProcedings.length; i++) {
+
+			System.out.println(DaysProcedings[i] + " check with these");
+
 			String[] timeSlot = DaysProcedings[i].split(";");
-			double startTime = 0;
-			double endTime = 0;
+			double startTime = getStartTime(timeSlot[0]);
+			double endTime = getStartTime(timeSlot[1]);
 
-			
-				startTime = getStartTime(timeSlot[0]);
-				endTime = getStartTime(timeSlot[1]);
-			
-
-			if (ApointStart >= startTime && ApointEnd <= endTime
-					&& timeSlot[2].compareTo("free") == 0 && runYet == false) {
-				boolean[] gaps = checks(startTime, endTime, ApointStart,
-						ApointEnd);
+			if (ApointStart >= startTime && ApointEnd <= endTime && timeSlot[2].compareTo("free") == 0
+					&& runYet == false) {
+				boolean[] gaps = checks(startTime, endTime, ApointStart, ApointEnd);
 				change = true;
 				oneTime = true;
 				didRun = true;
 				runYet = true;
 
 				if (gaps[0] == true && gaps[1] == true) {
-					String freeStart = moreChecks(Double.toString(startTime)
-							.replace(".", ":"));
-					String freeEnd = moreChecks(Double.toString(ApointStart)
-							.replace(".", ":"));
-					String ApointBegin = moreChecks(Double
-							.toString(ApointStart).replace(".", ":"));
-					String ApointFinish = moreChecks(Double.toString(ApointEnd)
-							.replace(".", ":"));
-					String freeStart1 = moreChecks(Double.toString(ApointEnd)
-							.replace(".", ":"));
-					String freeEnd1 = moreChecks(Double.toString(endTime)
-							.replace(".", ":"));
-					newTimeSlots = freeStart + ";" + freeEnd + ";free__"
-							+ ApointBegin + ";" + ApointFinish + ";" + name
+					String freeStart = moreChecks(Double.toString(startTime).replace(".", ":"));
+					String freeEnd = moreChecks(Double.toString(ApointStart).replace(".", ":"));
+					String ApointBegin = moreChecks(Double.toString(ApointStart).replace(".", ":"));
+					String ApointFinish = moreChecks(Double.toString(ApointEnd).replace(".", ":"));
+					String freeStart1 = moreChecks(Double.toString(ApointEnd).replace(".", ":"));
+					String freeEnd1 = moreChecks(Double.toString(endTime).replace(".", ":"));
+					newTimeSlots = freeStart + ";" + freeEnd + ";free__" + ApointBegin + ";" + ApointFinish + ";" + name
 							+ "__" + freeStart1 + ";" + freeEnd1 + ";free__";
 				} else if (gaps[0] == true && gaps[1] == false) {
-					String freeStart = moreChecks(Double.toString(startTime)
-							.replace(".", ":"));
-					String freeEnd = moreChecks(Double.toString(ApointStart)
-							.replace(".", ":"));
-					String ApointBegin = moreChecks(Double
-							.toString(ApointStart).replace(".", ":"));
-					String ApointFinish = moreChecks(Double.toString(ApointEnd)
-							.replace(".", ":"));
-					newTimeSlots = freeStart + ";" + freeEnd + ";free__"
-							+ ApointBegin + ";" + ApointFinish + ";" + name
+					String freeStart = moreChecks(Double.toString(startTime).replace(".", ":"));
+					String freeEnd = moreChecks(Double.toString(ApointStart).replace(".", ":"));
+					String ApointBegin = moreChecks(Double.toString(ApointStart).replace(".", ":"));
+					String ApointFinish = moreChecks(Double.toString(ApointEnd).replace(".", ":"));
+					newTimeSlots = freeStart + ";" + freeEnd + ";free__" + ApointBegin + ";" + ApointFinish + ";" + name
 							+ "__";
 
 				} else if (gaps[0] == false && gaps[1] == true) {
 
-					String ApointBegin = moreChecks(Double
-							.toString(ApointStart).replace(".", ":"));
-					String ApointFinish = moreChecks(Double.toString(ApointEnd)
-							.replace(".", ":"));
-					String freeStart1 = moreChecks(Double.toString(ApointEnd)
-							.replace(".", ":"));
-					String freeEnd1 = moreChecks(Double.toString(endTime)
-							.replace(".", ":"));
-					newTimeSlots = ApointBegin + ";" + ApointFinish + ";"
-							+ name + "__" + freeStart1 + ";" + freeEnd1
+					String ApointBegin = moreChecks(Double.toString(ApointStart).replace(".", ":"));
+					String ApointFinish = moreChecks(Double.toString(ApointEnd).replace(".", ":"));
+					String freeStart1 = moreChecks(Double.toString(ApointEnd).replace(".", ":"));
+					String freeEnd1 = moreChecks(Double.toString(endTime).replace(".", ":"));
+					newTimeSlots = ApointBegin + ";" + ApointFinish + ";" + name + "__" + freeStart1 + ";" + freeEnd1
 							+ ";free__";
 				} else if (gaps[0] == false && gaps[1] == false) {
 
-					String ApointBegin = moreChecks(Double
-							.toString(ApointStart).replace(".", ":"));
-					String ApointFinish = moreChecks(Double.toString(ApointEnd)
-							.replace(".", ":"));
-					newTimeSlots = ApointBegin + ";" + ApointFinish + ";"
-							+ name + "__";
+					String ApointBegin = moreChecks(Double.toString(ApointStart).replace(".", ":"));
+					String ApointFinish = moreChecks(Double.toString(ApointEnd).replace(".", ":"));
+					newTimeSlots = ApointBegin + ";" + ApointFinish + ";" + name + "__";
 
 				}
 
 			}
 			if (change == false) {
-
-				if (ApointStart < startTime
-						&& !(DaysProcedings[i - 1].endsWith("free"))
-						&& ApointEnd < endTime && conflict.compareTo("") == 0) {
-					if (ApointEnd > startTime
-							&& !(DaysProcedings[i].endsWith("free"))) {
+				// I suggest that you make an if statement here to remove the
+				// chance of 0 which WILL crash the code otherwise because 0-1
+				// is -1 which is not in DaysProcedings
+				if (ApointStart < startTime && !(DaysProcedings[i - 1].endsWith("free")) && ApointEnd < endTime
+						&& conflict.compareTo("") == 0) {
+					if (ApointEnd > startTime && !(DaysProcedings[i].endsWith("free"))) {
 						conflict = DaysProcedings[i - 1] + DaysProcedings[i];
 						conflict2 = true;
 					} else if (conflict.compareTo("") == 0) {
@@ -974,25 +952,18 @@ public class filecontrol extends GUI {
 						conflict2 = true;
 					}
 				}
-
 				if (ApointStart < startTime && ApointEnd > endTime) {
-					if (!(DaysProcedings[i].endsWith("free"))
-							&& !(DaysProcedings[i + 1].endsWith("free"))
+					if (!(DaysProcedings[i].endsWith("free")) && !(DaysProcedings[i + 1].endsWith("free"))
 							&& !(DaysProcedings[i - 1].endsWith("free"))) {
-						conflict = DaysProcedings[i - 1] + DaysProcedings[i]
-								+ DaysProcedings[i + 1];
+						conflict = DaysProcedings[i - 1] + DaysProcedings[i] + DaysProcedings[i + 1];
 						conflict2 = true;
-					} else if (!(DaysProcedings[i + 1].endsWith("free"))
-							&& !(DaysProcedings[i - 1].endsWith("free"))) {
-						conflict = DaysProcedings[i - 1]
-								+ DaysProcedings[i + 1];
+					} else if (!(DaysProcedings[i + 1].endsWith("free")) && !(DaysProcedings[i - 1].endsWith("free"))) {
+						conflict = DaysProcedings[i - 1] + DaysProcedings[i + 1];
 						conflict2 = true;
-					} else if (!(DaysProcedings[i].endsWith("free"))
-							&& !(DaysProcedings[i + 1].endsWith("free"))) {
+					} else if (!(DaysProcedings[i].endsWith("free")) && !(DaysProcedings[i + 1].endsWith("free"))) {
 						conflict = DaysProcedings[i] + DaysProcedings[i + 1];
 						conflict2 = true;
-					} else if (!(DaysProcedings[i].endsWith("free"))
-							&& !(DaysProcedings[i - 1].endsWith("free"))) {
+					} else if (!(DaysProcedings[i].endsWith("free")) && !(DaysProcedings[i - 1].endsWith("free"))) {
 						conflict = DaysProcedings[i - 1] + DaysProcedings[i];
 						conflict2 = true;
 					}
@@ -1010,10 +981,10 @@ public class filecontrol extends GUI {
 		newTextLine = CurrentDate + ":-:" + newTextLine;
 		System.out.println(newTextLine);
 		System.out.println(conflict);
-		if(conflict2 == false && didRun == true){
+		if (conflict2 == false && didRun == true) {
 			wrightToFile1(newTextLine);
 		}
-		
+
 	}
 
 	// checks
@@ -1047,9 +1018,9 @@ public class filecontrol extends GUI {
 	}
 
 	// edit appointment
-	public static void editApointment(String[] DaysProcedings,
-			Double ApointStart, Double ApointEnd, String oldName, String newName) {
-		
+	public static void editApointment(String[] DaysProcedings, Double ApointStart, Double ApointEnd, String oldName,
+			String newName) {
+
 		String conflict = "";
 		boolean hasStarted = false;
 		boolean hasAdded = false;
@@ -1064,14 +1035,12 @@ public class filecontrol extends GUI {
 		String replace = "";
 		String newTextLine = "";
 		int x;
-		
+
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		Date date = new Date();
 		String CurrentDate = dateFormat.format(date).toString();
-		
-		boolean IsConflict = checkForConflicts(DaysProcedings, ApointStart,
-				ApointEnd, oldName);
-		
+
+		boolean IsConflict = checkForConflicts(DaysProcedings, ApointStart, ApointEnd, oldName);
 
 		if (IsConflict == false) {
 			for (int i = 0; i < DaysProcedings.length; i++) {
@@ -1081,158 +1050,124 @@ public class filecontrol extends GUI {
 				double startTime = 0;
 				double endTime = 0;
 
-				
-				
-					
-					startTime = getStartTime(timeSlot[0]);
-					endTime = getStartTime(timeSlot[1]);
-					
+				startTime = getStartTime(timeSlot[0]);
+				endTime = getStartTime(timeSlot[1]);
 
-					if (hasAdded == true) {
-						newTextLine = newTextLine + DaysProcedings[i] + "__";
+				if (hasAdded == true) {
+					newTextLine = newTextLine + DaysProcedings[i] + "__";
+				}
+
+				if (timeSlot[2].compareTo(oldName) == 0) {
+					String newStart = moreChecks(Double.toString(ApointStart).replace(".", ":"));
+					String newEnd = moreChecks(Double.toString(ApointEnd).replace(".", ":"));
+					replace = newStart + ";" + newEnd + ";" + newName + "__";
+
+					if (endTime - ApointEnd >= 0.15) {
+						String tempS1 = moreChecks(Double.toString(ApointEnd).replace(".", ":"));
+						String tempE1 = moreChecks(Double.toString(endTime).replace(".", ":"));
+						newFreeAfter = tempS1 + ";" + tempE1 + ";" + "free__";
+					}
+					if (ApointStart - startTime >= 0.15) {
+						String tempS2 = moreChecks(Double.toString(startTime).replace(".", ":"));
+						String tempE2 = moreChecks(Double.toString(ApointStart).replace(".", ":"));
+						newFreeBefore = tempS2 + ";" + tempE2 + ";" + "free__";
 					}
 
-					if (timeSlot[2].compareTo(oldName) == 0) {
-						String newStart = moreChecks(Double.toString(
-								ApointStart).replace(".", ":"));
-						String newEnd = moreChecks(Double.toString(ApointEnd)
-								.replace(".", ":"));
-						replace = newStart + ";" + newEnd + ";" + newName
-								+ "__";
-
-						if (endTime - ApointEnd >= 0.15) {
-							String tempS1 = moreChecks(Double.toString(
-									ApointEnd).replace(".", ":"));
-							String tempE1 = moreChecks(Double.toString(endTime)
-									.replace(".", ":"));
-							newFreeAfter = tempS1 + ";" + tempE1 + ";"
-									+ "free__";
-						}
-						if (ApointStart - startTime >= 0.15) {
-							String tempS2 = moreChecks(Double.toString(
-									startTime).replace(".", ":"));
-							String tempE2 = moreChecks(Double.toString(
-									ApointStart).replace(".", ":"));
-							newFreeBefore = tempS2 + ";" + tempE2 + ";"
-									+ "free__";
-						}
-
-						if(i+1 != DaysProcedings.length){
+					if (i + 1 != DaysProcedings.length) {
 						String[] temp = DaysProcedings[i + 1].split(";");
 
 						startTimeAfter = getStartTime(temp[0]);
 						endTimeAfter = getStartTime(temp[1]);
-						}
+					}
 
-						if(i>0){
+					if (i > 0) {
 						String[] temp1 = DaysProcedings[i - 1].split(";");
 
 						startTimeBefore = getStartTime(temp1[0]);
 						endTimeBefore = getStartTime(temp1[1]);
-						
-						
 
-						
-						if (DaysProcedings[i - 1].endsWith("free") && (i+1 != DaysProcedings.length)
+						if (DaysProcedings[i - 1].endsWith("free") && (i + 1 != DaysProcedings.length)
 								&& DaysProcedings[i + 1].endsWith("free")) {
 
 							if (endTimeAfter - ApointEnd >= 0.15) {
-								String tempS3 = moreChecks(Double.toString(
-										ApointEnd).replace(".", ":"));
-								String tempE3 = moreChecks(Double.toString(
-										endTimeAfter).replace(".", ":"));
-								newFreeAfter = tempS3 + ";" + tempE3 + ";"
-										+ "free__";
+								String tempS3 = moreChecks(Double.toString(ApointEnd).replace(".", ":"));
+								String tempE3 = moreChecks(Double.toString(endTimeAfter).replace(".", ":"));
+								newFreeAfter = tempS3 + ";" + tempE3 + ";" + "free__";
 							}
-						
+
 							if (ApointStart - startTimeBefore >= 0.15) {
-								String tempS4 = moreChecks(Double.toString(
-										startTimeBefore).replace(".", ":"));
-								String tempE4 = moreChecks(Double.toString(
-										ApointStart).replace(".", ":"));
-								newFreeBefore = tempS4 + ";" + tempE4 + ";"
-										+ "free__";
+								String tempS4 = moreChecks(Double.toString(startTimeBefore).replace(".", ":"));
+								String tempE4 = moreChecks(Double.toString(ApointStart).replace(".", ":"));
+								newFreeBefore = tempS4 + ";" + tempE4 + ";" + "free__";
 							}
-							
+
 							i++;
 							freeBefore = true;
 
 						} else if (DaysProcedings[i - 1].endsWith("free")) {
 
 							if (ApointStart - startTimeBefore >= 0.15) {
-								String tempS4 = moreChecks(Double.toString(
-										startTimeBefore).replace(".", ":"));
-								String tempE4 = moreChecks(Double.toString(
-										ApointStart).replace(".", ":"));
-								newFreeBefore = tempS4 + ";" + tempE4 + ";"
-										+ "free__";
+								String tempS4 = moreChecks(Double.toString(startTimeBefore).replace(".", ":"));
+								String tempE4 = moreChecks(Double.toString(ApointStart).replace(".", ":"));
+								newFreeBefore = tempS4 + ";" + tempE4 + ";" + "free__";
 
 							}
 							freeBefore = true;
 
-						} 
 						}
-						else if (DaysProcedings[i + 1].endsWith("free") && (i+1 != DaysProcedings.length)) {
+					} else if (DaysProcedings[i + 1].endsWith("free") && (i + 1 != DaysProcedings.length)) {
 
-							if (endTimeAfter - ApointEnd >= 0.15) {
-								String tempS3 = moreChecks(Double.toString(
-										ApointEnd).replace(".", ":"));
-								String tempE3 = moreChecks(Double.toString(
-										endTimeAfter).replace(".", ":"));
-								newFreeAfter = tempS3 + ";" + tempE3 + ";"
-										+ "free__";
-								System.out.println("ApointEnd");
-							}
-							i++;
+						if (endTimeAfter - ApointEnd >= 0.15) {
+							String tempS3 = moreChecks(Double.toString(ApointEnd).replace(".", ":"));
+							String tempE3 = moreChecks(Double.toString(endTimeAfter).replace(".", ":"));
+							newFreeAfter = tempS3 + ";" + tempE3 + ";" + "free__";
+							System.out.println("ApointEnd");
 						}
-
-						newTextLine = newTextLine + newFreeBefore + replace
-										+ newFreeAfter;
-						hasAdded = true;
-
+						i++;
 					}
 
-					if (freeBefore == false && hasAdded == true
-							&& firstTime == true) {
-						String P = newTextLine;
-						newTextLine = "";
-						for (int b = 0; b < x; b++) {
-							newTextLine = newTextLine + DaysProcedings[b]
-									+ "__";
-						}
-						newTextLine = newTextLine + P;
-						firstTime = false;
+					newTextLine = newTextLine + newFreeBefore + replace + newFreeAfter;
+					hasAdded = true;
 
-					}
-					if (freeBefore == true) {
-						freeBefore = false;
-						String P = newTextLine;
-						newTextLine = "";
-						for (int b = 0; b < x - 1; b++) {
-							newTextLine = newTextLine + DaysProcedings[b]
-									+ "__";
-						}
-						newTextLine = newTextLine + P;
-						firstTime = false;
-					}
 				}
-			}
-			
-		newTextLine = CurrentDate + ":-:" + newTextLine;
-			System.out.println(newTextLine);
-			if(IsConflict==false){
-			wrightToFile1(newTextLine);
+
+				if (freeBefore == false && hasAdded == true && firstTime == true) {
+					String P = newTextLine;
+					newTextLine = "";
+					for (int b = 0; b < x; b++) {
+						newTextLine = newTextLine + DaysProcedings[b] + "__";
+					}
+					newTextLine = newTextLine + P;
+					firstTime = false;
+
+				}
+				if (freeBefore == true) {
+					freeBefore = false;
+					String P = newTextLine;
+					newTextLine = "";
+					for (int b = 0; b < x - 1; b++) {
+						newTextLine = newTextLine + DaysProcedings[b] + "__";
+					}
+					newTextLine = newTextLine + P;
+					firstTime = false;
+				}
 			}
 		}
 
+		newTextLine = CurrentDate + ":-:" + newTextLine;
+		System.out.println(newTextLine);
+		if (IsConflict == false) {
+			wrightToFile1(newTextLine);
+		}
+	}
+
 	// write information to files
-public static void wrightToFile1(String line) {
-		
-		
+	public static void wrightToFile1(String line) {
+
 		String CurrentDate = line.substring(0, 10);
 		BufferedReader br = null;
 		BufferedReader br2 = null;
-		
+
 		try {
 			br = new BufferedReader(new FileReader(dir));
 			br2 = new BufferedReader(new FileReader(dir));
@@ -1240,57 +1175,40 @@ public static void wrightToFile1(String line) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		
+
 		String input = "";
 		String CurrentDay = "";
 		File file = new File(dir);
-		if(file.exists()){
-		try {
-			while(br2.readLine() != null) {
-				
-				try {
-					
-					CurrentDay = br.readLine();
-					
-					
-					if (CurrentDate.compareTo(CurrentDay.substring(0, 10)) == 0) {
-						
-						System.out.println("check4");
-						input = input + line + '\n';
+		if (file.exists()) {
+			try {
+				while (br2.readLine() != null) {
+
+					try {
+
+						CurrentDay = br.readLine();
+
+						if (CurrentDate.compareTo(CurrentDay.substring(0, 10)) == 0) {
+
+							System.out.println("check4");
+							input = input + line + '\n';
+						} else {
+							input = input + CurrentDay + '\n';
+						}
+
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-					else{
-						input = input + CurrentDay + '\n';
-					}
-					
-					
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+
+					System.out.println(CurrentDay.substring(0, 10) + "and" + CurrentDate);
 				}
-				
-				
-				
-				System.out.println(CurrentDay.substring(0, 10) + "and" + CurrentDate);
+				FileOutputStream fileOut = new FileOutputStream(dir);
+				fileOut.write(input.getBytes());
+				fileOut.close();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
-		
-		
-		try{
-			FileOutputStream fileOut = new FileOutputStream(dir);
-			fileOut.write(input.getBytes());
-			fileOut.close();
-			
-		}catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
 		}
 	}
 
@@ -1308,6 +1226,8 @@ public static void wrightToFile1(String line) {
 		}
 	}
 
+	// checks for conflicts between added appointment and appointments in the
+	// file
 	public static boolean checkForConflicts(String[] DaysProcedings, Double ApointStart, Double ApointEnd,
 			String name) {
 		String conflict = "";
@@ -1345,6 +1265,7 @@ public static void wrightToFile1(String line) {
 		return false;
 	}
 
+	// deletes an appointment
 	public static void deleteApointment(String[] DaysProcedings, String name) {
 		String newTextLine = "";
 		double startTime = 0.0;
@@ -1397,6 +1318,8 @@ public static void wrightToFile1(String line) {
 		System.out.println(newTextLine);
 	}
 
+	// checks the month for a leap year and changes the number of days
+	// accordingly
 	public static int checkMonth(int m, boolean leapYear) {
 
 		if (m == 2 && leapYear) {
@@ -1417,6 +1340,7 @@ public static void wrightToFile1(String line) {
 		 */
 	}
 
+	// checks a year for a leap year
 	public static boolean leapYear(int y) {
 		int a = y % 4;
 		if (a == 0) {
@@ -1442,7 +1366,7 @@ public static void wrightToFile1(String line) {
 		dateY = Integer.parseInt(CurDate.substring(6, 10));
 		lastDateY = dateY + 1;
 		dateM--;
-		if (dateM == -1) {
+		if (dateM == 0) {
 			dateM = 12;
 			dateY--;
 		}
@@ -1453,7 +1377,7 @@ public static void wrightToFile1(String line) {
 			lastDateD = lastDateD - 1;
 		}
 
-		while (dateY != lastDateY || dateM != lastDateM || dateD != lastDateD) {
+		while (dateY != lastDateY || dateM != lastDateM || dateD != lastDateD+1) {
 			if (dateD < 10) {
 				day = "0" + dateD;
 			} else {
@@ -1483,12 +1407,8 @@ public static void wrightToFile1(String line) {
 		}
 	}
 
-	/**
-	 * get the current date and delete all info from the file that is before the
-	 * /date then add dates after until 1 year ahead of the current date
-	 *
-	 * @throws IOException
-	 */
+	// get the current date and delete all info from the file that is before the
+	// date then add dates after until 1 year ahead of the current date
 	public static void fixdates() throws IOException {
 		Date date = new Date();
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -1520,7 +1440,7 @@ public static void wrightToFile1(String line) {
 
 		LineNumberReader lnr = new LineNumberReader(new FileReader(file));
 		lnr.skip(Long.MAX_VALUE);
-		int numlinesinfile = lnr.getLineNumber();
+		int numlinesinfile = lnr.getLineNumber() + 1;
 		lnr.close();
 
 		int i = 0;
@@ -1531,7 +1451,8 @@ public static void wrightToFile1(String line) {
 			datescanned = line.substring(0, 10);
 			i++;
 			if (datescanned.equals(CurDate) && start == false) {
-				bob = new String[numlinesinfile - i + 2];
+				i--;
+				bob = new String[numlinesinfile - i];
 				i = 0;
 				start = true;
 			}
@@ -1539,31 +1460,45 @@ public static void wrightToFile1(String line) {
 				bob[i] = line;
 			}
 		}
-		PrintWriter writer = new PrintWriter(file);
-		if (bob.length > 0) {
-			for (int j = 0; j < bob.length; j++) {
-				writer.println(bob[j]);
-			}
+		scan.close();
+		PrintWriter writer2 = new PrintWriter(file);
+		for (int j = 0; j < bob.length; j++) {
+			writer2.println(bob[j]);
 		}
 
-		if (!datescanned.equals(CurDate)) {
+		CurDate = dateFormat.format(date).toString();
+		dateD = Integer.parseInt(CurDate.substring(0, 2));
+		dateM = Integer.parseInt(CurDate.substring(3, 5));
+		dateY = Integer.parseInt(CurDate.substring(6, 10)) + 1;
+		if (dateD < 10) {
+			day = "0" + dateD;
+		} else {
+			day = "" + dateD;
+		}
+		if (dateM < 10) {
+			month = "0" + dateM;
+		} else {
+			month = "" + dateM;
+		}
+		String finaldate = day + "/" + month + "/" + dateY;
+		if (datescanned.compareTo(finaldate) != 0) {
 			String date2;
-
-			CurDate = dateFormat.format(date).toString();
-			dateD = Integer.parseInt(CurDate.substring(0, 2));
-			dateM = Integer.parseInt(CurDate.substring(3, 5));
-			dateY = Integer.parseInt(CurDate.substring(6, 10)) + 1;
-
-			int startD = Integer.parseInt(datescanned.substring(0, 2));
+			int startD = Integer.parseInt(datescanned.substring(0, 2)) + 1;
 			int startM = Integer.parseInt(datescanned.substring(3, 5));
 			int startY = Integer.parseInt(datescanned.substring(6, 10));
 
-			boolean leapYear1 = leapYear(dateY);
-			int CurrMonth = checkMonth(dateM, leapYear1);
+			boolean leapYear1 = leapYear(startY);
+			int CurrMonth = checkMonth(startM, leapYear1);
+			if (startM == 2 && startD == 29) {
+				startD -= 1;
+			}
+
+			leapYear1 = leapYear(dateY);
+			CurrMonth = checkMonth(dateM, leapYear1);
 			if (dateM == 2 && dateD == 29) {
 				dateD -= 1;
 			}
-			while (startY < dateY || startD != dateD || startM != dateM) {
+			while (startY < dateY || startD != dateD + 1 || startM != dateM) {
 				if (startD < 10) {
 					day = "0" + startD;
 				} else {
@@ -1585,17 +1520,19 @@ public static void wrightToFile1(String line) {
 					startM = 1;
 					leapYear1 = leapYear(startY);
 				}
-				writer.print(date2 + ":-:7:00;11:30;free__11:30;12:30;lunch__12:30;14:00;free");
-				if (startY < dateY || startD != dateD || startM != dateM) {
-					writer.println();
+				writer2.print(date2 + ":-:7:00;11:30;free__11:30;12:30;lunch__12:30;14:00;free");
+				if (startY < dateY || startD != dateD + 1 || startM != dateM) {
+					writer2.println();
 				}
 				CurrMonth = checkMonth(startM, leapYear1);
 			}
-			writer.close();
+
 		}
+		writer2.close();
 	}
-	
-	public static void addtablelistener(){
+
+	// adds a listener to the table cells
+	public static void addtablelistener() {
 		table.getModel().addTableModelListener(new TableModelListener() {
 			public void tableChanged(TableModelEvent e) {
 				int row = e.getFirstRow();
@@ -1606,35 +1543,37 @@ public static void wrightToFile1(String line) {
 				String Name = "free";
 				double start = 0.0;
 				double end = 0.0;
-				String oldName="";
+				String oldName = "";
 
 				Date date = new Date();
 				DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-				String [] update = getCurrentDate(date);
-				
+				String[] update = getCurrentDate(date);
+
 				if (column == 0 || column == 1 || column == 2) {
 					String startTime = (String) model.getValueAt(row, 0);
 					String endTime = (String) model.getValueAt(row, 1);
 					Name = (String) model.getValueAt(row, 2);
 					start = getStartTime(startTime);
 					end = getStartTime(endTime);
-					oldName=Name;
+					oldName = Name;
 					// WHAT ABOUT LUNCH!!!!
-					System.out.println("	start:"+start+" end:"+end+" name:"+Name+ " NewEventStatus:"+newEvent);
+					System.out.println(
+							"	start:" + start + " end:" + end + " name:" + Name + " NewEventStatus:" + newEvent);
 					if (end != 0.0 && start != 0.0 && Name.compareTo("free") != 0 && Name.compareTo("lunch") != 0) {
-						if (newEvent == true && row == 0 && Name.compareTo("") !=0) {
-							System.out.println("added apointment");
+						if (newEvent == true && row == 0 && Name.compareTo("") != 0) {
 							AddApointment(CurrentDay, start, end, Name);
 							newEvent = false;
-						} else if (Name.compareTo("") == 0 && (oldName.compareTo("free") != 0 || oldName.compareTo("lunch") != 0)) {
-							if(newEvent==false || row != 0){
-							deleteApointment(CurrentDay, oldName);
-							System.out.println("deleted event");
+						} else if (Name.compareTo("") == 0
+								&& (oldName.compareTo("free") != 0 || oldName.compareTo("lunch") != 0)) {
+							if (newEvent == false || row != 0) {
+								deleteApointment(CurrentDay, oldName);
+								System.out.println("deleted event");
 							}
-						} else if (oldName.compareTo("free") != 0 && oldName.compareTo("lunch") != 0 && Name.compareTo("")!=0) {
+						} else if (oldName.compareTo("free") != 0 && oldName.compareTo("lunch") != 0
+								&& Name.compareTo("") != 0) {
 							editApointment(CurrentDay, start, end, oldName, Name);
 							System.out.println("edited appointment");
-						}else{
+						} else {
 							System.out.println("no changes");
 						}
 						System.out.println("something happened");
@@ -1642,10 +1581,10 @@ public static void wrightToFile1(String line) {
 				} else {
 					System.out.println(data + " succeeded");
 				}
-				
+
 			}
-			
+
 		});
-		
+
 	}
 }
