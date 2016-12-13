@@ -450,14 +450,13 @@ public class filecontrol extends GUI {
 
 			File file = new File(dir);
 
-			// Date date = new Date();
+			Date date = new Date();
 			// fileInit(date);
 			try {
 				Scanner scan = new Scanner(file);
 				if (!file.exists() || !scan.hasNextLine()) {
-					Date date = new Date();
 					fileInit(date);
-				} 
+				}
 				fixdates();
 				scan.close();
 			} catch (IOException e) {
@@ -887,16 +886,17 @@ public class filecontrol extends GUI {
 		boolean didRun = false;
 		boolean runYet = false;
 
+		System.out.println("Appointment Start:" + ApointStart + " Appointment End:" + ApointEnd + " name:" + name);
+
 		for (int i = 0; i < DaysProcedings.length; i++) {
-
-			System.out.println(DaysProcedings[i] + " check with these");
-
 			String[] timeSlot = DaysProcedings[i].split(";");
 			double startTime = getStartTime(timeSlot[0]);
 			double endTime = getStartTime(timeSlot[1]);
+			String event = timeSlot[2];
 
-			if (ApointStart >= startTime && ApointEnd <= endTime && timeSlot[2].compareTo("free") == 0
-					&& runYet == false) {
+			System.out.println(startTime + " " + endTime + " " + event);
+
+			if (ApointStart >= startTime && ApointEnd <= endTime && event.compareTo("free") == 0 && runYet == false) {
 				boolean[] gaps = checks(startTime, endTime, ApointStart, ApointEnd);
 				change = true;
 				oneTime = true;
@@ -938,9 +938,6 @@ public class filecontrol extends GUI {
 
 			}
 			if (change == false) {
-				// I suggest that you make an if statement here to remove the
-				// chance of 0 which WILL crash the code otherwise because 0-1
-				// is -1 which is not in DaysProcedings
 				if (ApointStart < startTime && !(DaysProcedings[i - 1].endsWith("free")) && ApointEnd < endTime
 						&& conflict.compareTo("") == 0) {
 					if (ApointEnd > startTime && !(DaysProcedings[i].endsWith("free"))) {
@@ -967,6 +964,7 @@ public class filecontrol extends GUI {
 						conflict2 = true;
 					}
 				}
+
 			}
 
 			if (oneTime == true) {
@@ -1181,11 +1179,8 @@ public class filecontrol extends GUI {
 		if (file.exists()) {
 			try {
 				while (br2.readLine() != null) {
-
 					try {
-
 						CurrentDay = br.readLine();
-
 						if (CurrentDate.compareTo(CurrentDay.substring(0, 10)) == 0) {
 
 							System.out.println("check4");
@@ -1264,7 +1259,7 @@ public class filecontrol extends GUI {
 		return false;
 	}
 
-	// deletes an appointment
+	// deletes an appointment that is specified
 	public static void deleteApointment(String[] DaysProcedings, String name) {
 		String newTextLine = "";
 		double startTime = 0.0;
@@ -1351,7 +1346,7 @@ public class filecontrol extends GUI {
 
 	}
 
-	// add current date to 1 year ahead to combobox
+	// add 1 month behind current date to 1 year ahead to combobox
 	private static void adddates() {
 		Date date = new Date();
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");

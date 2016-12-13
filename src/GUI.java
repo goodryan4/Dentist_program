@@ -8,21 +8,22 @@ public class GUI {
 
 	public JFrame frame;
 	public static List list;
-	public static JLabel check, lblFirstName, iconsearch, lblHealthNumber, lblHealthIssues, lblMedicalNotes, lblPhoneNumber, lblLastName, lblSex, lblDateOfBirth, lblPostalCode;
+	public static JLabel check, lblFirstName, iconsearch, lblHealthNumber, lblHealthIssues, lblMedicalNotes,
+			lblPhoneNumber, lblLastName, lblSex, lblDateOfBirth, lblPostalCode;
 	public static JPanel info, procedure, allinfo, search, schedule, currjpanel;
 	public static String directory = "src/patients";
 	public static String name;
-	public static JButton newperson, removeperson, btnGoToCompressed, btnGoToProcedure, btnHome, btnSchedule, btnSchedule_1,
-			btnRemoveAll, btnGoToPatientInfo, btnAddEvent;
+	public static JButton newperson, removeperson, btnGoToCompressed, btnGoToProcedure, btnHome, btnSchedule,
+			btnSchedule_1, btnRemoveAll, btnGoToPatientInfo, btnAddEvent, btnNewButton;
 	public JScrollPane scrollPane;
 	public static String[] currentData;
 	public static JToggleButton btnUpdateInfo;
-	public static JTextField text, textField, textField_1, textField_2, textField_3, textField_4, textField_5, textField_6,
-			textField_7, textField_8, textField_9;
+	public static JTextField text, textField, textField_1, textField_2, textField_3, textField_4, textField_5,
+			textField_6, textField_7, textField_8, textField_9;
 	public static JTextField[] TextFields;
 	public static JTextArea textarea, textarea_1;
 	public static JTextArea[] textareas;
-	public static JComboBox listdates, status ;
+	public static JComboBox listdates, status;
 	public static String x;
 	public static JTable table;
 	public static File bob;
@@ -65,9 +66,10 @@ public class GUI {
 		search = new JPanel();
 		frame.getContentPane().add(search, "name_210219853183045");
 		search.setLayout(null);
-		
+
 		// search icon beside the user input
-		iconsearch = new JLabel("");
+
+		iconsearch = new JLabel();
 		iconsearch.setBounds(406, 86, 24, 25);
 		ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource("icon.png"));
 		Image newimg = icon.getImage().getScaledInstance(iconsearch.getWidth(), iconsearch.getHeight(),
@@ -96,14 +98,14 @@ public class GUI {
 		list = new List();
 		list.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent arg0) {
-				if (arg0.getClickCount() == 2 && list.getSelectedItem().length()>0) {
+				if (arg0.getClickCount() == 2 && list.getSelectedItem().length() > 0) {
 					name = list.getSelectedItem();
 					System.out.println(name);
 					if (!(list.countItems() == 0) && !name.equals("There are no patients in the list")) {
 						currentData = filecontrol.getData(name, "info");
 						filecontrol.addobjects(info);
-						TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3, textField_4, textField_5,
-								textField_6 };
+						TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3, textField_4,
+								textField_5, textField_6 };
 						textareas = new JTextArea[] { textarea, textarea_1 };
 						filecontrol.setData();
 						filecontrol.hidepanels(info);
@@ -204,12 +206,23 @@ public class GUI {
 		schedule = new JPanel();
 		frame.getContentPane().add(schedule, "name_2570594671192");
 		schedule.setLayout(null);
-		
-		//set the name of each JPanel
+
+		// set the name of each JPanel
 		info.setName("info");
 		procedure.setName("procedure");
 		allinfo.setName("allinfo");
 		search.setName("search");
+
+		btnNewButton = new JButton("");
+		btnNewButton.setBounds(532, 324, 35, 35);
+		icon = new ImageIcon(getClass().getClassLoader().getResource("Settings.png"));
+		newimg = icon.getImage().getScaledInstance(btnNewButton.getWidth(), btnNewButton.getHeight(),
+				java.awt.Image.SCALE_SMOOTH);
+		icon = new ImageIcon(newimg);
+		btnNewButton.setIcon(icon);
+		btnNewButton.setBorder(null);
+		search.add(btnNewButton);
+		
 		schedule.setName("schedule");
 	}
 
