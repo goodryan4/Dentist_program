@@ -96,7 +96,7 @@ public class GUI {
 		list = new List();
 		list.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent arg0) {
-				if (list.getSelectedIndex()!=-1) {
+				if (list.getSelectedIndex() != -1) {
 					if (arg0.getClickCount() == 2 && list.getSelectedItem().length() > 0) {
 						name = list.getSelectedItem();
 						System.out.println(name);
@@ -162,7 +162,7 @@ public class GUI {
 		removeperson.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String name = list.getSelectedItem();
-				if (!name.equals(null) && (!name.equals("There are no patients in the list"))) {
+				if (name!=null && (!name.equals("There are no patients in the list"))) {
 					filecontrol.removefolder(name);
 				}
 			}
