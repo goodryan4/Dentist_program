@@ -1,11 +1,15 @@
 import java.awt.Color;
 import java.awt.List;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
@@ -303,6 +307,13 @@ public class filecontrol extends GUI {
 			textarea.setEditable(false);
 			textarea.setLineWrap(true);
 			textarea.setWrapStyleWord(true);
+			textarea.addKeyListener(new KeyAdapter() {
+				public void keyPressed(KeyEvent e) {
+					if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+						textarea.setCaretPosition(-1);
+					}
+				}
+			});
 			textarea.setBounds(250, 60, 175, 70);
 			a.add(textarea);
 
@@ -310,6 +321,13 @@ public class filecontrol extends GUI {
 			textarea_1.setEditable(false);
 			textarea_1.setLineWrap(true);
 			textarea_1.setWrapStyleWord(true);
+			textarea_1.addKeyListener(new KeyAdapter() {
+				public void keyPressed(KeyEvent e) {
+					if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+						textarea.setCaretPosition(-1);
+					}
+				}
+			});
 			textarea_1.setBounds(250, 180, 175, 70);
 			a.add(textarea_1);
 
@@ -393,7 +411,7 @@ public class filecontrol extends GUI {
 				e1.printStackTrace();
 			}
 
-			JLabel lblNewLabel = new JLabel("change date");
+			lblNewLabel = new JLabel("change date");
 			lblNewLabel.setBounds(463, 50, 92, 26);
 			a.add(lblNewLabel);
 
@@ -410,7 +428,7 @@ public class filecontrol extends GUI {
 			table.setCellSelectionEnabled(true);
 			table.setRowHeight(30);
 
-			JScrollPane scrollPane_1 = new JScrollPane();
+			scrollPane_1 = new JScrollPane();
 			scrollPane_1.setBounds(20, 20, 430, 330);
 			scrollPane_1.setViewportView(table);
 			scrollPane_1.setBorder(BorderFactory.createEmptyBorder());
@@ -575,6 +593,15 @@ public class filecontrol extends GUI {
 			} catch (IOException e) {
 				System.out.println(e.getMessage());
 			}
+
+			btnHome = new JButton("Home");
+			btnHome.setBounds(463, 30, 101, 24);
+			btnHome.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					hidepanels(search);
+				}
+			});
+			a.add(btnHome);
 
 			JLabel lblStartTime = new JLabel("Start Time:");
 			lblStartTime.setBounds(31, 77, 92, 26);
@@ -867,7 +894,8 @@ public class filecontrol extends GUI {
 				dateM = 1;
 				leapYear1 = leapYear(dateY);
 			}
-			writer.print(date + ":-:" + starttimestring + ";11:30;free__11:30;12:30;lunch__12:30;" + endtimestring + ";free");
+			writer.print(date + ":-:" + starttimestring + ";11:30;free__11:30;12:30;lunch__12:30;" + endtimestring
+					+ ";free");
 			if (dateY < startY + 1 || dateD != startD || dateM != startM) {
 				writer.println("");
 			}
@@ -1593,7 +1621,8 @@ public class filecontrol extends GUI {
 					startM = 1;
 					leapYear1 = leapYear(startY);
 				}
-				writer2.print(date2 + ":-:" + starttimestring + ";11:30;free__11:30;12:30;lunch__12:30;" + endtimestring + ";free");
+				writer2.print(date2 + ":-:" + starttimestring + ";11:30;free__11:30;12:30;lunch__12:30;" + endtimestring
+						+ ";free");
 				if (startY < dateY || startD != dateD + 1 || startM != dateM) {
 					writer2.println();
 				}

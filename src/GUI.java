@@ -10,12 +10,12 @@ public class GUI {
 	public JFrame frame;
 	public static List list;
 	public static JLabel check, lblFirstName, iconsearch, lblHealthNumber, lblHealthIssues, lblMedicalNotes,
-			lblPhoneNumber, lblLastName, lblSex, lblDateOfBirth, lblPostalCode;
+			lblPhoneNumber, lblLastName, lblSex, lblDateOfBirth, lblPostalCode, lblNewLabel;
 	public static JPanel info, procedure, allinfo, search, schedule, currjpanel, settings;
 	public static String directory = "src/patients", name, x, starttimestring, endtimestring;
 	public static JButton newperson, removeperson, btnGoToCompressed, btnGoToProcedure, btnHome, btnSchedule,
 			btnSchedule_1, btnRemoveAll, btnGoToPatientInfo, btnAddEvent, btnNewButton;
-	public JScrollPane scrollPane;
+	public static JScrollPane scrollPane, scrollPane_1;
 	public static String[] currentData;
 	public static JToggleButton btnUpdateInfo;
 	public static JTextField text, textField, textField_1, textField_2, textField_3, textField_4, textField_5,
@@ -96,17 +96,19 @@ public class GUI {
 		list = new List();
 		list.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent arg0) {
-				if (arg0.getClickCount() == 2 && list.getSelectedItem().length() > 0) {
-					name = list.getSelectedItem();
-					System.out.println(name);
-					if (!(list.countItems() == 0) && !name.equals("There are no patients in the list")) {
-						currentData = filecontrol.getData(name, "info");
-						filecontrol.addobjects(info);
-						TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3, textField_4,
-								textField_5, textField_6 };
-						textareas = new JTextArea[] { textarea, textarea_1 };
-						filecontrol.setData();
-						filecontrol.hidepanels(info);
+				if (list.getSelectedIndex()!=-1) {
+					if (arg0.getClickCount() == 2 && list.getSelectedItem().length() > 0) {
+						name = list.getSelectedItem();
+						System.out.println(name);
+						if (!(list.countItems() == 0) && !name.equals("There are no patients in the list")) {
+							currentData = filecontrol.getData(name, "info");
+							filecontrol.addobjects(info);
+							TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3,
+									textField_4, textField_5, textField_6 };
+							textareas = new JTextArea[] { textarea, textarea_1 };
+							filecontrol.setData();
+							filecontrol.hidepanels(info);
+						}
 					}
 				}
 			}
@@ -235,14 +237,14 @@ public class GUI {
 
 		File file = new File("src/settings.txt");
 		try {
-			if(file.exists()==false){
+			if (file.exists() == false) {
 				PrintWriter writer = new PrintWriter(file);
 				file.mkdirs();
 				writer.println("7:00");
 				writer.print("14:00");
 				writer.close();
 			}
-			
+
 			Scanner setstartandend;
 			setstartandend = new Scanner(file);
 			starttimestring = setstartandend.nextLine();
