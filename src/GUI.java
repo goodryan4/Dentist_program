@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.io.*;
+import java.util.Scanner;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -10,24 +11,21 @@ public class GUI {
 	public static List list;
 	public static JLabel check, lblFirstName, iconsearch, lblHealthNumber, lblHealthIssues, lblMedicalNotes,
 			lblPhoneNumber, lblLastName, lblSex, lblDateOfBirth, lblPostalCode;
-	public static JPanel info, procedure, allinfo, search, schedule, currjpanel;
-	public static String directory = "src/patients";
-	public static String name;
+	public static JPanel info, procedure, allinfo, search, schedule, currjpanel, settings;
+	public static String directory = "src/patients", name, x, starttimestring, endtimestring;
 	public static JButton newperson, removeperson, btnGoToCompressed, btnGoToProcedure, btnHome, btnSchedule,
 			btnSchedule_1, btnRemoveAll, btnGoToPatientInfo, btnAddEvent, btnNewButton;
 	public JScrollPane scrollPane;
 	public static String[] currentData;
 	public static JToggleButton btnUpdateInfo;
 	public static JTextField text, textField, textField_1, textField_2, textField_3, textField_4, textField_5,
-			textField_6, textField_7, textField_8, textField_9;
+			textField_6, textField_7, textField_8, textField_9, starttimetext, endtimetext;
 	public static JTextField[] TextFields;
 	public static JTextArea textarea, textarea_1;
 	public static JTextArea[] textareas;
-	public static JComboBox listdates, status;
-	public static String x;
+	public static JComboBox listdates, status, time;
 	public static JTable table;
 	public static File bob;
-	private JTable table_1;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -207,6 +205,10 @@ public class GUI {
 		frame.getContentPane().add(schedule, "name_2570594671192");
 		schedule.setLayout(null);
 
+		settings = new JPanel();
+		frame.getContentPane().add(settings, "name_5114555335704");
+		settings.setLayout(null);
+
 		// set the name of each JPanel
 		info.setName("info");
 		procedure.setName("procedure");
@@ -214,6 +216,12 @@ public class GUI {
 		search.setName("search");
 
 		btnNewButton = new JButton("");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				filecontrol.addobjects(settings);
+				filecontrol.hidepanels(settings);
+			}
+		});
 		btnNewButton.setBounds(532, 324, 35, 35);
 		icon = new ImageIcon(getClass().getClassLoader().getResource("Settings.png"));
 		newimg = icon.getImage().getScaledInstance(btnNewButton.getWidth(), btnNewButton.getHeight(),
@@ -222,8 +230,27 @@ public class GUI {
 		btnNewButton.setIcon(icon);
 		btnNewButton.setBorder(null);
 		search.add(btnNewButton);
-		
+
 		schedule.setName("schedule");
+
+		File file = new File("src/settings.txt");
+		try {
+			if(file.exists()==false){
+				PrintWriter writer = new PrintWriter(file);
+				file.mkdirs();
+				writer.println("7:00");
+				writer.print("14:00");
+				writer.close();
+			}
+			
+			Scanner setstartandend;
+			setstartandend = new Scanner(file);
+			starttimestring = setstartandend.nextLine();
+			endtimestring = setstartandend.nextLine();
+			setstartandend.close();
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	private static void addPopup(Component component, final JPopupMenu popup) {

@@ -2,15 +2,24 @@ import java.awt.Color;
 import java.awt.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.PrintWriter;
+import java.io.WriteAbortedException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -37,8 +46,10 @@ import javax.swing.table.TableModel;
 public class filecontrol extends GUI {
 	public static String[] information, CurrentDay;
 	public static File CurrentPat;
-	public static String dir = "src/table/schedule.txt", oldName, path, day, month, date, year, CurrentDate;
+	public static String dir = "src/table/schedule.txt", oldName, path, day, month, date, year, CurrentDate, starttime2,
+			endtime2;
 	public static boolean newEvent = false;
+	public static double starttime = 7.00, endtime = 14;
 
 	public static final int[] MONTH_LENGTH = new int[] { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
@@ -202,7 +213,6 @@ public class filecontrol extends GUI {
 
 	/** Add all objects **/
 	public static void addobjects(JPanel a) {
-
 		if (a.equals(info) || a.equals(procedure) || a.equals(allinfo)) {
 			currjpanel = a;
 			lblFirstName = new JLabel("First Name: ");
@@ -370,6 +380,19 @@ public class filecontrol extends GUI {
 			}
 		}
 		if (a.equals(schedule)) {
+			File settings = new File("src/settings.txt");
+			Scanner input;
+			try {
+				input = new Scanner(settings);
+				String start = input.nextLine();
+				String end = input.nextLine();
+				String split[][] = { start.split(":"), end.split(":") };
+				starttime = Double.parseDouble(split[0][0]) + Double.parseDouble(split[0][1]) / 100;
+				endtime = Double.parseDouble(split[1][0]) + Double.parseDouble(split[1][1]) / 100;
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			}
+
 			JLabel lblNewLabel = new JLabel("change date");
 			lblNewLabel.setBounds(463, 50, 92, 26);
 			a.add(lblNewLabel);
@@ -419,6 +442,8 @@ public class filecontrol extends GUI {
 
 									column1.setHeaderValue(columnNames[i]);
 								}
+								table.getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(time));
+								table.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(time));
 								table.getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(status));
 
 								for (int i = 0; i < separator.length; i++) {
@@ -428,16 +453,6 @@ public class filecontrol extends GUI {
 									table.setValueAt(timeandevent[2], i, 2);
 								}
 								addtablelistener();
-								table.addMouseListener(new java.awt.event.MouseAdapter() {
-									public void mouseClicked(java.awt.event.MouseEvent evt) {
-										int row = table.rowAtPoint(evt.getPoint());
-										int col = table.columnAtPoint(evt.getPoint());
-										if (col == 2) {
-											oldName = (String) table.getValueAt(row, col);
-											System.out.println(oldName);
-										}
-									}
-								});
 							}
 						}
 						in.close();
@@ -448,10 +463,13 @@ public class filecontrol extends GUI {
 			});
 			a.add(listdates);
 
+			time = new JComboBox();
+			addtimes();
+
 			File file = new File(dir);
 
 			Date date = new Date();
-			// fileInit(date);
+			fileInit(date);
 			try {
 				Scanner scan = new Scanner(file);
 				if (!file.exists() || !scan.hasNextLine()) {
@@ -464,6 +482,7 @@ public class filecontrol extends GUI {
 			}
 
 			adddates();
+
 			btnHome = new JButton("Home");
 			btnHome.setBounds(463, 30, 101, 24);
 			btnHome.addActionListener(new ActionListener() {
@@ -497,6 +516,8 @@ public class filecontrol extends GUI {
 
 							column1.setHeaderValue(columnNames[i]);
 						}
+						table.getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(time));
+						table.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(time));
 						table.getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(status));
 						addtablelistener();
 					}
@@ -504,7 +525,65 @@ public class filecontrol extends GUI {
 			});
 			a.add(btnAddEvent);
 		}
+		if (a.equals(settings)) {
+			File file = new File("src/settings.txt");
+			try {
+				starttimetext = new JTextField();
+				starttimetext.setBounds(133, 77, 193, 26);
+				starttimetext.addFocusListener(new FocusAdapter() {
+					public void focusLost(FocusEvent arg0) {
+						PrintWriter writer;
+						try {
+							writer = new PrintWriter(file);
+							writer.println(starttimetext.getText());
+							writer.print(endtimetext.getText());
+							writer.close();
+						} catch (FileNotFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 
+					}
+				});
+				a.add(starttimetext);
+
+				endtimetext = new JTextField();
+				endtimetext.setBounds(133, 129, 193, 26);
+				endtimetext.addFocusListener(new FocusAdapter() {
+					public void focusLost(FocusEvent arg0) {
+						PrintWriter writer;
+						try {
+							writer = new PrintWriter(file);
+							writer.println(starttimetext.getText());
+							writer.print(endtimetext.getText());
+							writer.close();
+						} catch (FileNotFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				});
+				a.add(endtimetext);
+
+				Scanner input = new Scanner(file);
+				String start = input.nextLine();
+				starttimetext.setText(start);
+				String end = input.nextLine();
+				endtimetext.setText(end);
+				input.close();
+
+			} catch (IOException e) {
+				System.out.println(e.getMessage());
+			}
+
+			JLabel lblStartTime = new JLabel("Start Time:");
+			lblStartTime.setBounds(31, 77, 92, 26);
+			a.add(lblStartTime);
+
+			JLabel lblEndTime = new JLabel("End Time:");
+			lblEndTime.setBounds(31, 129, 92, 26);
+			a.add(lblEndTime);
+		}
 	}
 
 	/** Remove all objects from other JPanels **/
@@ -568,31 +647,43 @@ public class filecontrol extends GUI {
 			info.hide();
 			schedule.hide();
 			search.hide();
+			settings.hide();
 			procedure.show();
 		} else if (panelbeingshown.equals(allinfo)) {
 			procedure.hide();
 			info.hide();
 			schedule.hide();
 			search.hide();
+			settings.hide();
 			allinfo.show();
 		} else if (panelbeingshown.equals(info)) {
 			procedure.hide();
 			allinfo.hide();
 			schedule.hide();
 			search.hide();
+			settings.hide();
 			info.show();
 		} else if (panelbeingshown.equals(schedule)) {
 			procedure.hide();
 			info.hide();
 			allinfo.hide();
 			search.hide();
+			settings.hide();
 			schedule.show();
 		} else if (panelbeingshown.equals(search)) {
 			procedure.hide();
 			allinfo.hide();
 			info.hide();
 			schedule.hide();
+			settings.hide();
 			search.show();
+		} else if (panelbeingshown.equals(settings)) {
+			procedure.hide();
+			allinfo.hide();
+			info.hide();
+			schedule.hide();
+			search.hide();
+			settings.show();
 		}
 	}
 
@@ -776,7 +867,7 @@ public class filecontrol extends GUI {
 				dateM = 1;
 				leapYear1 = leapYear(dateY);
 			}
-			writer.print(date + ":-:7:00;11:30;free__11:30;12:30;lunch__12:30;14:00;free");
+			writer.print(date + ":-:" + starttimestring + ";11:30;free__11:30;12:30;lunch__12:30;" + endtimestring + ";free");
 			if (dateY < startY + 1 || dateD != startD || dateM != startM) {
 				writer.println("");
 			}
@@ -1164,34 +1255,21 @@ public class filecontrol extends GUI {
 		String CurrentDate = line.substring(0, 10);
 		BufferedReader br = null;
 		BufferedReader br2 = null;
+		String input = "";
+		String CurrentDay = "";
+		File file = new File(dir);
 
 		try {
 			br = new BufferedReader(new FileReader(dir));
 			br2 = new BufferedReader(new FileReader(dir));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		String input = "";
-		String CurrentDay = "";
-		File file = new File(dir);
-		if (file.exists()) {
-			try {
+			if (file.exists()) {
 				while (br2.readLine() != null) {
-					try {
-						CurrentDay = br.readLine();
-						if (CurrentDate.compareTo(CurrentDay.substring(0, 10)) == 0) {
-
-							System.out.println("check4");
-							input = input + line + '\n';
-						} else {
-							input = input + CurrentDay + '\n';
-						}
-
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					CurrentDay = br.readLine();
+					if (CurrentDate.compareTo(CurrentDay.substring(0, 10)) == 0) {
+						System.out.println("check4");
+						input = input + line + '\n';
+					} else {
+						input = input + CurrentDay + '\n';
 					}
 
 					System.out.println(CurrentDay.substring(0, 10) + "and" + CurrentDate);
@@ -1199,10 +1277,11 @@ public class filecontrol extends GUI {
 				FileOutputStream fileOut = new FileOutputStream(dir);
 				fileOut.write(input.getBytes());
 				fileOut.close();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
 			}
+			br.close();
+			br2.close();
+		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
 	}
 
@@ -1514,7 +1593,7 @@ public class filecontrol extends GUI {
 					startM = 1;
 					leapYear1 = leapYear(startY);
 				}
-				writer2.print(date2 + ":-:7:00;11:30;free__11:30;12:30;lunch__12:30;14:00;free");
+				writer2.print(date2 + ":-:" + starttimestring + ";11:30;free__11:30;12:30;lunch__12:30;" + endtimestring + ";free");
 				if (startY < dateY || startD != dateD + 1 || startM != dateM) {
 					writer2.println();
 				}
@@ -1579,6 +1658,52 @@ public class filecontrol extends GUI {
 			}
 
 		});
+	}
 
+	public static void addtimes() {
+		String begining = starttime + "";
+		String ending = endtime + "";
+
+		String[] splitending = ending.split("\\.");
+		ending = "";
+		int firstnum = Integer.parseInt(splitending[0]);
+		int secondnum = Integer.parseInt(splitending[1]);
+		if (firstnum < 10) {
+			ending += "0" + firstnum;
+		} else {
+			ending += firstnum;
+		}
+		ending += ":";
+		if (secondnum < 1) {
+			ending += "00";
+		} else if (secondnum < 10) {
+			ending += secondnum + "0";
+		} else {
+			ending += secondnum;
+		}
+
+		String[] splitbeginning = begining.split("\\.");
+		firstnum = Integer.parseInt(splitbeginning[0]);
+		secondnum = Integer.parseInt(splitbeginning[1]);
+		while (!begining.equals(ending)) {
+			begining = "";
+			if (secondnum == 60) {
+				secondnum = 0;
+				firstnum += 1;
+			}
+			if (firstnum < 10) {
+				begining += "0" + firstnum;
+			} else {
+				begining += firstnum;
+			}
+			begining += ":";
+			if (secondnum < 1) {
+				begining += "00";
+			} else {
+				begining += secondnum;
+			}
+			time.addItem(begining);
+			secondnum += 30;
+		}
 	}
 }
