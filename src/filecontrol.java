@@ -23,15 +23,25 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.WriteAbortedException;
+import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
+import java.util.Random;
 import java.util.Scanner;
 
+import javax.crypto.IllegalBlockSizeException;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -54,6 +64,8 @@ public class filecontrol extends GUI {
 			endtime2;
 	public static boolean newEvent = false;
 	public static double starttime = 7.00, endtime = 14;
+	public static byte[] username;
+	public static byte[] password;
 
 	public static final int[] MONTH_LENGTH = new int[] { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
@@ -121,7 +133,7 @@ public class filecontrol extends GUI {
 		}
 		last.delete();
 		GUI.check.setText("remove " + name);
-		GUI.list.remove(name.toLowerCase());
+		GUI.list.remove(name);
 	}
 
 	// This is the initial check to see what patients are in the patents folder
@@ -131,9 +143,21 @@ public class filecontrol extends GUI {
 		if (numfiles == 0) {
 			list.add("There are no patients in the list");
 		} else {
+			String a = text.getText();
 			for (int i = 0; i < numfiles; i++) {
-				if (files[i].getName().contains(text.getText().toLowerCase())) {
-					list.add(files[i].getName());
+				if (text.getText().contains(" ")) {
+					String[] names = a.split(" ");
+					System.out.println(names[0].substring(0, 1) + names[0].substring(1) + " " + names[1].substring(0, 1)
+							+ names[1].substring(1));
+					if (files[i].getName().contains(names[0].substring(0, 1) + names[0].substring(1) + " "
+							+ names[1].substring(0, 1) + names[1].substring(1))) {
+						list.add(files[i].getName());
+					}
+				} else {
+					/** ERROR HERE */
+					if (files[i].getName().contains(a.substring(0, 0) + a.substring(1).toLowerCase())) {
+						list.add(files[i].getName());
+					}
 				}
 			}
 		}
@@ -141,10 +165,17 @@ public class filecontrol extends GUI {
 
 	// Add a patient to the list and to the file
 	public static void addentry() {
-		String name = text.getText().toLowerCase();
+		String name;
+		if (text.getText().contains(" ") && !text.getText().contains("  ")) {
+			name = text.getText().substring(0, 1) + text.getText().substring(1);
+			String[] names = name.split(" ");
+			name = names[0] + " " + names[1].substring(0, 1) + names[1].substring(1);
+		} else {
+			name = text.getText().substring(0, 1) + text.getText().substring(1);
+		}
+		System.out.println(name);
 		String dir = directory + "/" + name;
 		File add = new File(dir);
-		System.out.println(name);
 		if (name.equals("enter the person you wish to search")) {
 			check.setText("Enter patient name in search bar first");
 		} else if (add.exists()) {
@@ -546,8 +577,10 @@ public class filecontrol extends GUI {
 		if (a.equals(settings)) {
 			File file = new File("src/settings.txt");
 			try {
+				Scanner scan = new Scanner(Login.a);
+				
 				starttimetext = new JTextField();
-				starttimetext.setBounds(133, 77, 193, 26);
+				starttimetext.setBounds(120, 60, 193, 26);
 				starttimetext.addFocusListener(new FocusAdapter() {
 					public void focusLost(FocusEvent arg0) {
 						PrintWriter writer;
@@ -566,7 +599,7 @@ public class filecontrol extends GUI {
 				a.add(starttimetext);
 
 				endtimetext = new JTextField();
-				endtimetext.setBounds(133, 129, 193, 26);
+				endtimetext.setBounds(120, 90, 193, 26);
 				endtimetext.addFocusListener(new FocusAdapter() {
 					public void focusLost(FocusEvent arg0) {
 						PrintWriter writer;
@@ -583,6 +616,69 @@ public class filecontrol extends GUI {
 				});
 				a.add(endtimetext);
 
+				Usernametext = new JTextField();
+				Usernametext.setBounds(120, 120, 193, 26);
+				Usernametext.addFocusListener(new FocusAdapter() {
+					public void focusLost(FocusEvent arg0) {
+						PrintWriter writer;
+						try {			
+							String line3 = Files.readAllLines(Paths.get(Login.a.getAbsolutePath())).get(2);
+							writer = new PrintWriter(Login.a);
+							writer.println(MD5(Usernametext.getText()));
+							writer.println(MD5(Passwordtext.getText()));
+							writer.print(line3);
+							writer.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				});
+				a.add(Usernametext);
+
+				Passwordtext = new JTextField();
+				Passwordtext.setBounds(120, 150, 193, 26);
+				Passwordtext.addFocusListener(new FocusAdapter() {
+					public void focusLost(FocusEvent arg0) {
+						PrintWriter writer;
+						try {
+							String line3 = Files.readAllLines(Paths.get(Login.a.getAbsolutePath())).get(2);
+							writer = new PrintWriter(Login.a);
+							writer.println(MD5(Usernametext.getText()));
+							writer.println(MD5(Passwordtext.getText()));
+							writer.print(line3);
+							writer.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				});
+				a.add(Passwordtext);
+
+				JCheckBox chckbxNewCheckBox = new JCheckBox("remove login");
+				chckbxNewCheckBox.setBounds(17, 177, 179, 35);
+				chckbxNewCheckBox.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						PrintWriter writer;
+						try {
+							writer = new PrintWriter(Login.a);
+							if(chckbxNewCheckBox.isSelected()){
+								writer.println(MD5(Usernametext.getText()));
+								writer.println(MD5(Passwordtext.getText()));
+								writer.print(MD5("true"));
+							}else{
+								writer.println(MD5(Usernametext.getText()));
+								writer.println(MD5(Passwordtext.getText()));
+								writer.print(MD5("false"));
+							}
+							writer.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						
+					}
+				});
+				a.add(chckbxNewCheckBox);
+				
 				Scanner input = new Scanner(file);
 				String start = input.nextLine();
 				starttimetext.setText(start);
@@ -598,18 +694,27 @@ public class filecontrol extends GUI {
 			btnHome.setBounds(463, 30, 101, 24);
 			btnHome.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
+					btnHome.grabFocus();
 					hidepanels(search);
 				}
 			});
 			a.add(btnHome);
 
 			JLabel lblStartTime = new JLabel("Start Time:");
-			lblStartTime.setBounds(31, 77, 92, 26);
+			lblStartTime.setBounds(30, 60, 92, 26);
 			a.add(lblStartTime);
 
 			JLabel lblEndTime = new JLabel("End Time:");
-			lblEndTime.setBounds(31, 129, 92, 26);
+			lblEndTime.setBounds(30, 90, 92, 26);
 			a.add(lblEndTime);
+
+			JLabel lblUsername = new JLabel("New Username:");
+			lblUsername.setBounds(30, 120, 92, 26);
+			a.add(lblUsername);
+
+			JLabel lblPassword = new JLabel("New Password:");
+			lblPassword.setBounds(30, 150, 92, 26);
+			a.add(lblPassword);
 		}
 	}
 
@@ -1015,6 +1120,10 @@ public class filecontrol extends GUI {
 
 			System.out.println(startTime + " " + endTime + " " + event);
 
+			// if appointment start is greater than free start and appointment
+			// end
+			// is less then free end then cut a whole in free and place
+			// appointment in
 			if (ApointStart >= startTime && ApointEnd <= endTime && event.compareTo("free") == 0 && runYet == false) {
 				boolean[] gaps = checks(startTime, endTime, ApointStart, ApointEnd);
 				change = true;
@@ -1056,7 +1165,12 @@ public class filecontrol extends GUI {
 				}
 
 			}
+
+			// checks to see if the previous if statement did anything
 			if (change == false) {
+				// if appointment starts earlier then free start time and ends
+				// earlier than end time then
+				// create the appointment
 				if (ApointStart < startTime && !(DaysProcedings[i - 1].endsWith("free")) && ApointEnd < endTime
 						&& conflict.compareTo("") == 0) {
 					if (ApointEnd > startTime && !(DaysProcedings[i].endsWith("free"))) {
@@ -1067,6 +1181,9 @@ public class filecontrol extends GUI {
 						conflict2 = true;
 					}
 				}
+
+				// if appointment starts earlier than free start time and ends
+				// after end time of free time then delete free time
 				if (ApointStart < startTime && ApointEnd > endTime) {
 					if (!(DaysProcedings[i].endsWith("free")) && !(DaysProcedings[i + 1].endsWith("free"))
 							&& !(DaysProcedings[i - 1].endsWith("free"))) {
@@ -1689,6 +1806,7 @@ public class filecontrol extends GUI {
 		});
 	}
 
+	// add time between given start time and end time with 30 minute intervals
 	public static void addtimes() {
 		String begining = starttime + "";
 		String ending = endtime + "";
@@ -1720,12 +1838,7 @@ public class filecontrol extends GUI {
 				secondnum = 0;
 				firstnum += 1;
 			}
-			if (firstnum < 10) {
-				begining += "0" + firstnum;
-			} else {
-				begining += firstnum;
-			}
-			begining += ":";
+			begining += firstnum + ":";
 			if (secondnum < 1) {
 				begining += "00";
 			} else {
@@ -1734,5 +1847,41 @@ public class filecontrol extends GUI {
 			time.addItem(begining);
 			secondnum += 30;
 		}
+	}
+
+	public static String randomgenstring() {
+		Random r = new Random();
+		String random = "";
+		String alphabet = "abcdefghijklmnopqrstuvwxyz";
+		for (int i = 0; i < 50; i++) {
+			random += alphabet.charAt(r.nextInt(alphabet.length()));
+		}
+		return random;
+	}
+
+	public static int randomgenint() {
+		Random r = new Random();
+		String random = "";
+		String alphabet = "0123456789";
+		for (int i = 0; i < 50; i++) {
+			random += alphabet.charAt(r.nextInt(alphabet.length()));
+		}
+		int ranint = Integer.parseInt(random);
+		return ranint;
+	}
+
+	public static String MD5(String text) {
+		try {
+			java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+			byte[] array = md.digest(text.getBytes());
+			StringBuffer sb = new StringBuffer();
+			for (int i = 0; i < array.length; ++i) {
+				sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1, 3));
+			}
+			return sb.toString();
+		} catch (java.security.NoSuchAlgorithmException e) {
+			
+		}
+		return null;
 	}
 }

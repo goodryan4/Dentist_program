@@ -19,7 +19,7 @@ public class GUI {
 	public static String[] currentData;
 	public static JToggleButton btnUpdateInfo;
 	public static JTextField text, textField, textField_1, textField_2, textField_3, textField_4, textField_5,
-			textField_6, textField_7, textField_8, textField_9, starttimetext, endtimetext;
+			textField_6, textField_7, textField_8, textField_9, starttimetext, endtimetext, Usernametext, Passwordtext;
 	public static JTextField[] TextFields;
 	public static JTextArea textarea, textarea_1;
 	public static JTextArea[] textareas;
@@ -96,19 +96,17 @@ public class GUI {
 		list = new List();
 		list.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent arg0) {
-				if (list.getSelectedIndex() != -1) {
-					if (arg0.getClickCount() == 2 && list.getSelectedItem().length() > 0) {
-						name = list.getSelectedItem();
-						System.out.println(name);
-						if (!(list.countItems() == 0) && !name.equals("There are no patients in the list")) {
-							currentData = filecontrol.getData(name, "info");
-							filecontrol.addobjects(info);
-							TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3,
-									textField_4, textField_5, textField_6 };
-							textareas = new JTextArea[] { textarea, textarea_1 };
-							filecontrol.setData();
-							filecontrol.hidepanels(info);
-						}
+				if (arg0.getClickCount() == 2 && list.getSelectedItem().length() > 0 && list.getSelectedIndex() != -1) {
+					name = list.getSelectedItem();
+					System.out.println(name);
+					if (!name.equals("There are no patients in the list")) {
+						currentData = filecontrol.getData(name, "info");
+						filecontrol.addobjects(info);
+						TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3, textField_4,
+								textField_5, textField_6 };
+						textareas = new JTextArea[] { textarea, textarea_1 };
+						filecontrol.setData();
+						filecontrol.hidepanels(info);
 					}
 				}
 			}
@@ -139,7 +137,6 @@ public class GUI {
 			}
 		});
 		text.addMouseListener(new MouseAdapter() {
-
 			public void mouseClicked(MouseEvent arg0) {
 				if (text.getText().equals("Enter the person you wish to search")) {
 					text.setText("");
@@ -162,7 +159,7 @@ public class GUI {
 		removeperson.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String name = list.getSelectedItem();
-				if (name!=null && (!name.equals("There are no patients in the list"))) {
+				if (name != null && (!name.equals("There are no patients in the list"))) {
 					filecontrol.removefolder(name);
 				}
 			}
