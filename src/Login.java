@@ -28,6 +28,10 @@ import java.util.Scanner;
 import java.awt.event.ActionEvent;
 import javax.swing.JCheckBox;
 import javax.swing.JTextArea;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class Login {
 
@@ -37,6 +41,7 @@ public class Login {
 	public static File a = new File("src/userandpassandjunk.txt");
 	public static File folder = new File("src/");
 	static String line3;
+	JButton btnLogin;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -48,9 +53,9 @@ public class Login {
 						a.createNewFile();
 						try {
 							PrintWriter writer = new PrintWriter(a);
-							writer.println();
-							writer.println();
-							writer.print(filecontrol.MD5("true"));
+							writer.println(filecontrol.MD5("user"));
+							writer.println(filecontrol.MD5("pass"));
+							writer.print(filecontrol.MD5("false"));
 							writer.close();
 						} catch (FileNotFoundException e) {
 							e.printStackTrace();
@@ -58,7 +63,6 @@ public class Login {
 					}
 					line3 = Files.readAllLines(Paths.get(a.getAbsolutePath())).get(2);
 					if (!line3.equals(filecontrol.MD5("false"))) {
-						JOptionPane.showMessageDialog(frame,!line3.equals(filecontrol.MD5("false")));
 						GUI bob = new GUI();
 						bob.frame.show();
 					} else {
@@ -105,14 +109,44 @@ public class Login {
 		textField = new JTextField();
 		textField.setBounds(70, 30, 280, 32);
 		textField.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
+		textField.addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent arg0) {
+				if(arg0.getKeyCode()==KeyEvent.VK_ENTER){
+					btnLogin.doClick();
+				}
+			}
+		});
 		frame.getContentPane().add(textField);
 
 		textField_1 = new JTextField();
 		textField_1.setBounds(70, 90, 280, 32);
 		textField_1.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
+		textField_1.addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent arg0) {
+				if(arg0.getKeyCode()==KeyEvent.VK_ENTER){
+					btnLogin.doClick();
+				}
+			}
+		});
 		frame.getContentPane().add(textField_1);
 
-		JButton btnLogin = new JButton();
+		btnLogin = new JButton();
+		btnLogin.addMouseListener(new MouseAdapter() {
+			public void mouseEntered(MouseEvent arg0) {
+				ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource("button_login (1).png"));
+				Image newimg = icon.getImage().getScaledInstance(btnLogin.getWidth(), btnLogin.getHeight(),
+						java.awt.Image.SCALE_SMOOTH);
+				icon = new ImageIcon(newimg);
+				btnLogin.setIcon(icon);
+			}
+			public void mouseExited(MouseEvent e) {
+				ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource("button_login.png"));
+				 Image newimg = icon.getImage().getScaledInstance(btnLogin.getWidth(), btnLogin.getHeight(),
+						java.awt.Image.SCALE_SMOOTH);
+				icon = new ImageIcon(newimg);
+				btnLogin.setIcon(icon);
+			}
+		});
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Scanner scan;
@@ -128,9 +162,6 @@ public class Login {
 								frame.dispose();
 							}
 						}
-					} else {
-						GUI bob = new GUI();
-						bob.frame.show();
 					}
 				} catch (IOException e) {
 					e.printStackTrace();

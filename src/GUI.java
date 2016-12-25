@@ -228,6 +228,7 @@ public class GUI {
 		icon = new ImageIcon(newimg);
 		btnNewButton.setIcon(icon);
 		btnNewButton.setBorder(null);
+		btnNewButton.setContentAreaFilled(false);
 		search.add(btnNewButton);
 
 		schedule.setName("schedule");
