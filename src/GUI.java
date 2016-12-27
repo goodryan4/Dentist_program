@@ -96,18 +96,16 @@ public class GUI {
 		list = new List();
 		list.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent arg0) {
-				if (arg0.getClickCount() == 2 && list.getSelectedItem().length() > 0 && list.getSelectedIndex() != -1) {
+				if (arg0.getClickCount() == 2 && list.getSelectedIndex() != -1
+						&& !list.getSelectedItem().equals("There are no patients in the list")) {
 					name = list.getSelectedItem();
-					System.out.println(name);
-					if (!name.equals("There are no patients in the list")) {
-						currentData = filecontrol.getData(name, "info");
-						filecontrol.addobjects(info);
-						TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3, textField_4,
-								textField_5, textField_6 };
-						textareas = new JTextArea[] { textarea, textarea_1 };
-						filecontrol.setData();
-						filecontrol.hidepanels(info);
-					}
+					currentData = filecontrol.getData(name, "info");
+					filecontrol.addobjects(info);
+					TextFields = new JTextField[] { textField, textField_1, textField_2, textField_3, textField_4,
+							textField_5, textField_6 };
+					textareas = new JTextArea[] { textarea, textarea_1 };
+					filecontrol.setData();
+					filecontrol.hidepanels(info);
 				}
 			}
 		});

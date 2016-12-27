@@ -1,37 +1,28 @@
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.EventQueue;
-import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.Insets;
-
-import javax.swing.JFrame;
-import javax.swing.JTextField;
-import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
-import javax.xml.stream.events.Characters;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedWriter;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Scanner;
-import java.awt.event.ActionEvent;
-import javax.swing.JCheckBox;
-import javax.swing.JTextArea;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.util.zip.ZipFile;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 public class Login {
 
@@ -61,8 +52,9 @@ public class Login {
 							e.printStackTrace();
 						}
 					}
-					line3 = Files.readAllLines(Paths.get(a.getAbsolutePath())).get(2);
+					line3 = Files.readAllLines(Paths.get(a.getAbsolutePath())).get(filecontrol.numlines).substring(4,36);
 					if (!line3.equals(filecontrol.MD5("false"))) {
+						filecontrol.checkbox=true;
 						GUI bob = new GUI();
 						bob.frame.show();
 					} else {
@@ -146,6 +138,20 @@ public class Login {
 				icon = new ImageIcon(newimg);
 				btnLogin.setIcon(icon);
 			}
+			public void mousePressed(MouseEvent arg0) {
+				ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource("button_login (2).png"));
+				 Image newimg = icon.getImage().getScaledInstance(btnLogin.getWidth(), btnLogin.getHeight(),
+						java.awt.Image.SCALE_SMOOTH);
+				icon = new ImageIcon(newimg);
+				btnLogin.setIcon(icon);
+			}
+			public void mouseReleased(MouseEvent e) {
+				ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource("button_login (1).png"));
+				 Image newimg = icon.getImage().getScaledInstance(btnLogin.getWidth(), btnLogin.getHeight(),
+						java.awt.Image.SCALE_SMOOTH);
+				icon = new ImageIcon(newimg);
+				btnLogin.setIcon(icon);
+			}
 		});
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -155,12 +161,20 @@ public class Login {
 					if (!textField.getText().isEmpty() && !textField_1.getText().isEmpty() && scan.hasNextLine()) {
 						String first = textField.getText();
 						String second = textField_1.getText();
-						if (filecontrol.MD5(first).equals(scan.nextLine())) {
-							if (filecontrol.MD5(second).equals(scan.nextLine())) {
-								GUI bob = new GUI();
-								bob.frame.show();
+						String locations = scan.nextLine();
+						System.out.println(locations);
+						String [] location = locations.split("-");
+						String firstscan = Files.readAllLines(Paths.get(Login.a.getAbsolutePath())).get(Integer.parseInt(location[3])-1).substring(4,36);
+						String secondscan = Files.readAllLines(Paths.get(Login.a.getAbsolutePath())).get(Integer.parseInt(location[4])-1).substring(4,36);
+						if (filecontrol.MD5(first).equals(firstscan)) {
+							if (filecontrol.MD5(second).equals(secondscan)) {
 								frame.dispose();
+								new GUI().frame.show();		
+							}else{
+								JOptionPane.showMessageDialog(null,"Try again username and password are case sensitive.");
 							}
+						}else{
+							JOptionPane.showMessageDialog(null,"Try again username and password are case sensitive.");
 						}
 					}
 				} catch (IOException e) {

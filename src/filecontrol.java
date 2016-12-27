@@ -62,10 +62,11 @@ public class filecontrol extends GUI {
 	public static File CurrentPat;
 	public static String dir = "src/table/schedule.txt", oldName, path, day, month, date, year, CurrentDate, starttime2,
 			endtime2;
-	public static boolean newEvent = false;
+	public static boolean newEvent = false, checkbox = false;
 	public static double starttime = 7.00, endtime = 14;
-	public static byte[] username;
-	public static byte[] password;
+	public static byte[] username, password;
+	public static JCheckBox chckbxNewCheckBox;
+	public static int lengthofstring = 50, numlines = 100;
 
 	public static final int[] MONTH_LENGTH = new int[] { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
@@ -578,7 +579,7 @@ public class filecontrol extends GUI {
 			File file = new File("src/settings.txt");
 			try {
 				Scanner scan = new Scanner(Login.a);
-				
+
 				starttimetext = new JTextField();
 				starttimetext.setBounds(120, 60, 193, 26);
 				starttimetext.addFocusListener(new FocusAdapter() {
@@ -590,7 +591,6 @@ public class filecontrol extends GUI {
 							writer.print(endtimetext.getText());
 							writer.close();
 						} catch (FileNotFoundException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 
@@ -609,7 +609,6 @@ public class filecontrol extends GUI {
 							writer.print(endtimetext.getText());
 							writer.close();
 						} catch (FileNotFoundException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
@@ -620,17 +619,7 @@ public class filecontrol extends GUI {
 				Usernametext.setBounds(120, 120, 193, 26);
 				Usernametext.addFocusListener(new FocusAdapter() {
 					public void focusLost(FocusEvent arg0) {
-						PrintWriter writer;
-						try {			
-							String line3 = Files.readAllLines(Paths.get(Login.a.getAbsolutePath())).get(2);
-							writer = new PrintWriter(Login.a);
-							writer.println(MD5(Usernametext.getText()));
-							writer.println(MD5(Passwordtext.getText()));
-							writer.print(line3);
-							writer.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+						securitytofile("false");
 					}
 				});
 				a.add(Usernametext);
@@ -639,46 +628,23 @@ public class filecontrol extends GUI {
 				Passwordtext.setBounds(120, 150, 193, 26);
 				Passwordtext.addFocusListener(new FocusAdapter() {
 					public void focusLost(FocusEvent arg0) {
-						PrintWriter writer;
-						try {
-							String line3 = Files.readAllLines(Paths.get(Login.a.getAbsolutePath())).get(2);
-							writer = new PrintWriter(Login.a);
-							writer.println(MD5(Usernametext.getText()));
-							writer.println(MD5(Passwordtext.getText()));
-							writer.print(line3);
-							writer.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+						securitytofile("false");
 					}
 				});
 				a.add(Passwordtext);
 
-				JCheckBox chckbxNewCheckBox = new JCheckBox("remove login");
+				chckbxNewCheckBox = new JCheckBox("remove login");
 				chckbxNewCheckBox.setBounds(17, 177, 179, 35);
+				if(checkbox==true){
+					chckbxNewCheckBox.setSelected(true);
+				}
 				chckbxNewCheckBox.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
-						PrintWriter writer;
-						try {
-							writer = new PrintWriter(Login.a);
-							if(chckbxNewCheckBox.isSelected()){
-								writer.println(MD5(Usernametext.getText()));
-								writer.println(MD5(Passwordtext.getText()));
-								writer.print(MD5("true"));
-							}else{
-								writer.println(MD5(Usernametext.getText()));
-								writer.println(MD5(Passwordtext.getText()));
-								writer.print(MD5("false"));
-							}
-							writer.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						
+						securitytofile("true");
 					}
 				});
 				a.add(chckbxNewCheckBox);
-				
+
 				Scanner input = new Scanner(file);
 				String start = input.nextLine();
 				starttimetext.setText(start);
@@ -1849,27 +1815,37 @@ public class filecontrol extends GUI {
 		}
 	}
 
-	public static String randomgenstring() {
+	// create a random string to fill the gaps
+	public static String randomgenstringarray() {
 		Random r = new Random();
 		String random = "";
-		String alphabet = "abcdefghijklmnopqrstuvwxyz";
-		for (int i = 0; i < 50; i++) {
+		String alphabet = "1a2b3c4d5e6f7g8h9i0jklmnopqrstuvwxyz";
+		for (int i = 0; i < lengthofstring; i++) {
 			random += alphabet.charAt(r.nextInt(alphabet.length()));
 		}
 		return random;
 	}
 
-	public static int randomgenint() {
+	// create a random integer array to hide the location of the password and
+	// user
+	public static String randomgenintarray(int first, int second) {
 		Random r = new Random();
 		String random = "";
-		String alphabet = "0123456789";
-		for (int i = 0; i < 50; i++) {
-			random += alphabet.charAt(r.nextInt(alphabet.length()));
+		for (int i = 0; i < lengthofstring; i++) {
+			if (i == 3) {
+				random += first + "-";
+			} else if (i == 4) {
+				random += second + "-";
+			}else if (i == lengthofstring-1) {
+				random += (int) (Math.random() * numlines);
+			} else {
+				random += (int) (Math.random() * numlines) + "-";
+			}
 		}
-		int ranint = Integer.parseInt(random);
-		return ranint;
+		return random;
 	}
 
+	// change the String to MD5 encryption
 	public static String MD5(String text) {
 		try {
 			java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
@@ -1880,8 +1856,68 @@ public class filecontrol extends GUI {
 			}
 			return sb.toString();
 		} catch (java.security.NoSuchAlgorithmException e) {
-			
+
 		}
 		return null;
+	}
+
+	// add the MD5 encrypted string to a random array of string
+	public static String MD5stringintorandom(String MD5) {
+		Random r = new Random();
+		String random = "";
+		String alphabet = "1a2b3c4d5e6f7g8h9i0jklmnopqrstuvwxyz";
+		for (int i = 0; i < lengthofstring; i++) {
+			if (i == 4) {
+				random += MD5;
+				i += MD5.length()-1;
+			} else {
+				random += alphabet.charAt(r.nextInt(alphabet.length()));
+			}
+		}
+		return random;
+	}
+
+	// add all the security to the file
+	public static void securitytofile(String status) {
+		PrintWriter writer;
+		try {
+			String linelast = Files.readAllLines(Paths.get(Login.a.getAbsolutePath())).get(numlines-1);
+			writer = new PrintWriter(Login.a);
+			String username = Usernametext.getText();
+			String password = Passwordtext.getText();
+			
+			int location1 = (int) (Math.random() * numlines-10);
+			int location2 = (int) (Math.floor(Math.random() * (numlines - location1 + 1)) + location1);
+			
+			writer.println(randomgenintarray(location1, location2));
+			for (int i = 0; i < location1 - 2; i++) {
+				writer.println(randomgenstringarray());
+			}
+			writer.println(MD5stringintorandom(MD5(username)));
+			for (int i = 0; i < location2 - location1 - 1; i++) {
+				writer.println(randomgenstringarray());
+			}
+			writer.println(MD5stringintorandom(MD5(password)));
+			for (int i = 0; i < (numlines - location2); i++) {
+				if (i == (numlines - location2 - 1)) {
+						writer.println(randomgenstringarray());
+				} else {
+					writer.println(randomgenstringarray());
+				}
+			}
+
+			if (status.equals("true")) {
+				if (chckbxNewCheckBox.isSelected()) {
+					writer.print(MD5stringintorandom(MD5("true")));
+				} else {
+					writer.print(MD5stringintorandom(MD5("false")));
+				}
+			}else{
+				writer.print(linelast);
+			}
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
