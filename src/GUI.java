@@ -56,6 +56,15 @@ public class GUI {
 				text.setBounds(frame.getWidth() / 2 - 180, frame.getHeight() / 5, 280, 25);
 			}
 		});
+		
+		frame.addWindowListener(new java.awt.event.WindowAdapter() {
+		    @Override
+		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+		    	if(settings.isVisible()){
+		    		btnHome.grabFocus();
+		    	}
+		    }
+		});
 		frame.setBounds(100, 100, 614, 431);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new CardLayout(0, 0));

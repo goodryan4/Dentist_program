@@ -1885,6 +1885,12 @@ public class filecontrol extends GUI {
 			writer = new PrintWriter(Login.a);
 			String username = Usernametext.getText();
 			String password = Passwordtext.getText();
+			if(username.isEmpty()){
+				username = "user";
+			}
+			if(password.isEmpty()){
+				password = "pass";
+			}
 			
 			int location1 = (int) (Math.random() * numlines-10);
 			int location2 = (int) (Math.floor(Math.random() * (numlines - location1 + 1)) + location1);
