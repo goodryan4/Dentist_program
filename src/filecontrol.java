@@ -61,12 +61,11 @@ public class filecontrol extends GUI {
 	public static String[] information, CurrentDay;
 	public static File CurrentPat;
 	public static String dir = "src/table/schedule.txt", oldName, path, day, month, date, year, CurrentDate, starttime2,
-			endtime2;
-	public static boolean newEvent = false, checkbox = false;
+			endtime2, settingsdir = "src/settings.txt";
+	public static boolean newEvent = false, checkbox = false, allowenterkey = false;
 	public static double starttime = 7.00, endtime = 14;
-	public static byte[] username, password;
-	public static JCheckBox chckbxNewCheckBox;
-	public static int lengthofstring = 50, numlines = 100;
+	public static JCheckBox chckbxNewCheckBox, chckbxNewCheckBox2;
+	public static int lengthofstring = 50, numlines = 100, location1, location2;
 
 	public static final int[] MONTH_LENGTH = new int[] { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
@@ -93,7 +92,6 @@ public class filecontrol extends GUI {
 		try {
 			Scanner in = new Scanner(CurrentPat);
 			String data = in.nextLine();
-			System.out.println(data);
 			information = data.split(":;");
 			in.close();
 		} catch (FileNotFoundException e) {
@@ -144,70 +142,67 @@ public class filecontrol extends GUI {
 		if (numfiles == 0) {
 			list.add("There are no patients in the list");
 		} else {
-			String a = text.getText();
+			String userinput = text.getText();
 			for (int i = 0; i < numfiles; i++) {
-				if (text.getText().contains(" ")) {
-					String[] names = a.split(" ");
-					System.out.println(names[0].substring(0, 1) + names[0].substring(1) + " " + names[1].substring(0, 1)
-							+ names[1].substring(1));
-					if (files[i].getName().contains(names[0].substring(0, 1) + names[0].substring(1) + " "
-							+ names[1].substring(0, 1) + names[1].substring(1))) {
-						list.add(files[i].getName());
-					}
+				if (userinput.isEmpty()) {
+					list.add(files[i].getName());
 				} else {
-					/** ERROR HERE */
-					if (files[i].getName().contains(a.substring(0, 0) + a.substring(1).toLowerCase())) {
+					if (files[i].getName().toLowerCase().contains(userinput.toLowerCase())) {
 						list.add(files[i].getName());
 					}
 				}
+			}
+			if (list.getItemCount() == 0) {
+				list.add("No patient contains that user input");
 			}
 		}
 	}
 
 	// Add a patient to the list and to the file
 	public static void addentry() {
-		String name;
-		if (text.getText().contains(" ") && !text.getText().contains("  ")) {
-			name = text.getText().substring(0, 1) + text.getText().substring(1);
-			String[] names = name.split(" ");
-			name = names[0] + " " + names[1].substring(0, 1) + names[1].substring(1);
+		String name = "";
+		if (name.equals("Enter the person you wish to search")) {
+			check.setText("Type the patient's name in the search bar first");
 		} else {
-			name = text.getText().substring(0, 1) + text.getText().substring(1);
-		}
-		System.out.println(name);
-		String dir = directory + "/" + name;
-		File add = new File(dir);
-		if (name.equals("enter the person you wish to search")) {
-			check.setText("Enter patient name in search bar first");
-		} else if (add.exists()) {
-			check.setText("the patient already exist");
-		} else {
-			add.mkdir();
-			try {
-				String[] files = { "/allinfo.txt", "/info.txt", "/procedure.txt", "/balance.txt" };
-				for (int i = 0; i < files.length; i++) {
-					new File(dir + files[i]).createNewFile();
-					filecontrol.instantiat(dir, files[i]);
+			if (text.getText().contains(" ")) {
+				String[] names = text.getText().split(" ");
+				for (int i = 0; i < names.length; i++) {
+					name += names[i].substring(0, 1).toUpperCase() + names[i].substring(1).toLowerCase();
+					if (i != names.length - 1) {
+						name += " ";
+					}
 				}
-				check.setText("added " + name);
-				list.add(name);
-				// check for "There are no names" item in list and if it is
-				// there then delete it
-				if (list.getItem(0).contains("There are no patients in the list")) {
-					list.remove(0);
+			} else {
+				name = text.getText().substring(0, 1).toUpperCase() + text.getText().substring(1).toLowerCase();
+			}
+			String dir = directory + "/" + name;
+			File add = new File(dir);
+			if (add.exists()) {
+				check.setText("the patient already exist");
+			} else {
+				add.mkdir();
+				try {
+					String[] files = { "/allinfo.txt", "/info.txt", "/procedure.txt", "/balance.txt" };
+					for (int i = 0; i < files.length; i++) {
+						new File(dir + files[i]).createNewFile();
+						filecontrol.instantiat(dir, files[i]);
+					}
+					check.setText("added " + name);
+					list.add(name);
+					if (list.getItem(0).contains("There are no patients in the list")) {
+						list.remove(0);
+					}
+					text.setText("");
+					list.requestFocus();
+					list.removeAll();
+					filestolist(list, bob);
+					text.setText("Enter the person you wish to search");
+					text.setForeground(Color.gray);
+					text.setHorizontalAlignment(SwingConstants.CENTER);
+				} catch (IOException e) {
+					check.setText("Failed to add " + name + " unknown reason");
+					e.printStackTrace();
 				}
-				text.setText("");
-				list.requestFocus();
-				list.removeAll();
-				filestolist(list, bob);
-				text.setText("Enter the person you wish to search");
-				text.setForeground(Color.gray);
-				text.setHorizontalAlignment(SwingConstants.CENTER);
-				// this should never happen!! but if there is an error creating
-				// the files then the it will tell user "Failed to add"
-			} catch (IOException e) {
-				check.setText("Failed to add");
-				e.printStackTrace();
 			}
 		}
 	}
@@ -219,8 +214,16 @@ public class filecontrol extends GUI {
 			TextFields[i].setText(a);
 		}
 		for (int i = 0; i < textareas.length; i++) {
-			String a = currentData[TextFields.length + i].substring(1, currentData[TextFields.length + i].length());
-			textareas[i].setText(a);
+			if (allowenterkey == true) {
+				String a = currentData[TextFields.length + i].substring(1, currentData[TextFields.length + i].length());
+				String[] data = a.split(" ");
+				for (int j = 0; j < data.length; j++) {
+					textareas[i].append(data[j]);
+				}
+			} else {
+				String a = currentData[TextFields.length + i].substring(1, currentData[TextFields.length + i].length());
+				textareas[i].setText(a);
+			}
 		}
 	}
 
@@ -340,9 +343,11 @@ public class filecontrol extends GUI {
 			textarea.setLineWrap(true);
 			textarea.setWrapStyleWord(true);
 			textarea.addKeyListener(new KeyAdapter() {
-				public void keyPressed(KeyEvent e) {
-					if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-						textarea.setCaretPosition(-1);
+				public void keyTyped(KeyEvent e) {
+					if (allowenterkey == false) {
+						if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+							textarea.setCaretPosition(0);
+						}
 					}
 				}
 			});
@@ -430,7 +435,7 @@ public class filecontrol extends GUI {
 			}
 		}
 		if (a.equals(schedule)) {
-			File settings = new File("src/settings.txt");
+			File settings = new File(settingsdir);
 			Scanner input;
 			try {
 				input = new Scanner(settings);
@@ -576,91 +581,63 @@ public class filecontrol extends GUI {
 			a.add(btnAddEvent);
 		}
 		if (a.equals(settings)) {
-			File file = new File("src/settings.txt");
-			try {
-				Scanner scan = new Scanner(Login.a);
+			File file = new File(settingsdir);
+			starttimetext = new JTextField();
+			starttimetext.setBounds(120, 60, 193, 26);
+			a.add(starttimetext);
 
-				starttimetext = new JTextField();
-				starttimetext.setBounds(120, 60, 193, 26);
-				starttimetext.addFocusListener(new FocusAdapter() {
-					public void focusLost(FocusEvent arg0) {
-						PrintWriter writer;
-						try {
-							writer = new PrintWriter(file);
-							writer.println(starttimetext.getText());
-							writer.print(endtimetext.getText());
-							writer.close();
-						} catch (FileNotFoundException e) {
-							e.printStackTrace();
-						}
+			endtimetext = new JTextField();
+			endtimetext.setBounds(120, 90, 193, 26);
+			a.add(endtimetext);
 
+			Usernametext = new JTextField();
+			Usernametext.setBounds(120, 120, 193, 26);
+			a.add(Usernametext);
+
+			Passwordtext = new JTextField();
+			Passwordtext.setBounds(120, 150, 193, 26);
+			a.add(Passwordtext);
+
+			chckbxNewCheckBox = new JCheckBox("remove login");
+			chckbxNewCheckBox.setBounds(17, 177, 179, 35);
+			if (checkbox == true) {
+				chckbxNewCheckBox.setSelected(true);
+			}
+			a.add(chckbxNewCheckBox);
+
+			chckbxNewCheckBox2 = new JCheckBox("Enable enter key for textareas (beta)");
+			chckbxNewCheckBox2.setBounds(17, 213, 179, 35);
+			chckbxNewCheckBox2.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					if (chckbxNewCheckBox2.isSelected()) {
+						allowenterkey = true;
+					} else {
+						allowenterkey = false;
 					}
-				});
-				a.add(starttimetext);
-
-				endtimetext = new JTextField();
-				endtimetext.setBounds(120, 90, 193, 26);
-				endtimetext.addFocusListener(new FocusAdapter() {
-					public void focusLost(FocusEvent arg0) {
-						PrintWriter writer;
-						try {
-							writer = new PrintWriter(file);
-							writer.println(starttimetext.getText());
-							writer.print(endtimetext.getText());
-							writer.close();
-						} catch (FileNotFoundException e) {
-							e.printStackTrace();
-						}
-					}
-				});
-				a.add(endtimetext);
-
-				Usernametext = new JTextField();
-				Usernametext.setBounds(120, 120, 193, 26);
-				Usernametext.addFocusListener(new FocusAdapter() {
-					public void focusLost(FocusEvent arg0) {
-						securitytofile("false");
-					}
-				});
-				a.add(Usernametext);
-
-				Passwordtext = new JTextField();
-				Passwordtext.setBounds(120, 150, 193, 26);
-				Passwordtext.addFocusListener(new FocusAdapter() {
-					public void focusLost(FocusEvent arg0) {
-						securitytofile("false");
-					}
-				});
-				a.add(Passwordtext);
-
-				chckbxNewCheckBox = new JCheckBox("remove login");
-				chckbxNewCheckBox.setBounds(17, 177, 179, 35);
-				if(checkbox==true){
-					chckbxNewCheckBox.setSelected(true);
 				}
-				chckbxNewCheckBox.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						securitytofile("true");
-					}
-				});
-				a.add(chckbxNewCheckBox);
+			});
+			a.add(chckbxNewCheckBox2);
 
+			try {
 				Scanner input = new Scanner(file);
 				String start = input.nextLine();
 				starttimetext.setText(start);
 				String end = input.nextLine();
 				endtimetext.setText(end);
+				if (input.nextLine().equals("true")) {
+					chckbxNewCheckBox2.doClick();
+					allowenterkey = true;
+				}
 				input.close();
-
-			} catch (IOException e) {
-				System.out.println(e.getMessage());
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
 			}
 
-			btnHome = new JButton("Home");
+			btnHome = new JButton("Save and go Home");
 			btnHome.setBounds(463, 30, 101, 24);
 			btnHome.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
-					btnHome.grabFocus();
+					settingstofile();
 					hidepanels(search);
 				}
 			});
@@ -1032,28 +1009,20 @@ public class filecontrol extends GUI {
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		String CurrentDate = dateFormat.format(d).toString();
 		BufferedReader br = null;
-		try {
-			br = new BufferedReader(new FileReader(dir));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		String CurrentDays = null;
 		File file = new File(dir);
-		for (int i = 0; i < file.length(); i++) {
-			try {
+		try {
+			br = new BufferedReader(new FileReader(dir));
+			for (int i = 0; i < file.length(); i++) {
 				CurrentDays = br.readLine();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			// System.out.println(CurrentDay.substring(0,10));
-			if (CurrentDate.compareTo(CurrentDays.substring(0, 10)) == 0) {
+				if (CurrentDate.compareTo(CurrentDays.substring(0, 10)) == 0) {
+					CurrentDay = CurrentDays.substring(13, CurrentDays.length()).split("__");
+					return CurrentDays.substring(13, CurrentDays.length()).split("__");
+				}
 
-				CurrentDay = CurrentDays.substring(13, CurrentDays.length()).split("__");
-				return CurrentDays.substring(13, CurrentDays.length()).split("__");
 			}
-
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -1076,15 +1045,11 @@ public class filecontrol extends GUI {
 		boolean didRun = false;
 		boolean runYet = false;
 
-		System.out.println("Appointment Start:" + ApointStart + " Appointment End:" + ApointEnd + " name:" + name);
-
 		for (int i = 0; i < DaysProcedings.length; i++) {
 			String[] timeSlot = DaysProcedings[i].split(";");
 			double startTime = getStartTime(timeSlot[0]);
 			double endTime = getStartTime(timeSlot[1]);
 			String event = timeSlot[2];
-
-			System.out.println(startTime + " " + endTime + " " + event);
 
 			// if appointment start is greater than free start and appointment
 			// end
@@ -1178,8 +1143,6 @@ public class filecontrol extends GUI {
 
 		}
 		newTextLine = CurrentDate + ":-:" + newTextLine;
-		System.out.println(newTextLine);
-		System.out.println(conflict);
 		if (conflict2 == false && didRun == true) {
 			wrightToFile1(newTextLine);
 		}
@@ -1320,7 +1283,6 @@ public class filecontrol extends GUI {
 							String tempS3 = moreChecks(Double.toString(ApointEnd).replace(".", ":"));
 							String tempE3 = moreChecks(Double.toString(endTimeAfter).replace(".", ":"));
 							newFreeAfter = tempS3 + ";" + tempE3 + ";" + "free__";
-							System.out.println("ApointEnd");
 						}
 						i++;
 					}
@@ -1354,7 +1316,6 @@ public class filecontrol extends GUI {
 		}
 
 		newTextLine = CurrentDate + ":-:" + newTextLine;
-		System.out.println(newTextLine);
 		if (IsConflict == false) {
 			wrightToFile1(newTextLine);
 		}
@@ -1377,13 +1338,10 @@ public class filecontrol extends GUI {
 				while (br2.readLine() != null) {
 					CurrentDay = br.readLine();
 					if (CurrentDate.compareTo(CurrentDay.substring(0, 10)) == 0) {
-						System.out.println("check4");
 						input = input + line + '\n';
 					} else {
 						input = input + CurrentDay + '\n';
 					}
-
-					System.out.println(CurrentDay.substring(0, 10) + "and" + CurrentDate);
 				}
 				FileOutputStream fileOut = new FileOutputStream(dir);
 				fileOut.write(input.getBytes());
@@ -1422,8 +1380,6 @@ public class filecontrol extends GUI {
 			double startTime = 0;
 			double endTime = 0;
 
-			// System.out.println(timeSlot[2]);
-
 			startTime = getStartTime(timeSlot[0]);
 			endTime = getStartTime(timeSlot[1]);
 
@@ -1435,7 +1391,6 @@ public class filecontrol extends GUI {
 
 			} else if (ApointStart >= startTime && endTime > ApointStart) {
 				hasStarted = true;
-				System.out.println(timeSlot[2]);
 				if (!(timeSlot[2].compareTo("free") == 0) && timeSlot[2].compareTo(name) != 0) {
 					conflict = conflict + DaysProcedings[i];
 
@@ -1445,7 +1400,6 @@ public class filecontrol extends GUI {
 			}
 
 		}
-		System.out.println("check3");
 		return false;
 	}
 
@@ -1499,7 +1453,6 @@ public class filecontrol extends GUI {
 			oldend = endTime;
 
 		}
-		System.out.println(newTextLine);
 	}
 
 	// checks the month for a leap year and changes the number of days
@@ -1741,9 +1694,6 @@ public class filecontrol extends GUI {
 					start = getStartTime(startTime);
 					end = getStartTime(endTime);
 					oldName = Name;
-					// WHAT ABOUT LUNCH!!!!
-					System.out.println(
-							"	start:" + start + " end:" + end + " name:" + Name + " NewEventStatus:" + newEvent);
 					if (end != 0.0 && start != 0.0 && Name.compareTo("free") != 0 && Name.compareTo("lunch") != 0) {
 						if (newEvent == true && row == 0 && Name.compareTo("") != 0) {
 							AddApointment(CurrentDay, start, end, Name);
@@ -1752,23 +1702,14 @@ public class filecontrol extends GUI {
 								&& (oldName.compareTo("free") != 0 || oldName.compareTo("lunch") != 0)) {
 							if (newEvent == false || row != 0) {
 								deleteApointment(CurrentDay, oldName);
-								System.out.println("deleted event");
 							}
 						} else if (oldName.compareTo("free") != 0 && oldName.compareTo("lunch") != 0
 								&& Name.compareTo("") != 0) {
 							editApointment(CurrentDay, start, end, oldName, Name);
-							System.out.println("edited appointment");
-						} else {
-							System.out.println("no changes");
 						}
-						System.out.println("something happened");
 					}
-				} else {
-					System.out.println(data + " succeeded");
 				}
-
 			}
-
 		});
 	}
 
@@ -1836,7 +1777,7 @@ public class filecontrol extends GUI {
 				random += first + "-";
 			} else if (i == 4) {
 				random += second + "-";
-			}else if (i == lengthofstring-1) {
+			} else if (i == lengthofstring - 1) {
 				random += (int) (Math.random() * numlines);
 			} else {
 				random += (int) (Math.random() * numlines) + "-";
@@ -1869,7 +1810,7 @@ public class filecontrol extends GUI {
 		for (int i = 0; i < lengthofstring; i++) {
 			if (i == 4) {
 				random += MD5;
-				i += MD5.length()-1;
+				i += MD5.length() - 1;
 			} else {
 				random += alphabet.charAt(r.nextInt(alphabet.length()));
 			}
@@ -1878,50 +1819,68 @@ public class filecontrol extends GUI {
 	}
 
 	// add all the security to the file
-	public static void securitytofile(String status) {
-		PrintWriter writer;
+	public static void settingstofile() {
 		try {
-			String linelast = Files.readAllLines(Paths.get(Login.a.getAbsolutePath())).get(numlines-1);
-			writer = new PrintWriter(Login.a);
+			Boolean change1 = false;
+			Boolean change2 = false;
+			PrintWriter writer = new PrintWriter(Login.a);
 			String username = Usernametext.getText();
 			String password = Passwordtext.getText();
-			if(username.isEmpty()){
-				username = "user";
+
+			// location of username and password
+			if (!username.isEmpty()) {
+				location1 = (int) (Math.random() * numlines - 10);
+				change1 = true;
 			}
-			if(password.isEmpty()){
-				password = "pass";
+
+			if (!password.isEmpty()) {
+				location2 = (int) (Math.floor(Math.random() * (numlines - location1 + 1)) + location1);
+				change2 = true;
 			}
-			
-			int location1 = (int) (Math.random() * numlines-10);
-			int location2 = (int) (Math.floor(Math.random() * (numlines - location1 + 1)) + location1);
-			
+
 			writer.println(randomgenintarray(location1, location2));
 			for (int i = 0; i < location1 - 2; i++) {
 				writer.println(randomgenstringarray());
 			}
-			writer.println(MD5stringintorandom(MD5(username)));
+
+			// if the user has changed the username
+			if (change1 == true) {
+				writer.println(MD5stringintorandom(MD5(username)));
+			} else {
+				writer.println(Login.firstscan);
+			}
 			for (int i = 0; i < location2 - location1 - 1; i++) {
 				writer.println(randomgenstringarray());
 			}
-			writer.println(MD5stringintorandom(MD5(password)));
+
+			// if the user has changed the password
+			if (change2 == true) {
+				writer.println(MD5stringintorandom(MD5(password)));
+			} else {
+				writer.println(Login.secondscan);
+			}
 			for (int i = 0; i < (numlines - location2); i++) {
 				if (i == (numlines - location2 - 1)) {
-						writer.println(randomgenstringarray());
+					writer.println(randomgenstringarray());
 				} else {
 					writer.println(randomgenstringarray());
 				}
 			}
 
-			if (status.equals("true")) {
-				if (chckbxNewCheckBox.isSelected()) {
-					writer.print(MD5stringintorandom(MD5("true")));
-				} else {
-					writer.print(MD5stringintorandom(MD5("false")));
-				}
-			}else{
-				writer.print(linelast);
+			// if the remove checkbox is selected or not
+			if (chckbxNewCheckBox.isSelected()) {
+				writer.print(MD5stringintorandom(MD5("true")));
+			} else {
+				writer.print(MD5stringintorandom(MD5("false")));
 			}
 			writer.close();
+
+			// if the enterkey is allowed or not
+			PrintWriter writer2 = new PrintWriter(settingsdir);
+			writer2.println(starttimetext.getText());
+			writer2.println(endtimetext.getText());
+			writer2.print(chckbxNewCheckBox2.isSelected());
+			writer2.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

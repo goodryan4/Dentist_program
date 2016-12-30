@@ -14,8 +14,6 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Scanner;
-import java.util.zip.ZipFile;
-
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -33,13 +31,14 @@ public class Login {
 	public static File folder = new File("src/");
 	static String line3;
 	JButton btnLogin;
+	static String firstscan, secondscan;
+	static boolean skip = false;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
 					if (!a.exists()) {
-						System.out.println("made a file");
 						folder.mkdir();
 						a.createNewFile();
 						try {
@@ -52,15 +51,33 @@ public class Login {
 							e.printStackTrace();
 						}
 					}
-					line3 = Files.readAllLines(Paths.get(a.getAbsolutePath())).get(filecontrol.numlines).substring(4,36);
+					line3 = Files.readAllLines(Paths.get(a.getAbsolutePath())).get(filecontrol.numlines).substring(4,
+							36);
 					if (!line3.equals(filecontrol.MD5("false"))) {
-						filecontrol.checkbox=true;
-						GUI bob = new GUI();
-						bob.frame.show();
+						filecontrol.checkbox =true;
+						try {
+							Scanner scan = new Scanner(a);
+							if (scan.hasNextLine()) {
+								String locations = scan.nextLine();
+								String[] location = locations.split("-");
+								filecontrol.location1 = Integer.parseInt(location[3]);
+								filecontrol.location2 = Integer.parseInt(location[4]);
+								firstscan = Files.readAllLines(Paths.get(Login.a.getAbsolutePath()))
+										.get(filecontrol.location1 - 1);
+								secondscan = Files.readAllLines(Paths.get(Login.a.getAbsolutePath()))
+										.get(filecontrol.location2 - 1);
+								new GUI().frame.show();
+							}else {
+								System.exit(0);
+							}
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					} else {
 						Login window = new Login();
 						window.frame.setVisible(true);
 					}
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -103,7 +120,7 @@ public class Login {
 		textField.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
 		textField.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent arg0) {
-				if(arg0.getKeyCode()==KeyEvent.VK_ENTER){
+				if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
 					btnLogin.doClick();
 				}
 			}
@@ -115,7 +132,7 @@ public class Login {
 		textField_1.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
 		textField_1.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent arg0) {
-				if(arg0.getKeyCode()==KeyEvent.VK_ENTER){
+				if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
 					btnLogin.doClick();
 				}
 			}
@@ -131,23 +148,26 @@ public class Login {
 				icon = new ImageIcon(newimg);
 				btnLogin.setIcon(icon);
 			}
+
 			public void mouseExited(MouseEvent e) {
 				ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource("button_login.png"));
-				 Image newimg = icon.getImage().getScaledInstance(btnLogin.getWidth(), btnLogin.getHeight(),
+				Image newimg = icon.getImage().getScaledInstance(btnLogin.getWidth(), btnLogin.getHeight(),
 						java.awt.Image.SCALE_SMOOTH);
 				icon = new ImageIcon(newimg);
 				btnLogin.setIcon(icon);
 			}
+
 			public void mousePressed(MouseEvent arg0) {
 				ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource("button_login (2).png"));
-				 Image newimg = icon.getImage().getScaledInstance(btnLogin.getWidth(), btnLogin.getHeight(),
+				Image newimg = icon.getImage().getScaledInstance(btnLogin.getWidth(), btnLogin.getHeight(),
 						java.awt.Image.SCALE_SMOOTH);
 				icon = new ImageIcon(newimg);
 				btnLogin.setIcon(icon);
 			}
+
 			public void mouseReleased(MouseEvent e) {
 				ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource("button_login (1).png"));
-				 Image newimg = icon.getImage().getScaledInstance(btnLogin.getWidth(), btnLogin.getHeight(),
+				Image newimg = icon.getImage().getScaledInstance(btnLogin.getWidth(), btnLogin.getHeight(),
 						java.awt.Image.SCALE_SMOOTH);
 				icon = new ImageIcon(newimg);
 				btnLogin.setIcon(icon);
@@ -155,30 +175,19 @@ public class Login {
 		});
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Scanner scan;
-				try {
-					scan = new Scanner(a);
-					if (!textField.getText().isEmpty() && !textField_1.getText().isEmpty() && scan.hasNextLine()) {
-						String first = textField.getText();
-						String second = textField_1.getText();
-						String locations = scan.nextLine();
-						System.out.println(locations);
-						String [] location = locations.split("-");
-						String firstscan = Files.readAllLines(Paths.get(Login.a.getAbsolutePath())).get(Integer.parseInt(location[3])-1).substring(4,36);
-						String secondscan = Files.readAllLines(Paths.get(Login.a.getAbsolutePath())).get(Integer.parseInt(location[4])-1).substring(4,36);
-						if (filecontrol.MD5(first).equals(firstscan)) {
-							if (filecontrol.MD5(second).equals(secondscan)) {
-								frame.dispose();
-								new GUI().frame.show();		
-							}else{
-								JOptionPane.showMessageDialog(null,"Try again username and password are case sensitive.");
-							}
-						}else{
-							JOptionPane.showMessageDialog(null,"Try again username and password are case sensitive.");
+				if (!textField.getText().isEmpty() && !textField_1.getText().isEmpty()) {
+					String first = textField.getText();
+					String second = textField_1.getText();
+					if (filecontrol.MD5(first).equals(firstscan.substring(4, 36))) {
+						if (filecontrol.MD5(second).equals(secondscan.substring(4, 36))) {
+							frame.dispose();
+							new GUI().frame.show();
+						} else {
+							JOptionPane.showMessageDialog(null, "Try again username and password are case sensitive.");
 						}
+					} else {
+						JOptionPane.showMessageDialog(null, "Try again username and password are case sensitive.");
 					}
-				} catch (IOException e) {
-					e.printStackTrace();
 				}
 			}
 		});
