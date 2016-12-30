@@ -131,7 +131,7 @@ public class GUI {
 		text.addFocusListener(new FocusAdapter() {
 			public void focusLost(FocusEvent arg0) {
 				if (text.getText().equals("")) {
-					text.setText("Enter the person you wish to search");
+					text.setText("Enter the patient you wish to search or add");
 					text.setForeground(Color.gray);
 					text.setHorizontalAlignment(SwingConstants.CENTER);
 				}
@@ -145,7 +145,7 @@ public class GUI {
 		});
 		text.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent arg0) {
-				if (text.getText().equals("Enter the person you wish to search")) {
+				if (text.getText().equals("Enter the patient you wish to search or add")) {
 					text.setText("");
 					text.setForeground(Color.black);
 					text.setHorizontalAlignment(SwingConstants.LEADING);
@@ -156,7 +156,7 @@ public class GUI {
 		});
 		text.setHorizontalAlignment(SwingConstants.CENTER);
 		filecontrol.filestolist(list, bob);
-		text.setText("Enter the person you wish to search");
+		text.setText("Enter the patient you wish to search or add");
 		text.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		text.setBounds(frame.getWidth() / 2 - 180, frame.getHeight() / 5, 280, 25);
 		search.add(text);

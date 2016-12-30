@@ -41,38 +41,30 @@ public class Login {
 					if (!a.exists()) {
 						folder.mkdir();
 						a.createNewFile();
-						try {
-							PrintWriter writer = new PrintWriter(a);
-							writer.println(filecontrol.MD5("user"));
-							writer.println(filecontrol.MD5("pass"));
-							writer.print(filecontrol.MD5("false"));
-							writer.close();
-						} catch (FileNotFoundException e) {
-							e.printStackTrace();
-						}
+						filecontrol.settingstofile("user", "pass", true);
 					}
 					line3 = Files.readAllLines(Paths.get(a.getAbsolutePath())).get(filecontrol.numlines).substring(4,
 							36);
-					if (!line3.equals(filecontrol.MD5("false"))) {
-						filecontrol.checkbox =true;
-						try {
-							Scanner scan = new Scanner(a);
-							if (scan.hasNextLine()) {
-								String locations = scan.nextLine();
-								String[] location = locations.split("-");
-								filecontrol.location1 = Integer.parseInt(location[3]);
-								filecontrol.location2 = Integer.parseInt(location[4]);
-								firstscan = Files.readAllLines(Paths.get(Login.a.getAbsolutePath()))
-										.get(filecontrol.location1 - 1);
-								secondscan = Files.readAllLines(Paths.get(Login.a.getAbsolutePath()))
-										.get(filecontrol.location2 - 1);
-								new GUI().frame.show();
-							}else {
-								System.exit(0);
-							}
-						} catch (IOException e) {
-							e.printStackTrace();
+					try {
+						Scanner scan = new Scanner(a);
+						if (scan.hasNextLine()) {
+							String locations = scan.nextLine();
+							String[] location = locations.split("-");
+							filecontrol.location1 = Integer.parseInt(location[3]);
+							filecontrol.location2 = Integer.parseInt(location[4]);
+							firstscan = Files.readAllLines(Paths.get(Login.a.getAbsolutePath()))
+									.get(filecontrol.location1 - 1);
+							secondscan = Files.readAllLines(Paths.get(Login.a.getAbsolutePath()))
+									.get(filecontrol.location2 - 1);
+						} else {
+							System.exit(0);
 						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					if (!line3.equals(filecontrol.MD5("false"))) {
+						filecontrol.checkbox = true;
+						new GUI().frame.show();
 					} else {
 						Login window = new Login();
 						window.frame.setVisible(true);
