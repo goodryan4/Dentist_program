@@ -68,6 +68,8 @@ public class GUI {
 		frame.setBounds(100, 100, 614, 431);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new CardLayout(0, 0));
+		
+		frame.setLocation(Login.dim.width/2-frame.getWidth()/2, Login.dim.height/2-frame.getHeight()/2);
 
 		// main page
 		search = new JPanel();

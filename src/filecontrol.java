@@ -62,9 +62,9 @@ public class filecontrol extends GUI {
 	public static File CurrentPat;
 	public static String dir = "src/table/schedule.txt", oldName, path, day, month, date, year, CurrentDate, starttime2,
 			endtime2, settingsdir = "src/settings.txt";
-	public static boolean newEvent = false, checkbox = false, allowenterkey = false;
+	public static boolean newEvent = false, checkbox = false;
 	public static double starttime = 7.00, endtime = 14;
-	public static JCheckBox chckbxNewCheckBox, chckbxNewCheckBox2;
+	public static JCheckBox chckbxNewCheckBox;
 	public static int lengthofstring = 50, numlines = 100, location1, location2;
 
 	public static final int[] MONTH_LENGTH = new int[] { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
@@ -102,7 +102,6 @@ public class filecontrol extends GUI {
 
 	// Adds new info to info page
 	public static void newInfo(String data, int position) throws IOException {
-
 		information[position] = data;
 		String textline = "";
 		for (int i = 0; i < information.length; i++) {
@@ -111,7 +110,6 @@ public class filecontrol extends GUI {
 		PrintWriter writer = new PrintWriter(path);
 		writer.print(textline);
 		writer.close();
-
 	}
 
 	// For look through all patients and calling "removefolder" method
@@ -176,7 +174,7 @@ public class filecontrol extends GUI {
 		File add = new File(dir);
 		if (add.exists()) {
 			check.setText("the patient already exist");
-		} else if (name.equals("Enter The patient You Wish To Search Or Add")) {
+		} else if (name.equals("Enter The Patient You Wish To Search Or Add")) {
 			check.setText("Type the patient's name in the search bar first");
 		} else {
 			add.mkdir();
@@ -212,14 +210,14 @@ public class filecontrol extends GUI {
 			TextFields[i].setText(a);
 		}
 		for (int i = 0; i < textareas.length; i++) {
-			if (allowenterkey == true) {
-				String a = currentData[TextFields.length + i].substring(1, currentData[TextFields.length + i].length());
-				String[] data = a.split(" ");
+			String a = currentData[TextFields.length + i].substring(1, currentData[TextFields.length + i].length());
+			System.out.println(a);
+			if (a.contains("{:")) {
+				String[] data = a.split("\\{:");
 				for (int j = 0; j < data.length; j++) {
-					textareas[i].append(data[j]);
+					textareas[i].append(data[j] + "\n");
 				}
 			} else {
-				String a = currentData[TextFields.length + i].substring(1, currentData[TextFields.length + i].length());
 				textareas[i].setText(a);
 			}
 		}
@@ -242,7 +240,19 @@ public class filecontrol extends GUI {
 			}
 			for (int i = 0; i < textareas.length; i++) {
 				textareas[i].setEditable(false);
-				a[TextFields.length + i] = textareas[i].getText();
+				String[] text = textareas[i].getText().split("\\n");
+				String textareatext = "";
+				for (int j = 0; j < textareas[i].getLineCount(); j++) {
+					if (text[j].equals(null)) {
+
+					} else {
+						textareatext += text[j];
+						if (j != textareas[i].getLineCount() - 1) {
+							textareatext += "{:";
+						}
+					}
+				}
+				a[TextFields.length + i] = textareatext;
 			}
 			setfiledata(name, currjpanel, a);
 		}
@@ -340,15 +350,6 @@ public class filecontrol extends GUI {
 			textarea.setEditable(false);
 			textarea.setLineWrap(true);
 			textarea.setWrapStyleWord(true);
-			textarea.addKeyListener(new KeyAdapter() {
-				public void keyTyped(KeyEvent e) {
-					if (allowenterkey == false) {
-						if (e.getKeyChar() == KeyEvent.VK_ENTER) {
-							textarea.setCaretPosition(0);
-						}
-					}
-				}
-			});
 			textarea.setBounds(250, 60, 175, 70);
 			a.add(textarea);
 
@@ -474,54 +475,57 @@ public class filecontrol extends GUI {
 			listdates.setBounds(463, 70, 100, 25);
 			listdates.addActionListener(new ActionListener() {
 
-	public void actionPerformed(ActionEvent arg0) {
-		File CurrentPat = new File(dir);
-		try {
-			Scanner in = new Scanner(CurrentPat);
-			Boolean start = true;
-			while (in.hasNextLine() && start == true) {
-				String data = in.nextLine();
-				String date = data.substring(0, 10);
-				if (date.equals(listdates.getSelectedItem())) {
-					start = false;
-					String[] separator = data.substring(13, data.length()).split("__");
-					CurrentDay = separator;
-					// remake the jtable to the proper amount of
-					// rows
-					DefaultTableModel model = new DefaultTableModel(separator.length, 4);
+				public void actionPerformed(ActionEvent arg0) {
+					File CurrentPat = new File(dir);
+					try {
+						Scanner in = new Scanner(CurrentPat);
+						Boolean start = true;
+						while (in.hasNextLine() && start == true) {
+							String data = in.nextLine();
+							String date = data.substring(0, 10);
+							if (date.equals(listdates.getSelectedItem())) {
+								start = false;
+								String[] separator = data.substring(13, data.length()).split("__");
+								CurrentDay = separator;
+								// remake the jtable to the proper amount of
+								// rows
+								DefaultTableModel model = new DefaultTableModel(separator.length, 4);
 
-					table.setModel(model);
-					for (int i = 0; i < table.getColumnCount(); i++) {
-						TableColumn column1 = table.getTableHeader().getColumnModel().getColumn(i);
+								table.setModel(model);
+								for (int i = 0; i < table.getColumnCount(); i++) {
+									TableColumn column1 = table.getTableHeader().getColumnModel().getColumn(i);
 
-						column1.setHeaderValue(columnNames[i]);
+									column1.setHeaderValue(columnNames[i]);
+								}
+								table.getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(time));
+								table.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(time));
+								table.getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(status));
+
+								for (int i = 0; i < separator.length; i++) {
+									String[] timeandevent = separator[i].split(";");
+									table.setValueAt(timeandevent[0], i, 0);
+									table.setValueAt(timeandevent[1], i, 1);
+									table.setValueAt(timeandevent[2], i, 2);
+								}
+								addtablelistener();
+							}
+						}
+						in.close();
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
 					}
-					table.getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(time));
-					table.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(time));
-					table.getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(status));
-
-					for (int i = 0; i < separator.length; i++) {
-						String[] timeandevent = separator[i].split(";");
-						table.setValueAt(timeandevent[0], i, 0);
-						table.setValueAt(timeandevent[1], i, 1);
-						table.setValueAt(timeandevent[2], i, 2);
-					}
-					addtablelistener();
 				}
-			}
-			in.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-	}});a.add(listdates);
+			});
+			a.add(listdates);
 
-	time=new JComboBox();addtimes();
+			time = new JComboBox();
+			addtimes();
 
-	File file = new File(dir);
+			File file = new File(dir);
 
-	Date date = new Date();
+			Date date = new Date();
 
-	fileInit(date);
+			fileInit(date);
 			try {
 				Scanner scan = new Scanner(file);
 				if (!file.exists() || !scan.hasNextLine()) {
@@ -577,7 +581,9 @@ public class filecontrol extends GUI {
 			});
 			a.add(btnAddEvent);
 		}
-		if (a.equals(settings)) {
+		if (a.equals(settings))
+
+		{
 			File file = new File(settingsdir);
 			starttimetext = new JTextField();
 			starttimetext.setBounds(120, 60, 193, 26);
@@ -602,30 +608,12 @@ public class filecontrol extends GUI {
 			}
 			a.add(chckbxNewCheckBox);
 
-			chckbxNewCheckBox2 = new JCheckBox("Enable enter key for textareas (beta)");
-			chckbxNewCheckBox2.setBounds(17, 213, 179, 35);
-			chckbxNewCheckBox2.addActionListener(new ActionListener() {
-
-	public void actionPerformed(ActionEvent arg0) {
-					if (chckbxNewCheckBox2.isSelected()) {
-						allowenterkey = true;
-					} else {
-						allowenterkey = false;
-					}
-				}
-			});
-			a.add(chckbxNewCheckBox2);
-
 			try {
 				Scanner input = new Scanner(file);
 				String start = input.nextLine();
 				starttimetext.setText(start);
 				String end = input.nextLine();
 				endtimetext.setText(end);
-				if (input.nextLine().equals("true")) {
-					chckbxNewCheckBox2.doClick();
-					allowenterkey = true;
-				}
 				input.close();
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -860,10 +848,11 @@ public class filecontrol extends GUI {
 		File CurrentPat = new File(path);
 		String data = "";
 		for (int i = 0; i < info.length; i++) {
-			data = data + " " + info[i] + ":;";
+			data += " " + info[i] + ":;";
 		}
 		try {
 			PrintWriter writer = new PrintWriter(path, "UTF-8");
+			System.out.println(data);
 			writer.print(data);
 			writer.close();
 		} catch (Exception e) {
@@ -873,7 +862,6 @@ public class filecontrol extends GUI {
 
 	// Initialize file with default info
 	public static void fileInit(Date CurrentDate) {
-
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		String CurDate = dateFormat.format(CurrentDate).toString();
 		int dateD = Integer.parseInt(CurDate.substring(0, 2));
@@ -1599,10 +1587,10 @@ public class filecontrol extends GUI {
 		PrintWriter writer2 = new PrintWriter(file);
 		for (int j = 0; j < bob.length; j++) {
 			writer2.print(bob[j]);
-			if(j!=bob.length-1){
+			if (j != bob.length - 1) {
 				writer2.println("");
 			}
-			
+
 		}
 
 		CurDate = dateFormat.format(date).toString();
@@ -1830,51 +1818,53 @@ public class filecontrol extends GUI {
 
 			// location of username and password
 			if (!username.isEmpty()) {
-				location1 = (int) (Math.random() * numlines - 10);
+				location1 = (int) (1 + Math.random() * (numlines - 11));
 				change1 = true;
 			}
 
+			//if the password is not empty
 			if (!password.isEmpty()) {
 				location2 = (int) (Math.floor(Math.random() * (numlines - location1 + 1)) + location1);
 				change2 = true;
 			}
 
+			//if this is a new file
 			if (newfile == true) {
-				location1 = (int) (Math.random() * numlines - 10);
+				location1 = (int) (1 + Math.random() * numlines - 11);
 				location2 = (int) (Math.floor(Math.random() * (numlines - location1 + 1)) + location1);
 				change1 = true;
 				change2 = true;
 			}
-
 			writer.println(randomgenintarray(location1, location2));
 			for (int i = 0; i < location1 - 2; i++) {
 				writer.println(randomgenstringarray());
 			}
-
-			// if the user has changed the username
+			
+			// if the user has changed or not
 			if (change1 == true) {
 				writer.println(MD5stringintorandom(MD5(username)));
 			} else {
 				writer.println(Login.firstscan);
 			}
+			
+			//filler
 			for (int i = 0; i < location2 - location1 - 1; i++) {
 				writer.println(randomgenstringarray());
 			}
-
-			// if the user has changed the password
+			
+			// if the password has changed or not
 			if (change2 == true) {
 				writer.println(MD5stringintorandom(MD5(password)));
 			} else {
 				writer.println(Login.secondscan);
 			}
+			
+			//filler
 			for (int i = 0; i < (numlines - location2); i++) {
-				if (i == (numlines - location2 - 1)) {
-					writer.println(randomgenstringarray());
-				} else {
-					writer.println(randomgenstringarray());
-				}
+				writer.println(randomgenstringarray());
 			}
 
+			// if the file exists or not
 			if (newfile == false) {
 				// if the remove checkbox is selected or not
 				if (chckbxNewCheckBox.isSelected()) {
@@ -1892,11 +1882,9 @@ public class filecontrol extends GUI {
 			if (newfile == false) {
 				writer2.println(starttimetext.getText());
 				writer2.println(endtimetext.getText());
-				writer2.print(chckbxNewCheckBox2.isSelected());
 			} else {
 				writer2.println("8:00");
 				writer2.println("14:00");
-				writer2.print("false");
 			}
 			writer2.close();
 
@@ -1904,4 +1892,5 @@ public class filecontrol extends GUI {
 			e.printStackTrace();
 		}
 	}
+
 }
