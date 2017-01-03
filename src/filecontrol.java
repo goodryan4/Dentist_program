@@ -382,10 +382,9 @@ public class filecontrol extends GUI {
 
 			} else if (a.equals(procedure)) {
 				lblSex.setText("procedure date:");
-				lblDateOfBirth.setText("Procedure starts:");
-				lblPostalCode.setText("Procedure ends:");
-
-				lblPhoneNumber.setText("Procedure:");
+				lblDateOfBirth.setText("Procedure:");
+				lblPostalCode.setText("Date:");
+				lblPhoneNumber.setText("End:");
 				lblPhoneNumber.setBounds(10, 180, 200, 14);
 
 				lblHealthNumber.setText("Discriptions:");
@@ -522,17 +521,22 @@ public class filecontrol extends GUI {
 			addtimes();
 
 			File file = new File(dir);
-
 			Date date = new Date();
-
-			fileInit(date);
 			try {
-				Scanner scan = new Scanner(file);
-				if (!file.exists() || !scan.hasNextLine()) {
+				if (!file.exists()) {
+					new File("src/table").mkdirs();
+					file.createNewFile();
 					fileInit(date);
+				} else {
+					Scanner scan = new Scanner(file);
+					if (!scan.hasNextLine()) {
+						fileInit(date);
+					} else {
+						fixdates();
+					}
+					scan.close();
 				}
-				fixdates();
-				scan.close();
+
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -1539,7 +1543,7 @@ public class filecontrol extends GUI {
 		int dateD = Integer.parseInt(CurDate.substring(0, 2));
 		int dateM = Integer.parseInt(CurDate.substring(3, 5)) - 1;
 		int dateY = Integer.parseInt(CurDate.substring(6, 10));
-		if (dateM == -1) {
+		if (dateM == 0) {
 			dateM = 12;
 			dateY--;
 		}
@@ -1567,7 +1571,7 @@ public class filecontrol extends GUI {
 		lnr.close();
 
 		int i = 0;
-		String datescanned = null;
+		String datescanned = "";
 
 		while (scan.hasNextLine()) {
 			String line = scan.nextLine();
@@ -1583,6 +1587,7 @@ public class filecontrol extends GUI {
 				bob[i] = line;
 			}
 		}
+
 		scan.close();
 		PrintWriter writer2 = new PrintWriter(file);
 		for (int j = 0; j < bob.length; j++) {
@@ -1590,7 +1595,6 @@ public class filecontrol extends GUI {
 			if (j != bob.length - 1) {
 				writer2.println("");
 			}
-
 		}
 
 		CurDate = dateFormat.format(date).toString();
@@ -1822,13 +1826,13 @@ public class filecontrol extends GUI {
 				change1 = true;
 			}
 
-			//if the password is not empty
+			// if the password is not empty
 			if (!password.isEmpty()) {
 				location2 = (int) (Math.floor(Math.random() * (numlines - location1 + 1)) + location1);
 				change2 = true;
 			}
 
-			//if this is a new file
+			// if this is a new file
 			if (newfile == true) {
 				location1 = (int) (1 + Math.random() * numlines - 11);
 				location2 = (int) (Math.floor(Math.random() * (numlines - location1 + 1)) + location1);
@@ -1839,27 +1843,27 @@ public class filecontrol extends GUI {
 			for (int i = 0; i < location1 - 2; i++) {
 				writer.println(randomgenstringarray());
 			}
-			
+
 			// if the user has changed or not
 			if (change1 == true) {
 				writer.println(MD5stringintorandom(MD5(username)));
 			} else {
 				writer.println(Login.firstscan);
 			}
-			
-			//filler
+
+			// filler
 			for (int i = 0; i < location2 - location1 - 1; i++) {
 				writer.println(randomgenstringarray());
 			}
-			
+
 			// if the password has changed or not
 			if (change2 == true) {
 				writer.println(MD5stringintorandom(MD5(password)));
 			} else {
 				writer.println(Login.secondscan);
 			}
-			
-			//filler
+
+			// filler
 			for (int i = 0; i < (numlines - location2); i++) {
 				writer.println(randomgenstringarray());
 			}
