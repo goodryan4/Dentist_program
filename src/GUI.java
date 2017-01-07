@@ -7,14 +7,14 @@ import javax.swing.border.*;
 
 public class GUI {
 
-	public JFrame frame;
+	public static JFrame frame;
 	public static List list;
 	public static JLabel check, lblFirstName, iconsearch, lblHealthNumber, lblHealthIssues, lblMedicalNotes,
-			lblPhoneNumber, lblLastName, lblSex, lblDateOfBirth, lblPostalCode, lblNewLabel;
-	public static JPanel info, procedure, allinfo, search, schedule, currjpanel, settings;
+			lblPhoneNumber, lblLastName, lblSex, lblDateOfBirth, lblPostalCode, lblNewLabel, lblTitle;
+	public static JPanel info, procedure, allinfo, search, schedule, currjpanel, settings, balance;
 	public static String directory = "src/patients", name, x, starttimestring, endtimestring;
-	public static JButton newperson, removeperson, btnGoToCompressed, btnGoToProcedure, btnHome, btnSchedule,
-			btnSchedule_1, btnRemoveAll, btnGoToPatientInfo, btnAddEvent, btnNewButton;
+	public static JButton newperson, removeperson, btnGoToCompressed, btnGoToProcedure, btnGoTobalance, btnHome,
+			btnSchedule, btnSchedule_1, btnRemoveAll, btnGoToPatientInfo, btnAddEvent, btnNewButton;
 	public static JScrollPane scrollPane, scrollPane_1;
 	public static String[] currentData;
 	public static JToggleButton btnUpdateInfo;
@@ -23,9 +23,10 @@ public class GUI {
 	public static JTextField[] TextFields;
 	public static JTextArea textarea, textarea_1;
 	public static JTextArea[] textareas;
-	public static JComboBox listdates, status, time;
+	public static JComboBox listdates, status, time, specificprocedure;
 	public static JTable table;
 	public static File bob;
+	private JTextField textField_10;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -56,20 +57,20 @@ public class GUI {
 				text.setBounds(frame.getWidth() / 2 - 180, frame.getHeight() / 5, 280, 25);
 			}
 		});
-		
+
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-		    @Override
-		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-		    	if(settings.isVisible()){
-		    		btnHome.grabFocus();
-		    	}
-		    }
+			@Override
+			public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+				if (settings.isVisible()) {
+					btnHome.grabFocus();
+				}
+			}
 		});
 		frame.setBounds(100, 100, 614, 431);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new CardLayout(0, 0));
-		
-		frame.setLocation(Login.dim.width/2-frame.getWidth()/2, Login.dim.height/2-frame.getHeight()/2);
+
+		frame.setLocation(Login.dim.width / 2 - frame.getWidth() / 2, Login.dim.height / 2 - frame.getHeight() / 2);
 
 		// main page
 		search = new JPanel();
@@ -217,11 +218,16 @@ public class GUI {
 		frame.getContentPane().add(settings, "name_5114555335704");
 		settings.setLayout(null);
 
+		balance = new JPanel();
+		frame.getContentPane().add(balance, "name_22847323594590");
+		balance.setLayout(null);
+
 		// set the name of each JPanel
 		info.setName("info");
 		procedure.setName("procedure");
 		allinfo.setName("allinfo");
 		search.setName("search");
+		balance.setName("balance");
 
 		btnNewButton = new JButton("");
 		btnNewButton.addActionListener(new ActionListener() {
