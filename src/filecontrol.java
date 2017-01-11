@@ -66,10 +66,11 @@ public class filecontrol extends GUI {
 	public static File CurrentPat;
 	public static String dir = "src/table/schedule.txt", oldName, path, day, month, date, year, CurrentDate, starttime2,
 			endtime2, settingsdir = "src/settings.txt";
-	public static boolean newEvent = false, checkbox = false, newentry = false;
+	public static boolean newEvent = false, checkbox = false, newentry = false, firstDate = true;
 	public static double starttime = 7.00, endtime = 14;
 	public static JCheckBox chckbxNewCheckBox;
 	public static int lengthofstring = 50, numlines = 100, location1, location2;
+	public static Object CurrentDate1;
 
 	public static final int[] MONTH_LENGTH = new int[] { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
@@ -479,42 +480,17 @@ public class filecontrol extends GUI {
 			listdates.setBounds(463, 70, 100, 25);
 			listdates.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
-					File CurrentPat = new File(dir);
-					try {
-						Scanner in = new Scanner(CurrentPat);
-						Boolean start = true;
-						while (in.hasNextLine() && start == true) {
-							String data = in.nextLine();
-							String date = data.substring(0, 10);
-							if (date.equals(listdates.getSelectedItem())) {
-								start = false;
-								String[] separator = data.substring(13, data.length()).split("__");
-								CurrentDay = separator;
-								// remake the jtable to the proper amount of
-								// rows
-								DefaultTableModel model = new DefaultTableModel(separator.length, 4);
-
-								table.setModel(model);
-								for (int i = 0; i < table.getColumnCount(); i++) {
-									TableColumn column1 = table.getTableHeader().getColumnModel().getColumn(i);
-									column1.setHeaderValue(columnNames[i]);
-								}
-								table.getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(time));
-								table.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(time));
-								table.getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(status));
-
-								for (int i = 0; i < separator.length; i++) {
-									String[] timeandevent = separator[i].split(";");
-									table.setValueAt(timeandevent[0], i, 0);
-									table.setValueAt(timeandevent[1], i, 1);
-									table.setValueAt(timeandevent[2], i, 2);
-								}
-								addtablelistener();
-							}
-						}
-						in.close();
-					} catch (FileNotFoundException e) {
-						e.printStackTrace();
+					if(firstDate == true){
+						Date FirstDate = new Date();
+						DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+						String CurDate = dateFormat.format(FirstDate).toString();
+						refresh(CurDate);
+						firstDate=false;
+						CurrentDate1 = CurDate;
+					}
+					else{
+						CurrentDate1 = listdates.getSelectedItem();
+					refresh(CurrentDate1);
 					}
 				}
 			});
@@ -1000,8 +976,7 @@ public class filecontrol extends GUI {
 	// get the selected date
 	// get start time
 	public static String[] getCurrentDate(Date d) {
-		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		String CurrentDate = dateFormat.format(d).toString();
+		
 		BufferedReader br = null;
 		String CurrentDays = null;
 		File file = new File(dir);
@@ -1009,7 +984,7 @@ public class filecontrol extends GUI {
 			br = new BufferedReader(new FileReader(dir));
 			for (int i = 0; i < file.length(); i++) {
 				CurrentDays = br.readLine();
-				if (CurrentDate.compareTo(CurrentDays.substring(0, 10)) == 0) {
+				if (CurrentDate1.equals(CurrentDays.substring(0, 10))) {
 					CurrentDay = CurrentDays.substring(13, CurrentDays.length()).split("__");
 					return CurrentDays.substring(13, CurrentDays.length()).split("__");
 				}
@@ -1066,9 +1041,7 @@ public class filecontrol extends GUI {
 	// add, edit and delete appointments
 	public static void AddApointment(String[] DaysProcedings, Double ApointStart, Double ApointEnd, String name) {
 
-		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		Date date = new Date();
-		String CurrentDate = dateFormat.format(date).toString();
+		
 
 		String newTextLine = "";
 		String newTimeSlots = "";
@@ -1079,6 +1052,7 @@ public class filecontrol extends GUI {
 		boolean didRun = false;
 		boolean runYet = false;
 
+		if(ApointEnd-ApointStart>=0.15){
 		for (int i = 0; i < DaysProcedings.length; i++) {
 			String[] timeSlot = DaysProcedings[i].split(";");
 			double startTime = getStartTime(timeSlot[0]);
@@ -1176,11 +1150,11 @@ public class filecontrol extends GUI {
 			}
 
 		}
-		newTextLine = CurrentDate + ":-:" + newTextLine;
+		newTextLine = CurrentDate1 + ":-:" + newTextLine;
 		if (conflict2 == false && didRun == true) {
 			wrightToFile1(newTextLine);
 		}
-
+		}
 	}
 
 	public static void editApointment(String[] DaysProcedings, Double ApointStart, Double ApointEnd, String oldName,
@@ -1197,9 +1171,9 @@ public class filecontrol extends GUI {
 		String newTextLine = "";
 		int x;
 
-		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		Date date = new Date();
-		String CurrentDate = dateFormat.format(date).toString();
+		if(ApointEnd-ApointStart>=0.15){
+			
+		
 
 		boolean IsConflict = checkForConflicts(DaysProcedings, ApointStart, ApointEnd, oldName);
 
@@ -1250,6 +1224,7 @@ public class filecontrol extends GUI {
 						if (DaysProcedings[i - 1].endsWith("free") && (i + 1 != DaysProcedings.length)
 								&& DaysProcedings[i + 1].endsWith("free")) {
 
+							System.out.println("check 1");
 							if (endTimeAfter - ApointEnd >= 0.15) {
 								String tempS3 = moreChecks(Double.toString(ApointEnd).replace(".", ":"));
 								String tempE3 = moreChecks(Double.toString(endTimeAfter).replace(".", ":"));
@@ -1275,9 +1250,9 @@ public class filecontrol extends GUI {
 							}
 							freeBefore = true;
 
-						}
-					} else if (DaysProcedings[i + 1].endsWith("free") && (i + 1 != DaysProcedings.length)) {
+						} else if (DaysProcedings[i + 1].endsWith("free") && (i + 1 != DaysProcedings.length)) {
 
+						System.out.println("check 1");
 						if (endTimeAfter - ApointEnd >= 0.15) {
 							String tempS3 = moreChecks(Double.toString(ApointEnd).replace(".", ":"));
 							String tempE3 = moreChecks(Double.toString(endTimeAfter).replace(".", ":"));
@@ -1288,7 +1263,7 @@ public class filecontrol extends GUI {
 
 					newTextLine = newTextLine + newFreeBefore + replace + newFreeAfter;
 					hasAdded = true;
-
+					}
 				}
 
 				if (freeBefore == false && hasAdded == true && firstTime == true) {
@@ -1314,12 +1289,12 @@ public class filecontrol extends GUI {
 			}
 		}
 
-		newTextLine = CurrentDate + ":-:" + newTextLine;
+		newTextLine = CurrentDate1 + ":-:" + newTextLine;
 		if (IsConflict == false) {
 			wrightToFile1(newTextLine);
 		}
 	}
-
+}
 	public static void deleteApointment(String[] DaysProcedings, String name) {
 		String newTextLine = "";
 		double startTime = 0.0;
@@ -1402,6 +1377,8 @@ public class filecontrol extends GUI {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
+		System.out.println(CurrentDate1);
+		refresh(CurrentDate1);
 	}
 
 	// checks for conflicts between added appointment and appointments in the
@@ -1755,4 +1732,46 @@ public class filecontrol extends GUI {
 			e.printStackTrace();
 		}
 	}
+	public static void refresh(Object startDate) {
+		File CurrentPat = new File(dir);
+		try {
+			Scanner in = new Scanner(CurrentPat);
+			Boolean start = true;
+			
+			while (in.hasNextLine() && start == true) {
+				String data = in.nextLine();
+				String date = data.substring(0, 10);
+				if (date.equals(startDate)) {
+					start = false;
+					String[] separator = data.substring(13, data.length()).split("__");
+					
+					CurrentDay = separator;
+					// remake the jtable to the proper amount of
+					// rows
+					DefaultTableModel model = new DefaultTableModel(separator.length, 4);
+
+					table.setModel(model);
+					for (int i = 0; i < table.getColumnCount(); i++) {
+						TableColumn column1 = table.getTableHeader().getColumnModel().getColumn(i);
+						column1.setHeaderValue(columnNames[i]);
+					}
+					table.getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(time));
+					table.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(time));
+					table.getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(status));
+
+					for (int i = 0; i < separator.length; i++) {
+						String[] timeandevent = separator[i].split(";");
+						table.setValueAt(timeandevent[0], i, 0);
+						table.setValueAt(timeandevent[1], i, 1);
+						table.setValueAt(timeandevent[2], i, 2);
+					}
+					addtablelistener();
+				}
+			}
+			in.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
 }
