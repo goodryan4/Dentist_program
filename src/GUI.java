@@ -4,36 +4,37 @@ import java.util.Scanner;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
+import javax.swing.table.DefaultTableModel;
 
 public class GUI {
 
 	public static JFrame frame;
 	public static List list;
 	public static JLabel check, lblFirstName, iconsearch, lblHealthNumber, lblHealthIssues, lblMedicalNotes,
-			lblPhoneNumber, lblLastName, lblSex, lblDateOfBirth, lblPostalCode, lblNewLabel, lblTitle;
+			lblPhoneNumber, lblLastName, lblSex, lblDateOfBirth, lblPostalCode, lblNewLabel;
 	public static JPanel info, procedure, allinfo, search, schedule, currjpanel, settings, balance;
-	public static String directory = "src/patients", name, x, starttimestring, endtimestring;
+	public static String directory = "src/patients", name, x, starttimestring, endtimestring, accountdir = "src/Costandprocedures.txt";
 	public static JButton newperson, removeperson, btnGoToCompressed, btnGoToProcedure, btnGoTobalance, btnHome,
 			btnSchedule, btnSchedule_1, btnRemoveAll, btnGoToPatientInfo, btnAddEvent, btnNewButton;
 	public static JScrollPane scrollPane, scrollPane_1;
 	public static String[] currentData;
 	public static JToggleButton btnUpdateInfo;
 	public static JTextField text, textField, textField_1, textField_2, textField_3, textField_4, textField_5,
-			textField_6, textField_7, textField_8, textField_9, starttimetext, endtimetext, Usernametext, Passwordtext;
+			textField_6, textField_7, textField_8, textField_9,textField_10, starttimetext, endtimetext, Usernametext, Passwordtext;
 	public static JTextField[] TextFields;
 	public static JTextArea textarea, textarea_1;
 	public static JTextArea[] textareas;
 	public static JComboBox listdates, status, time, specificprocedure;
-	public static JTable table;
-	public static File bob;
-	private JTextField textField_10;
-
+	public static JTable table, table_1;
+	public static File bob, accounting;
+	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
+			@SuppressWarnings("unused")
 			public void run() {
 				try {
 					GUI window = new GUI();
-					window.frame.setVisible(true);
+					GUI.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -49,8 +50,28 @@ public class GUI {
 		bob = new File(directory);
 		if (bob.exists() == false) {
 			bob.mkdirs();
+			
+		}
+		accounting = new File(accountdir);
+		if(!accounting.exists()){
+			try {
+				accounting.createNewFile();
+				BufferedWriter writer = new BufferedWriter(new FileWriter(accountdir));
+				writer.write("Cleaning teeth, Filling teeth");
+				writer.newLine();
+				for(int i=1; i<33; i++){
+					writer.write("Tooth "+i);
+					if(i!=32){
+						writer.write(", ");
+					}
+				}
+				writer.close();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		}
 		frame = new JFrame();
+		frame.setTitle("Home");
 		frame.setResizable(false);
 		frame.addWindowStateListener(new WindowStateListener() {
 			public void windowStateChanged(WindowEvent arg0) {
@@ -228,6 +249,17 @@ public class GUI {
 		allinfo.setName("allinfo");
 		search.setName("search");
 		balance.setName("balance");
+		
+		JButton btnNewProcedure = new JButton("New Procedure");
+		btnNewProcedure.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				addprocedure procede = new addprocedure();
+				procede.frmEnterProcedure.setTitle("Add Procedure for "+name);
+				procede.frmEnterProcedure.show();
+			}
+		});
+		btnNewProcedure.setBounds(21, 10, 175, 35);
+		balance.add(btnNewProcedure);
 
 		btnNewButton = new JButton("");
 		btnNewButton.addActionListener(new ActionListener() {
@@ -268,6 +300,7 @@ public class GUI {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private static void addPopup(Component component, final JPopupMenu popup) {
 		component.addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {

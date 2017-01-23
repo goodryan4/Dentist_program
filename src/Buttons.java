@@ -16,6 +16,7 @@ import javax.swing.table.TableColumn;
 
 public class Buttons extends filecontrol{
 
+	//Button to go home to main menu
 	public static void btnhome(JPanel a){
 		btnHome = new JButton("Home");
 		btnHome.setBounds(463, 30, 101, 24);
@@ -23,11 +24,13 @@ public class Buttons extends filecontrol{
 			public void actionPerformed(ActionEvent arg0) {
 				removeobjects();
 				hidepanels(search);
+				frame.setTitle("Home");
 			}
 		});
 		a.add(btnHome);
 	}
 	
+	//Add row to JTable for a new appointment
 	public static void btnevent(JPanel a){
 		btnAddEvent = new JButton("Add Event");
 		btnAddEvent.setBounds(463, 100, 100, 25);
@@ -67,6 +70,7 @@ public class Buttons extends filecontrol{
 		a.add(btnAddEvent);
 	}
 	
+	//Enable/disable jTextareas and JTextfields in patient info database
 	public static void btnupdateinfo(JPanel a){
 		btnUpdateInfo = new JToggleButton("Update Info");
 		btnUpdateInfo.addActionListener(new ActionListener() {
@@ -103,7 +107,7 @@ public class Buttons extends filecontrol{
 		} else if (a.equals(balance)) {
 			createbutton1(a, 10, 326, 140, 35);
 			createbutton2(a, 160, 326, 140, 35);
-			createbutton3(a, 310, 326, 140, 35);
+			createbutton3(a, 310, 326, 180, 35);
 		}
 	}
 
@@ -181,6 +185,7 @@ public class Buttons extends filecontrol{
 							hidebuttons(schedule);
 						}
 					}
+					scan.close();
 					if (found == false) {
 						int n = JOptionPane.showConfirmDialog(null, "Would you like to add an appointment?",
 								"No appointment found", JOptionPane.YES_NO_OPTION);
@@ -203,7 +208,7 @@ public class Buttons extends filecontrol{
 
 	// Balance button
 	public static void createbutton5(JPanel a, int b, int c, int d, int e) {
-		btnGoTobalance = new JButton("Balance");
+		btnGoTobalance = new JButton("Accounting");
 		btnGoTobalance.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				removeobjects();

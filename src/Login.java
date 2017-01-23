@@ -37,6 +37,7 @@ public class Login {
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
+			@SuppressWarnings({ "deprecation", "unused" })
 			public void run() {
 				try {
 					if (!a.exists()) {
@@ -57,7 +58,9 @@ public class Login {
 									.get(filecontrol.location1 - 1);
 							secondscan = Files.readAllLines(Paths.get(Login.a.getAbsolutePath()))
 									.get(filecontrol.location2 - 1);
+							scan.close();
 						} else {
+							scan.close();
 							System.exit(0);
 						}
 					} catch (IOException e) {
@@ -65,10 +68,11 @@ public class Login {
 					}
 					if (!line3.equals(filecontrol.MD5("false"))) {
 						filecontrol.checkbox = true;
-						new GUI().frame.show();
+						new GUI();
+						GUI.frame.show();
 					} else {
 						Login window = new Login();
-						window.frame.setVisible(true);
+						Login.frame.setVisible(true);
 					}
 
 				} catch (Exception e) {
@@ -169,6 +173,7 @@ public class Login {
 			}
 		});
 		btnLogin.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent arg0) {
 				if (!textField.getText().isEmpty() && !textField_1.getText().isEmpty()) {
 					String first = textField.getText();
@@ -176,7 +181,8 @@ public class Login {
 					if (filecontrol.MD5(first).equals(firstscan.substring(4, 36))) {
 						if (filecontrol.MD5(second).equals(secondscan.substring(4, 36))) {
 							frame.dispose();
-							new GUI().frame.show();
+							new GUI();
+							GUI.frame.show();
 						} else {
 							JOptionPane.showMessageDialog(null, "Try again username and password are case sensitive.");
 						}
