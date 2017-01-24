@@ -92,18 +92,6 @@ public class filecontrol extends GUI {
 		}
 	}
 
-	// Adds new info to info page
-	public static void newInfo(String data, int position) throws IOException {
-		information[position] = data;
-		String textline = "";
-		for (int i = 0; i < information.length; i++) {
-			textline = textline + information[i].toString() + ":";
-		}
-		PrintWriter writer = new PrintWriter(path);
-		writer.print(textline);
-		writer.close();
-	}
-
 	// For look through all patients and calling "removefolder" method
 	public static void removeallfolders() {
 		File last = new File(GUI.directory);
