@@ -378,55 +378,91 @@ public class Schedule extends filecontrol {
 	}
 }
 	public static void deleteApointment(String[] DaysProcedings, String name) {
-		String newTextLine = "";
-		double startTime = 0.0;
-		double endTime = 0.0;
-		double startTime1 = 0.0;
-		double endTime1 = 0.0;
-		double oldstart = 0.0;
-		double oldend = 7.30;
-		boolean deleted = false;
+		/*
+		 This method is shorter then the others because less variable checking is required simply delete the appointment and
+		 replace it with a free time slot the only variable checking being done is whether there is a need to merge the free
+		 time slots with pre exsiting free time slots
+		 */
+			
+			String newTextLine = "";
+			double startTime = 0.0;
+			double endTime = 0.0;
+			double startTime1 = 0.0;
+			double endTime1 = 0.0;
+			double oldstart = 0.0;
+			double oldend = 7.30;
+			boolean deleted = false;
 
-		for (int i = 0; i < DaysProcedings.length; i++) {
+			for (int i = 0; i < DaysProcedings.length; i++) {
 
-			String[] timeSlot = DaysProcedings[i].split(";");
-			startTime = getStartTime(timeSlot[0]);
-			endTime = getStartTime(timeSlot[1]);
+				String[] timeSlot = DaysProcedings[i].split(";");
+				startTime = getStartTime(timeSlot[0]);
+				endTime = getStartTime(timeSlot[1]);
 
-			if (deleted == true) {
-				newTextLine = newTextLine + DaysProcedings[i] + "__";
-			} else if (timeSlot[2].compareTo(name) == 0) {
+				if (deleted == true) {
+					newTextLine = newTextLine + DaysProcedings[i] + "__";
+				} else if (timeSlot[2].compareTo(name) == 0) {
+					System.out.println("check 3");
+					
+					if(DaysProcedings.length >= (i+2)){
+						
+					String[] timeSlot2 = DaysProcedings[i + 1].split(";");
+					startTime1 = getStartTime(timeSlot2[0]);
+					endTime1 = getStartTime(timeSlot2[1]);
+					}
 
-				String[] timeSlot2 = DaysProcedings[i + 1].split(";");
-				startTime1 = getStartTime(timeSlot2[0]);
-				endTime1 = getStartTime(timeSlot2[1]);
+					
+					if (i-1 >= 0 && DaysProcedings[i - 1].endsWith("free") && DaysProcedings.length >= i+2 && DaysProcedings[i + 1].endsWith("free") && i > 0) {
+						String tempS3 = moreChecks(Double.toString(oldstart).replace(".", ":"));
+						String tempE3 = moreChecks(Double.toString(endTime1).replace(".", ":"));
+						newTextLine = newTextLine + tempS3 + ";" + tempE3 + ";" + "free__";
+						i++;
 
-				if (DaysProcedings[i - 1].endsWith("free") && DaysProcedings[i + 1].endsWith("free") && i > 0) {
-					newTextLine = newTextLine + oldstart + ";" + endTime1 + ";" + "free__";
-					i++;
+					} else if (i- 1>= 0 && DaysProcedings[i - 1].endsWith("free") && i > 0) {
+						String tempS3 = moreChecks(Double.toString(oldstart).replace(".", ":"));
+						String tempE3 = moreChecks(Double.toString(endTime).replace(".", ":"));
+						newTextLine = newTextLine + tempS3 + ";" + tempE3 + ";" + "free__";
+						
 
-				} else if (DaysProcedings[i - 1].endsWith("free") && i > 0) {
-					newTextLine = newTextLine + oldstart + ";" + endTime + ";" + "free__";
+					} else if (DaysProcedings[i + 1].endsWith("free")) {
+						String tempS3 = moreChecks(Double.toString(oldend).replace(".", ":"));
+						String tempE3 = moreChecks(Double.toString(endTime1).replace(".", ":"));
+						String temp1 = moreChecks(Double.toString(startTime).replace(".", ":"));
+						String temp2 = moreChecks(Double.toString(endTime).replace(".", ":"));
+						if(i-1<0){
+							newTextLine = newTextLine + temp1 + ";" + tempE3 + ";" + "free__";
+							i++;
+						}else{
+						newTextLine = newTextLine + DaysProcedings[i - 1] + "__" + tempS3 + ";" + tempE3 + ";" + "free__";
+						i++;
+						}
 
-				} else if (DaysProcedings[i + 1].endsWith("free")) {
-					newTextLine = newTextLine + DaysProcedings[i - 1] + "__" + oldend + ";" + endTime1 + ";" + "free__";
-					i++;
-
-				} else {
-					newTextLine = newTextLine + DaysProcedings[i - 1] + "__" + oldend + ";" + startTime1 + ";"
-							+ "free__";
+					} else {
+						String tempS3 = moreChecks(Double.toString(oldend).replace(".", ":"));
+						String tempE3 = moreChecks(Double.toString(startTime1).replace(".", ":"));
+						String temp1 = moreChecks(Double.toString(startTime).replace(".", ":"));
+						String temp2 = moreChecks(Double.toString(endTime).replace(".", ":"));
+						if(i-1<0){
+							newTextLine = newTextLine + temp1 + ";" + temp2 + ";" + "free__";
+						}else{
+						newTextLine = newTextLine + DaysProcedings[i - 1] + "__" + tempS3 + ";" + tempE3 + ";"
+								+ "free__";
+						}
+					}
+					deleted = true;
+					
+				} else if (i > 0 && deleted == false) {
+					newTextLine = newTextLine + DaysProcedings[i - 1] + "__";
 				}
-				deleted = true;
 
-			} else if (i > 0) {
-				newTextLine = newTextLine + DaysProcedings[i - 1] + "__";
+				
+				oldstart = startTime;
+				oldend = endTime;
+
 			}
-
-			oldstart = startTime;
-			oldend = endTime;
-
+			newTextLine = CurrentDate1 + ":-:" + newTextLine;
+			wrightToFile1(newTextLine);
 		}
-	}
 
 	// write information to files
 	public static void wrightToFile1(String line) {

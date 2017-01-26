@@ -1035,48 +1035,53 @@ public class filecontrol extends GUI {
 
 	// add listener to table
 	// adds a listener to the table cells
-	public static void addtablelistener() {
-		table.getModel().addTableModelListener(new TableModelListener() {
-			public void tableChanged(TableModelEvent e) {
-				int row = e.getFirstRow();
-				int column = e.getColumn();
-				TableModel model = (TableModel) e.getSource();
-				model.getColumnName(column);
-				model.getValueAt(row, column);
-				String Name = "free";
-				double start = 0.0;
-				double end = 0.0;
-				String oldName = "";
+public static void addtablelistener() {
+	table.getModel().addTableModelListener(new TableModelListener() {
+		public void tableChanged(TableModelEvent e) {
+			int row = e.getFirstRow();
+			int column = e.getColumn();
+			TableModel model = (TableModel) e.getSource();
+			model.getColumnName(column);
+			model.getValueAt(row, column);
+			String Name = "free";
+			double start = 0.0;
+			double end = 0.0;
+			
+			String[] timeSlot = CurrentDay[row].split(";");
+			String oldName = timeSlot[2];
 
-				Date date = new Date();
-				new SimpleDateFormat("dd/MM/yyyy");
-				Schedule.getCurrentDate(date);
+			System.out.println(oldName);
+			Date date = new Date();
+			new SimpleDateFormat("dd/MM/yyyy");
+			Schedule.getCurrentDate(date);
 
-				if (column == 0 || column == 1 || column == 2) {
-					String startTime = (String) model.getValueAt(row, 0);
-					String endTime = (String) model.getValueAt(row, 1);
-					Name = (String) model.getValueAt(row, 2);
-					start = Schedule.getStartTime(startTime);
-					end = Schedule.getStartTime(endTime);
-					oldName = Name;
-					if (end != 0.0 && start != 0.0 && Name.compareTo("free") != 0 && Name.compareTo("lunch") != 0) {
-						if (newEvent == true && row == 0 && Name.compareTo("") != 0) {
-							Schedule.AddApointment(CurrentDay, start, end, Name);
-							newEvent = false;
-						} else if (Name.compareTo("") == 0
-								&& (oldName.compareTo("free") != 0 || oldName.compareTo("lunch") != 0)) {
-							if (newEvent == false || row != 0) {
-								Schedule.deleteApointment(CurrentDay, oldName);
-							}
-						} else if (oldName.compareTo("free") != 0 && oldName.compareTo("lunch") != 0
-								&& Name.compareTo("") != 0) {
-							Schedule.editApointment(CurrentDay, start, end, oldName, Name);
+			if (column == 0 || column == 1 || column == 2) {
+				String startTime = (String) model.getValueAt(row, 0);
+				String endTime = (String) model.getValueAt(row, 1);
+				Name = (String) model.getValueAt(row, 2);
+				start = Schedule.getStartTime(startTime);
+				end = Schedule.getStartTime(endTime);
+				
+				if (end != 0.0 && start != 0.0 && Name.compareTo("free") != 0 && Name.compareTo("lunch") != 0) {
+					if (newEvent == true && row == 0 && Name.compareTo("") != 0) {
+						Schedule.AddApointment(CurrentDay, start, end, Name);
+						newEvent = false;
+					} else if (Name.compareTo("") == 0
+							&& (oldName.compareTo("free") != 0 && oldName.compareTo("lunch") != 0)) {
+						if (newEvent == false || row != 0) {
+							System.out.println("check 1");
+							Schedule.deleteApointment(CurrentDay, oldName);
+							
 						}
+					} else if (oldName.compareTo("free") != 0 && oldName.compareTo("lunch") != 0
+							&& Name.compareTo("") != 0) {
+						Schedule.editApointment(CurrentDay, start, end, oldName, Name);
 					}
 				}
 			}
-		});
-	}
+		}
+	});
+}
 
 	// Settings management methods and password encryption
 	public static String randomgenstringarray() {
